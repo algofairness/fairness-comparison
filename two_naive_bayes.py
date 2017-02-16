@@ -2,6 +2,20 @@ from sklearn import metrics
 from sklearn.naive_bayes import GaussianNB
 import urllib2
 
+
+
+def get_accuracy_for_calders(y, Y_predicted):
+	correct = []
+	assert(len(y) == len(Y_predicted))
+	for i in range(len(y)):
+		if y[i] == Y_predicted[i]:
+			correct.append(1)
+		else:
+			correct.append(0)
+
+	accuracy = float(sum(correct)) / float(len(correct))
+	return accuracy
+
 def splitDataByGender(X, x_control, y):
 
     """

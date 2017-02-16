@@ -1,7 +1,8 @@
 import os,sys
 import numpy as np
-from regression_model_with_prejudice_remover_adult_data import *
 from two_naive_bayes import *
+from zafar_classifier import *
+from prejudice_regularizer import *
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
 import utils as ut
 import loss_funcs as lf # loss funcs that can be optimized subject to various constraints
@@ -28,38 +29,12 @@ def test_adult_data():
 	sensitive_attrs_to_cov_thresh = {}
 	gamma = None
 
-	def train_test_classifier():
 
-		w = ut.train_model(x_train, y_train, x_control_train, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
-		#W is learned weight vector for the classifier
+	""" Classify the data using Kamishima's Prejudice Reducer Regularizer"""
+	print "\n== Kamishima's Prejudice Reducer Regularizer"
+	train_classify(x_train, y_train, 1)
 
-		#Calculate the accuracy by comparing against correct classification
-		train_score, test_score, correct_answers_train, correct_answers_test = ut.check_accuracy(w, x_train, y_train, x_test, y_test, None, None)
 
-		#Take the dot product of W and each element in the testing set
-		distances_boundary_test = (np.dot(x_test, w)).tolist()
-
-		#Classify class labels based off sign (+/-) of result of dot product
-		all_class_labels_assigned_test = np.sign(distances_boundary_test)
-
-		correlation_dict_test = ut.get_correlations(None, None, all_class_labels_assigned_test, x_control_test, sensitive_attrs)
-		cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test, distances_boundary_test, x_control_test, sensitive_attrs)
-		ut.print_mutual_information(all_class_labels_assigned_test, x_control_test, sensitive_attrs)
-		p_rule = ut.print_classifier_fairness_stats([test_score], [correlation_dict_test], [cov_dict_test], sensitive_attrs[0])
-
-		return w, p_rule, test_score
-
-	def get_accuracy_for_calders(y, Y_predicted):
-		correct = []
-		assert(len(y) == len(Y_predicted))
-		for i in range(len(y)):
-			if y[i] == Y_predicted[i]:
-				correct.append(1)
-			else:
-				correct.append(0)
-
-		accuracy = float(sum(correct)) / float(len(correct))
-		return accuracy
 
 	""" Classify the data using Calder's Two Naive Bayes"""
 	print "\n== Calder's Two Naive Bayes Classifier"
@@ -131,7 +106,7 @@ def test_adult_data():
 	apply_fairness_constraints = 0
 	apply_accuracy_constraint = 0
 	sep_constraint = 0
-	w_uncons, p_uncons, acc_uncons = train_test_classifier()
+	w_uncons, p_uncons, acc_uncons = train_test_classifier(x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
 
 	""" Now classify such that we optimize for accuracy while achieving perfect fairness """
 	apply_fairness_constraints = 1 # set this flag to one since we want to optimize accuracy subject to fairness constraints
@@ -139,7 +114,7 @@ def test_adult_data():
 	sep_constraint = 0
 	sensitive_attrs_to_cov_thresh = {"sex":0}
 	print "\n== Zafar:  Classifier with fairness constraint =="
-	w_f_cons, p_f_cons, acc_f_cons  = train_test_classifier()
+	w_f_cons, p_f_cons, acc_f_cons  = train_test_classifier(x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
 
 
 
@@ -149,7 +124,7 @@ def test_adult_data():
 	sep_constraint = 0
 	gamma = 0.5 # gamma controls how much loss in accuracy we are willing to incur to achieve fairness -- increase gamme to allow more loss in accuracy
 	print "\n== Zafar:  Classifier with accuracy constraint =="
-	w_a_cons, p_a_cons, acc_a_cons = train_test_classifier()
+	w_a_cons, p_a_cons, acc_a_cons = train_test_classifier(x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
 
 	"""
 	Classify such that we optimize for fairness subject to a certain loss in accuracy
@@ -161,7 +136,7 @@ def test_adult_data():
 	sep_constraint = 1 # set the separate constraint flag to one, since in addition to accuracy constrains, we also want no misclassifications for certain points (details in demo README.md)
 	gamma = 1000.0
 	print "\n== Zafar: Classifier with accuracy constraint (no +ve misclassification) =="
-	w_a_cons_fine, p_a_cons_fine, acc_a_cons_fine  = train_test_classifier()
+	w_a_cons_fine, p_a_cons_fine, acc_a_cons_fine  = train_test_classifier(x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
 
 	return
 
