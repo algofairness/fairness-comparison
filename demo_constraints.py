@@ -1,6 +1,6 @@
 import os,sys
 import numpy as np
-from prepare_adult_data import *
+from regression_model_with_prejudice_remover_adult_data import *
 from two_naive_bayes import *
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
 import utils as ut

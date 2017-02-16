@@ -16,7 +16,7 @@ np.random.seed(SEED)
 def check_data_file(fname):
     sys.path.insert(0, '/data') # the code for fair classification is in this directory
     files = os.listdir(".") # get the current directory listing
-    print "Looking for file '%s' in the current directory..." % fname
+    #print "Looking for file '%s' in the current directory..." % fname
 
     if fname not in files:
         print "'%s' not found! Downloading from UCI Archive..." % fname
@@ -28,8 +28,8 @@ def check_data_file(fname):
         fileOut.close()
         print "'%s' download and saved locally.." % fname
     else:
-        print "File found in current directory.."
-
+        pass
+        #print "files found"
     return
 
 
@@ -69,7 +69,6 @@ def load_adult_data(load_data_size=None):
             attrs_to_vals[k] = []
 
     for f in data_files:
-        print f
         check_data_file(f)
 
         for line in open(f):

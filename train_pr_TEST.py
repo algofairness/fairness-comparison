@@ -79,7 +79,9 @@ from fadm import __version__ as fadm_version
 from sklearn import __version__ as sklearn_version
 from fadm.util import fill_missing_with_mean
 from fadm.lr.pr import *
+site.addsitedir('..')
 
+from prepare_adult_data import *
 #==============================================================================
 # Public symbols
 #==============================================================================
@@ -148,22 +150,32 @@ def main():
     """ Main routine that exits with status code 0
     """
     # init constants
+    #TODO WHAT ARE THESE
     ns = 1
     N_NS = 1
 
     ### pre process
-    #00DATA/adultd@0l.bindata
     # read data
-    D = np.loadtxt("00DATA/adultd@0l.bindata")
 
-    # split data and process missing values
-    y = np.array(D[:, -1])
-    X = fill_missing_with_mean(D[:, :-1])
+    D = np.loadtxt("kamishima/00DATA/adultd@1t.bindata")
+    #split data and process missing values
+    y_kamishima_data= np.array(D[:, -1])
+    updated_y_kamishima_data = []
 
+    for j in y_kamishima_data:
+        if j == 0:
+            updated_y_kamishima_data.append(-1.0)
+        else:
+            updated_y_kamishima_data.append(1)
+
+    X_kamishima_data = fill_missing_with_mean(D[:, :-1])
+    #TODO WHAT IS THIS: Is it sex?
     S = np.atleast_2d(D[:, -(1 + N_NS):-1])
-
     del D
 
+    # set the argument to none, or no arguments if you want to test
+    #with the whole data -- we are subsampling for performance speedup
+    X, y, x_control = load_adult_data(load_data_size=10000)
 
     ### main process
 
@@ -188,61 +200,70 @@ def main():
     """
 
 
+    def train_classify(X, y, ns):
+        clr = None
+        best_loss = np.inf
+        best_trial = 0
+        #Can run multiple trials to get better results
+        for trial in xrange(1):
+            #print("Trial No. " + str(trial + 1))
+            regression_model_with_prejudice_remover = train(X, y, ns, 30, 1, 4, 3)
+            #print("loss = " + str(regression_model_with_prejudice_remover.f_loss_))
+            if regression_model_with_prejudice_remover.f_loss_ < best_loss:
+                clr = regression_model_with_prejudice_remover
+                best_loss = clr.f_loss_
+                best_trial = trial + 1
 
-    clr = None
-    best_loss = np.inf
-    best_trial = 0
-    #Can run multiple trials to get better results
-    for trial in xrange(1):
-        #print("Trial No. " + str(trial + 1))
-        regression_model_with_prejudice_remover = train(X, y, ns, 30, 1, 4, 3)
-        #print("loss = " + str(regression_model_with_prejudice_remover.f_loss_))
-        if regression_model_with_prejudice_remover.f_loss_ < best_loss:
-            clr = regression_model_with_prejudice_remover
-            best_loss = clr.f_loss_
-            best_trial = trial + 1
+        final_loss = best_loss
+        best_trial = best_trial
+        ### Going onto what is done in predict_lr.py
 
-    final_loss = best_loss
-    best_trial = best_trial
-    ### Going onto what is done in predict_lr.py
+        # prediction and write results
+        #p is a two-dimensional array, where every element is contains two probabilities
+        #corresponding to the binary classification
+        #Presumably
+        p = clr.predict_proba(X)
 
-    # prediction and write results
-    #p is a two-dimensional array, where every element is contains two probabilities
-    #corresponding to the binary classification
-    #Presumably
-    p = clr.predict_proba(X)
+        negative = 0
+        positive = 0
 
-    negative = 0
-    positive = 0
+        for person in y:
+            if person == -1.0:
+                negative +=1
+            elif person ==1.0:
+                positive +=1
 
-    for person in y:
-        if person == 0:
-            negative +=1
-        elif person ==1:
-            positive +=1
-
-    print "Percent people in positive class in raw data: %f" % (100.0*float(positive)/float(len(y)))
-    print "Percent people in negative class in raw data: %f" % (100.0*float(negative)/float(len(y)))
+        print "Percent people in positive class in raw data: %f" % (100.0*float(positive)/float(len(y)))
+        print "Percent people in negative class in raw data: %f" % (100.0*float(negative)/float(len(y)))
 
 
-    # output prediction
-    total_people = 0
-    people_who_were_accurately_classified = 0
-    people_in_positive_class = 0
-    people_in_negative_class = 0
+        # output prediction
+        total_people = 0
+        people_who_were_accurately_classified = 0
+        people_in_positive_class = 0
+        people_in_negative_class = 0
+        total_people = len(y)
 
-    for i in xrange(p.shape[0]):
-        #print y[i]
-        c = np.argmax(p[i, :])
-        if c == 0:
-            people_in_negative_class+=1
-        elif c == 1:
-            people_in_positive_class+=1
-        total_people += 1
-        people_who_were_accurately_classified += 1 if c == y[i] else 0
+        for i in xrange(p.shape[0]):
+            c = np.argmax(p[i, :])
+            #print (" ".join(S[i, :].astype(str)) + " ")
 
-    print "Percent people classified in positive class: %f" % (100.0*float(people_in_positive_class)/float(total_people))
-    print "Percent people classified in negative class: %f" % (100.0*float(people_in_negative_class)/float(total_people))
-    print "Accuracy: %f" % (100.0* float(people_who_were_accurately_classified)/float(total_people))
+            if c == 0:
+                people_in_negative_class+=1
+                #Because negative classification is represented as -1 and 0 depending on data encoding
+                if (y[i] == -1.0 or y[i] == 0):
+                    people_who_were_accurately_classified+=1
+            elif c == 1:
+                people_in_positive_class+=1
+                if y[i] == c:
+                    people_who_were_accurately_classified+=1
 
+        print "Percent people classified in positive class: %f" % (100.0*float(people_in_positive_class)/float(total_people))
+        print "Percent people classified in negative class: %f" % (100.0*float(people_in_negative_class)/float(total_people))
+        print "Accuracy: %f" % (100.0* float(people_who_were_accurately_classified)/float(total_people))
+
+    print "\nWith data discretized by Zafar code: \n"
+    train_classify(X, y, 1)
+    print "\nWith Kamishima's discretization: \n"
+    train_classify(X_kamishima_data, y_kamishima_data, 1)
 main()
