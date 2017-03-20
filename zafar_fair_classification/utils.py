@@ -51,7 +51,6 @@ def train_model(x, y, x_control, loss_function, apply_fairness_constraints, appl
 
     """
 
-
     assert((apply_accuracy_constraint == 1 and apply_fairness_constraints == 1) == False) # both constraints cannot be applied at the same time
 
     max_iter = 100000 # maximum number of iterations for the minimization algorithm
@@ -60,7 +59,6 @@ def train_model(x, y, x_control, loss_function, apply_fairness_constraints, appl
         constraints = []
     else:
         constraints = get_constraint_list_cov(x, y, x_control, sensitive_attrs, sensitive_attrs_to_cov_thresh)
-
     if apply_accuracy_constraint == 0: #its not the reverse problem, just train w with cross cov constraints
 
         f_args=(x, y)
@@ -103,6 +101,8 @@ def train_model(x, y, x_control, loss_function, apply_fairness_constraints, appl
         constraints = []
         predicted_labels = np.sign(np.dot(w.x, x.T))
         unconstrained_loss_arr = loss_function(w.x, x, y, return_arr=True)
+
+
 
         if sep_constraint == True: # separate gemma for different people
             for i in range(0, len(predicted_labels)):
@@ -579,7 +579,6 @@ def get_constraint_list_cov(x_train, y_train, x_control_train, sensitive_attrs, 
 
 
     for attr in sensitive_attrs:
-
 
         attr_arr = x_control_train[attr]
         attr_arr_transformed, index_dict = get_one_hot_encoding(attr_arr)

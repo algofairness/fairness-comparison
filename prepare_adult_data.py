@@ -1,8 +1,10 @@
+"""To load data from Blackbox auditing, change line 59"""
 import os,sys
 import urllib2
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
 import utils as ut
 import numpy as np
+from fairness_metric_calculations import *
 from random import seed, shuffle
 SEED = 1122334455
 seed(SEED) # set the random seed so that the random permutations can be reproduced again
@@ -13,27 +15,7 @@ np.random.seed(SEED)
     The code will look for the data files (adult.data, adult.test) in the present directory, if they are not found, it will download them from UCI archive.
 """
 
-def check_data_file(fname):
-    sys.path.insert(0, '/data') # the code for fair classification is in this directory
-    files = os.listdir(".") # get the current directory listing
-    #print "Looking for file '%s' in the current directory..." % fname
-
-    if fname not in files:
-        print "'%s' not found! Downloading from UCI Archive..." % fname
-        addr = "http://archive.ics.uci.edu/ml/machine-learning-databases/adult/%s" % fname
-        response = urllib2.urlopen(addr)
-        data = response.read()
-        fileOut = open(fname, "w")
-        fileOut.write(data)
-        fileOut.close()
-        print "'%s' download and saved locally.." % fname
-    else:
-        pass
-        #print "files found"
-    return
-
-
-def load_adult_data(load_data_size=None):
+def load_adult_data(filename, load_data_size=None):
 
     """
         if load_data_size is set to None (or if no argument is provided), then we load and return the whole data
@@ -47,7 +29,7 @@ def load_adult_data(load_data_size=None):
     attrs_for_classification = set(attrs) - set(attrs_to_ignore)
 
     # adult data comes in two different files, one for training and one for testing, however, we will combine data from both the files
-    data_files = ["adult.data", "adult.test"]
+    data_files = [filename]
 
 
 
@@ -69,12 +51,12 @@ def load_adult_data(load_data_size=None):
             attrs_to_vals[k] = []
 
     for f in data_files:
-        check_data_file(f)
 
         for line in open(f):
             line = line.strip()
             if line == "": continue # skip empty lines
-            line = line.split(", ")
+            #line = line.split(", ")
+            line = line.split(",")
             if len(line) != 15 or "?" in line: # if a line has missing attributes, ignore it
                 continue
 
@@ -143,7 +125,7 @@ def load_adult_data(load_data_size=None):
             X.append(attr_vals)
 
         else:
-            attr_vals, index_dict = ut.get_one_hot_encoding(attr_vals)
+            attr_vals, index_dict = get_one_hot_encoding(attr_vals)
             for inner_col in attr_vals.T:
                 X.append(inner_col)
 
@@ -163,11 +145,62 @@ def load_adult_data(load_data_size=None):
 
     # see if we need to subsample the data
     if load_data_size is not None:
-        print "Loading only %d examples from the data" % load_data_size
+        print "Loading only %d examples from the adult dataset" % load_data_size
         X = X[:load_data_size]
         y = y[:load_data_size]
         for k in x_control.keys():
             x_control[k] = x_control[k][:load_data_size]
 
 
+    # #In case I want to run this data with Kamishima's classifiers
+    # new_y = []
+    # for i in y:
+    #     if i == -1:
+    #         new_y.append(0)
+    #     else:
+    #         new_y.append(1)
+    # f = open("zafar_data", "w")
+    # for i in range(0, len(new_y)-1):
+    #     line_of_data = X[i].tolist()
+    #     line_of_data.append(x_control["sex"][i])
+    #     line_of_data.append(new_y[i])
+    #     for j in line_of_data:
+    #         f.write('{}'.format(j))
+    #         f.write(" ")
+    #     f.write("\n")
+    # f.close()
+    print X[10:20], y[10:20], x_control["sex"][10:20]
+    return X, y, x_control
+
+def load_adult_data_from_kamashima():
+    X = []
+    y = []
+    x_control = {"sex": []}
+    lines = [line.rstrip('\n') for line in open('kamashima_complete/00DATA/adultd.bindata')]
+    for line in lines:
+        line = line.split()
+        print len(line)
+        y_val = line[-1]
+        del line[-1]
+        y.append(float(y_val))
+
+        x_control_val = line[-1]
+        del line[-1]
+        x_control["sex"].append(float(x_control_val))
+
+        x_val = line
+        X.append(x_val)
+
+    X = np.array(X, dtype=float)
+    new_y = []
+    for i in y:
+        if i == 0:
+            new_y.append(-1.0)
+        else:
+            new_y.append(1.0)
+
+    y = np.array(new_y)
+    for k, v in x_control.items(): x_control[k] = np.array(v, dtype=float)
+    print "Length: %f" % len(X)
+    print "X[0], y[0], x_control[0]"
     return X, y, x_control

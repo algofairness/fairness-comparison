@@ -3,19 +3,6 @@ from sklearn.naive_bayes import GaussianNB
 import urllib2
 
 
-
-def get_accuracy_for_calders(y, Y_predicted):
-	correct = []
-	assert(len(y) == len(Y_predicted))
-	for i in range(len(y)):
-		if y[i] == Y_predicted[i]:
-			correct.append(1)
-		else:
-			correct.append(0)
-
-	accuracy = float(sum(correct)) / float(len(correct))
-	return accuracy
-
 def splitDataByGender(X, x_control, y):
 
     """
@@ -26,13 +13,12 @@ def splitDataByGender(X, x_control, y):
 
     #Converting from numpy list to standard python list
     X.tolist()
-    x_control.tolist()
+    #x_control.tolist()
     y.tolist()
     women = []
     y_women = []
     men = []
     y_men = []
-
     #Loop through for every individual, split into two lists by gender
     for i in range(len(X)):
 
@@ -40,7 +26,7 @@ def splitDataByGender(X, x_control, y):
         person = X[i].tolist()
         person.append(x_control[i])
 
-        if (x_control[i] == 0):
+        if (x_control[i] == 0.0):
             women.append(person)
             y_women.append(y[i])
         else:
@@ -71,14 +57,35 @@ def predict(X, y, X_test, y_test):
     # make predictions
     expected = y_test
     predicted = model.predict(X_test)
+    predicted = predicted.tolist()
+    #Replacing -1.0 with 0, for sake of compatability with Kamashima's code
 
-    #summarize the fit of the model
-    #print(metrics.classification_report(expected, predicted))
-    #print(metrics.confusion_matrix(expected, predicted))
+    updated_predicted = []
+    for i in predicted:
+        if i == -1.0:
+            updated_predicted.append(0)
+        elif i == 1.0:
+            updated_predicted.append(1)
+        elif i == 0.0:
+            updated_predicted.append(0)
 
-    return predicted, expected
+        else:
+            print "Inproper value in predicted class values"
 
-def run_two_naive_bayes(x_train, y_train, x_control_train, x_test, y_test, x_control_test):
+    updated_expected = []
+    for i in expected:
+        if i == -1.0:
+            updated_expected.append(0)
+        elif i == 1.0:
+            updated_expected.append(1)
+        elif i == 0.0:
+            updated_expected.append(0)
+        else:
+            print "Inproper value in expected class values"
+
+    return updated_predicted, updated_expected
+
+def run_two_naive_bayes(filename, x_train, y_train, x_control_train, x_test, y_test, x_control_test):
 
     """Take the train and test data, split it by gender, and train the two naive bayes classifiers
     """
@@ -86,10 +93,19 @@ def run_two_naive_bayes(x_train, y_train, x_control_train, x_test, y_test, x_con
     women_train, y_women_train, men_train, y_men_train = splitDataByGender(x_train, x_control_train["sex"], y_train)
     women_test, y_women_test, men_test, y_men_test = splitDataByGender(x_test, x_control_test["sex"], y_test)
 
-    #This unmodified naive bayes classifier is included for comparison
-    predict (x_train, y_train, x_test, y_test)
-
     women_predicted_class_status, women_expected_class_status = predict(women_train, y_women_train, women_test, y_women_test)
-    men_predicted_class_status, men_expected_class_status =     predict(men_train, y_men_train, men_test, y_men_test)
+    men_predicted_class_status, men_expected_class_status     = predict(men_train, y_men_train, men_test, y_men_test)
+
+    f = open("RESULTS/"+filename, 'w')
+    for i in range(0, len(women_predicted_class_status)-1):
+	    line_of_data = ( str(women_expected_class_status[i]) + " " + str(women_predicted_class_status[i]) + " 0.0")
+	    f.write(line_of_data)
+	    f.write("\n")
+    for i in range(0, len(men_predicted_class_status)-1):
+	    line_of_data = ( str(men_expected_class_status[i]) + " " + str(men_predicted_class_status[i]) + " 1.0")
+	    f.write(line_of_data)
+	    f.write("\n")
+    f.close()
+
 
     return women_predicted_class_status, women_expected_class_status, men_predicted_class_status, men_expected_class_status

@@ -1,0 +1,11 @@
+JOB201209040313-001 bash "learn-cv-lr.sh" "adultd" "LR" "train_lr.py" "predict_lr.py" reg=1
+JOB201209040313-002 bash "learn-cv-lr.sh" "adultd" "LRns" "train_lr.py --ns" "predict_lr.py --ns" reg=1
+JOB201209040313-003 bash "learn-cv-nb.sh" "adultd" "NB" "train_nb.py" "predict_nb.py" beta=1.0 nfv=4:7:4:16:4:7:14:6:5:2:2:3:8
+JOB201209040313-004 bash "learn-cv-nb.sh" "adultd" "NBns" "train_nb.py --ns" "predict_nb.py --ns" beta=1.0 nfv=4:7:4:16:4:7:14:6:5:2:2:3:8
+JOB201209040313-005 bash "learn-cv-nb.sh" "adultd" "CV2NB" "train_cv2nb.py" "predict_nb.py" beta=1.0 nfv=4:7:4:16:4:7:14:6:5:2:2:3:8
+JOB201209040313-006 bash "learn-cv-lr.sh" "adultd" "PR4" "train_pr.py" "predict_lr.py" reg=1 eta=0.0 ltype=4 itype=3 try=1
+JOB201209040313-007 bash "learn-cv-lr.sh" "adultd" "PR4" "train_pr.py" "predict_lr.py" reg=1 eta=5.0 ltype=4 itype=3 try=1
+JOB201209040313-008 bash "learn-cv-lr.sh" "adultd" "PR4" "train_pr.py" "predict_lr.py" reg=1 eta=10.0 ltype=4 itype=3 try=1
+JOB201209040313-009 bash "learn-cv-lr.sh" "adultd" "PR4" "train_pr.py" "predict_lr.py" reg=1 eta=15.0 ltype=4 itype=3 try=1
+JOB201209040313-010 bash "learn-cv-lr.sh" "adultd" "PR4" "train_pr.py" "predict_lr.py" reg=1 eta=20.0 ltype=4 itype=3 try=1
+JOB201209040313-011 bash "learn-cv-lr.sh" "adultd" "PR4" "train_pr.py" "predict_lr.py" reg=1 eta=30.0 ltype=4 itype=3 try=1

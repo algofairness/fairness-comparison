@@ -4,8 +4,6 @@
 Description
 ===========
 
-The last column indicates binary class.
-
 Options
 =======
 -C <REG>, --reg <REG>
@@ -86,7 +84,7 @@ def train(X, y, ns, eta, C, ltype, itype):
         features
     y : ary, shape=(n_samples)
         classes
-    number_sensative_features : int
+    ns, number_sensative_features : int
         the number of sensitive features
     opt : object
         options
@@ -97,47 +95,36 @@ def train(X, y, ns, eta, C, ltype, itype):
         trained classifier
     """
     if ltype == 4:
-            #clr = LRwPRType4(eta=opt.eta, C=opt.C)
-            clr = LRwPRType4(eta, C)
-            clr.fit(X, y, ns, itype)
-            #clr.fit(X, y, ns, itype=opt.itype)
+            print "ETA"
+            print eta
+            clr = LRwPRType4(eta=eta, C=1)
+            clr.fit(X, y, number_sensative_features, itype)
+
+
     else:
         sys.exit("Illegal likelihood fitting type")
 
     return clr
 
 
-#==============================================================================
-# Load Data
-#==============================================================================
-D = np.loadtxt("kamishima/00DATA/adultd@1t.bindata")
-#split data and process missing values
-y_kamishima_data= np.array(D[:, -1])
-updated_y_kamishima_data = []
-
-for j in y_kamishima_data:
-    if j == 0:
-        updated_y_kamishima_data.append(-1.0)
-    else:
-        updated_y_kamishima_data.append(1)
-
-X_kamishima_data = fill_missing_with_mean(D[:, :-1])
-#TODO WHAT IS THIS: Is it sex?
-S = np.atleast_2d(D[:, -(1 + number_non_sensative_features):-1])
-del D
-
 
 ### main process
 
-def train_classify(X, y, number_sensative_features):
+def train_classify(X_train, y_train, X_test, y_test, number_sensative_features, fairness_param, x_control_test):
+
+
     clr = None
     best_loss = np.inf
     best_trial = 0
     #Can run multiple trials to get better results
+
     for trial in xrange(1):
 
         #Check top of file for parameters of regression_model_with_prejudice_remover
-        regression_model_with_prejudice_remover = train(X, y, number_sensative_features, 30, 1, 4, 3)
+        #If you make fairness parameter too big, there will be no women in negative class in Kamishima's
+        #Cannot reproduce with fairness parameter at 30, leading me to believe something is wrong
+        print fairness_param
+        regression_model_with_prejudice_remover = train(X_train, y_train, number_sensative_features, fairness_param, 1, 4, 3)
         if regression_model_with_prejudice_remover.f_loss_ < best_loss:
             clr = regression_model_with_prejudice_remover
             best_loss = clr.f_loss_
@@ -149,45 +136,61 @@ def train_classify(X, y, number_sensative_features):
     #Calculate predictions
     #p is a two-dimensional array, where every element is contains two probabilities
     #corresponding to the binary classification presumably
-    p = clr.predict_proba(X)
-
+    p = clr.predict_proba(X_test)
     negative = 0
     positive = 0
+    total_people = len(y_test)
 
-    for person in y:
-        if person == -1.0:
+    for person in y_test:
+        if person == -1.0 or person == 0.0:
             negative +=1
         elif person ==1.0:
             positive +=1
 
-    print "Percent people in positive class in raw data: %f" % (100.0*float(positive)/float(len(y)))
-    print "Percent people in negative class in raw data: %f" % (100.0*float(negative)/float(len(y)))
 
-    total_people = 0
+    print "Percent people in positive class in raw data: %f" % (100.0*float(positive)/float(total_people))
+    print "Percent people in negative class in raw data: %f" % (100.0*float(negative)/float(total_people))
+
     people_who_were_accurately_classified = 0
     people_in_positive_class = 0
     people_in_negative_class = 0
-    total_people = len(y)
-
+    y_classified_results = []
     for i in xrange(p.shape[0]):
         c = np.argmax(p[i, :])
-        #print (" ".join(S[i, :].astype(str)) + " ")
-
         if c == 0:
+            y_classified_results.append(0)
             people_in_negative_class+=1
+
             #Because negative classification is represented as -1 and 0 depending on data encoding
-            if (y[i] == -1.0 or y[i] == 0):
+            if (y_test[i] == -1.0 or y_test[i] == 0):
                 people_who_were_accurately_classified+=1
+
         elif c == 1:
+            y_classified_results.append(1)
             people_in_positive_class+=1
-            if y[i] == c:
+            if y_test[i] == c:
                 people_who_were_accurately_classified+=1
+
+    y_test_updated = []
+    for j in y_test:
+        if j == 1.0:
+            y_test_updated.append(1)
+        elif j == -1.0:
+            y_test_updated.append(0)
+        else:
+            print "Invalid class value in y_control_test"
+
+    f = open("RESULTS/kamishima", 'w')
+    for i in range(0, len(y_test)-1):
+        line_of_data = ( str(y_test_updated[i]) + " " + str(y_classified_results[i]) + " " + str(x_control_test["sex"][i]))
+        f.write(line_of_data)
+        f.write("\n")
+    f.close()
+
 
     print "Percent people classified in positive class: %f" % (100.0*float(people_in_positive_class)/float(total_people))
     print "Percent people classified in negative class: %f" % (100.0*float(people_in_negative_class)/float(total_people))
     print "Accuracy: %f" % (100.0* float(people_who_were_accurately_classified)/float(total_people))
 
-#print "\nWith data discretized by Zafar code: \n"
-#train_classify(X, y, 1)
-#print "\nWith Kamishima's discretization: \n"
-#train_classify(X_kamishima_data, y_kamishima_data, 1)
+
+    return y_classified_results
