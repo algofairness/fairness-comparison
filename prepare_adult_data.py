@@ -25,7 +25,8 @@ def load_adult_data(filename, load_data_size=None):
     attrs = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country'] # all attributes
     int_attrs = ['age', 'fnlwgt', 'education_num', 'capital_gain', 'capital_loss', 'hours_per_week'] # attributes with integer values -- the rest are categorical
     sensitive_attrs = ['sex'] # the fairness constraints will be used for this feature
-    attrs_to_ignore = ['sex', 'race' ,'fnlwgt'] # sex and race are sensitive feature so we will not use them in classification, we will not consider fnlwght for classification since its computed externally and it highly predictive for the class (for details, see documentation of the adult data)
+    attrs_to_ignore = ['fnlwgt']
+    #attrs_to_ignore = ['sex', 'race' ,'fnlwgt'] # sex and race are sensitive feature so we will not use them in classification, we will not consider fnlwght for classification since its computed externally and it highly predictive for the class (for details, see documentation of the adult data)
     attrs_for_classification = set(attrs) - set(attrs_to_ignore)
 
     # adult data comes in two different files, one for training and one for testing, however, we will combine data from both the files
@@ -49,14 +50,15 @@ def load_adult_data(filename, load_data_size=None):
             pass
         else:
             attrs_to_vals[k] = []
+    attrs_to_vals['sex'] = []
 
     for f in data_files:
 
         for line in open(f):
             line = line.strip()
             if line == "": continue # skip empty lines
-            #line = line.split(", ")
-            line = line.split(",")
+            line = line.split(", ")
+            #line = line.split(",")
             if len(line) != 15 or "?" in line: # if a line has missing attributes, ignore it
                 continue
 
@@ -169,7 +171,6 @@ def load_adult_data(filename, load_data_size=None):
     #         f.write(" ")
     #     f.write("\n")
     # f.close()
-    print X[10:20], y[10:20], x_control["sex"][10:20]
     return X, y, x_control
 
 def load_adult_data_from_kamashima():

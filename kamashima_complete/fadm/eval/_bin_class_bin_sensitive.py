@@ -136,6 +136,40 @@ class BinClassBinSensitiveStats(BinClassStats):
 
         return pr
 
+    def str_balanced_classification_error(self, header=True):
+        """ Strings for balanced classification error, calculated from contigency table
+
+        Parameters
+        ----------
+        header : boolean, default=True
+            include header info
+
+        Returns
+        -------
+        pr : list, type=str
+            list of message strings
+        """
+
+        m = self.sct()
+
+        #False Negative for 0 class (m[1])
+        #False positive for 0 class (m[2])
+        be = (((m[1]+m[2])/(m[0]+m[1]+m[2]+m[3]))+((m[5]+m[6])/ (m[4]+m[5]+m[6]+m[7])))/2
+
+
+        #False negative for 1 class(m[5])
+
+        #False positive for 1 class(m[6])
+
+
+        balanced_error = []
+        if header:
+            balanced_error.append("### Balanced error rate ###")
+
+        balanced_error.append("Balanced error rate: %f" % be)
+
+        return balanced_error
+
     def kldiv(self):
         """ KL divergence
 
@@ -592,7 +626,8 @@ class BinClassBinSensitiveStats(BinClassStats):
         ret_str += "\n".join(self.str_klgivens(header)) + "\n\n"
         ret_str += "\n".join(self.str_hdjoints(header)) + "\n\n"
         ret_str += "\n".join(self.str_cvs(header)) + "\n\n"
-        ret_str += "\n".join(self.str_p_rule(header))
+        ret_str += "\n".join(self.str_p_rule(header)) + "\n\n"
+        ret_str += "\n".join(self.str_balanced_classification_error(header))
 
         return ret_str
 

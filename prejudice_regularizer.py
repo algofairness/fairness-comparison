@@ -112,7 +112,8 @@ def train(X, y, ns, eta, C, ltype, itype):
 
 def train_classify(X_train, y_train, X_test, y_test, number_sensative_features, fairness_param, x_control_test):
 
-
+    print "Fairness_param"
+    print fairness_param
     clr = None
     best_loss = np.inf
     best_trial = 0
@@ -123,7 +124,6 @@ def train_classify(X_train, y_train, X_test, y_test, number_sensative_features, 
         #Check top of file for parameters of regression_model_with_prejudice_remover
         #If you make fairness parameter too big, there will be no women in negative class in Kamishima's
         #Cannot reproduce with fairness parameter at 30, leading me to believe something is wrong
-        print fairness_param
         regression_model_with_prejudice_remover = train(X_train, y_train, number_sensative_features, fairness_param, 1, 4, 3)
         if regression_model_with_prejudice_remover.f_loss_ < best_loss:
             clr = regression_model_with_prejudice_remover
@@ -180,7 +180,7 @@ def train_classify(X_train, y_train, X_test, y_test, number_sensative_features, 
         else:
             print "Invalid class value in y_control_test"
 
-    f = open("RESULTS/kamishima", 'w')
+    f = open("RESULTS/kamishima:eta="+str(fairness_param), 'w')
     for i in range(0, len(y_test)-1):
         line_of_data = ( str(y_test_updated[i]) + " " + str(y_classified_results[i]) + " " + str(x_control_test["sex"][i]))
         f.write(line_of_data)
