@@ -1,5 +1,6 @@
 from sklearn import metrics
 from sklearn.naive_bayes import GaussianNB
+import numpy as np
 import urllib2
 
 
@@ -20,6 +21,7 @@ def splitDataByGender(X, x_control, y):
     men = []
     y_men = []
     #Loop through for every individual, split into two lists by gender
+    print X_control['sex']
     for i in range(len(X)):
 
         #Converting from numpy list to standard python list
@@ -38,33 +40,35 @@ def splitDataByGender(X, x_control, y):
 def splitDataBySensitiveFeature(X, x_control, y, sensitive_attr):
 
     """
-    X is a list of individuals, x_control is a list of each individual's sex (as binary variable),
+    X is a list of individuals, x_control is a list of each individual's sensitive variable (as binary variable),
     y is a list of that individual's actual class status as binary variable (where 0 = income <=50k, 1 = income >50k)
     X[i], x_control[i], y[i] should all correspond to the same individual. Accordingly each list should be of same length
     """
 
     #Converting from numpy list to standard python list
+    X = np.array(X, dtype=float)
     X.tolist()
-    #x_control.tolist()
     y.tolist()
+
     negative = []
     y_negative = []
     positive = []
     y_positive = []
+
     #Loop through for every individual, split into two lists by gender
     for i in range(len(X)):
 
         #Converting from numpy list to standard python list
         person = X[i].tolist()
         person.append(x_control[i])
-
         ##What should this be
-        if (x_control[i] == 0.0):
+
+        if (float(x_control[i]) == 0.0):
             negative.append(person)
-            y_negative.append(y[i])
+            y_negative.append(float(y[i]))
         else:
             positive.append(person)
-            y_positive.append(y[i])
+            y_positive.append(float(y[i]))
 
     return negative, y_negative, positive, y_positive
 
@@ -72,26 +76,20 @@ def splitDataBySensitiveFeature(X, x_control, y, sensitive_attr):
 
 def predict(X, y, X_test, y_test):
 
-    """
-    classification report and confusion_matrix info
-    -1 is <=50K
-    1 is >50k
-    Thus in binary classification, the count of true negatives is C_{0,0},
-    false negatives is C_{1,0}, true positives is C_{1,1} and false positives
-    is C_{0,1}.
-    """
-
     # fit a Naive Bayes model to the data
     model = GaussianNB()
+    X = np.array(X).astype(float)
+    y = np.array(y).astype(float)
+    X_test = np.array(X_test).astype(float)
+    y_test = np.array(y_test).astype(float)
 
-    # fit a Naive Bayes model to the data
-    model = GaussianNB()
     model.fit(X, y)
 
     # make predictions
     expected = y_test
     predicted = model.predict(X_test)
     predicted = predicted.tolist()
+
     #Replacing -1.0 with 0, for sake of compatability with Kamashima's code
 
     updated_predicted = []
@@ -121,14 +119,58 @@ def predict(X, y, X_test, y_test):
 
 def run_two_naive_bayes(filename, x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attrs):
 
+
     """Take the train and test data, split it by gender, and train the two naive bayes classifiers
     """
 
-    women_train, y_women_train, men_train, y_men_train = splitDataByGender(x_train, x_control_train[sensitive_attrs], y_train)
-    women_test, y_women_test, men_test, y_men_test = splitDataByGender(x_test, x_control_test[sensitive_attrs], y_test)
 
-    women_predicted_class_status, women_expected_class_status = predict(women_train, y_women_train, women_test, y_women_test)
-    men_predicted_class_status, men_expected_class_status     = predict(men_train, y_men_train, men_test, y_men_test)
+    # model = GaussianNB()
+    # X = np.array(x_train).astype(float)
+    # y = np.array(y_train).astype(float)
+    # X_test = np.array(x_test).astype(float)
+    # y_test = np.array(y_test).astype(float)
+    #
+    # model.fit(X, y)
+    #
+    # # make predictions
+    # expected = y_test
+    # predicted = model.predict(X_test)
+    # predicted = predicted.tolist()
+    #
+    # count = 0
+    # for i in range(0, len(expected)):
+    #     if expected[i] == predicted[i]:
+    #         count +=1
+    #
+    # print count
+    # print len(expected)
+    # print float(count)/float((len(expected)))
+
+
+    protected_train, y_protected_train, unprotected_train, y_unprotected_train = splitDataBySensitiveFeature(x_train, x_control_train[sensitive_attrs], y_train, sensitive_attrs)
+    protected_test, y_protected_test, unprotected_test, y_unprotected_test = splitDataBySensitiveFeature(x_test, x_control_test[sensitive_attrs], y_test, sensitive_attrs)
+
+
+    women_predicted_class_status, women_expected_class_status = predict(protected_train, y_protected_train, protected_test, y_protected_test)
+
+    # count = 0
+    # for i in range(0, len(women_expected_class_status)):
+    #     if women_expected_class_status[i] == women_predicted_class_status[i]:
+    #         count +=1
+    # print count
+    # print float(count)/float((len(women_expected_class_status)))
+
+    men_predicted_class_status, men_expected_class_status     = predict(unprotected_train, y_unprotected_train, unprotected_test, y_unprotected_test)
+
+
+    # count = 0
+    # for i in range(0, len(men_expected_class_status)):
+    #     if men_expected_class_status[i] == men_predicted_class_status[i]:
+    #         count +=1
+    # print count
+    # print float(count)/float((len(men_expected_class_status)))
+
+
 
     f = open("RESULTS/"+filename, 'w')
     for i in range(0, len(women_predicted_class_status)-1):

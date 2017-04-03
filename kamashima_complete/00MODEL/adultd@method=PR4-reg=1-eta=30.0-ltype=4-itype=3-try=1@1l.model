@@ -149,7 +149,7 @@ S'0.18.1'
 p12
 sS'elapsed_utime'
 p13
-S'13.41'
+S'13.24'
 p14
 sS'python_version'
 p15
@@ -165,7 +165,7 @@ S'3.0.0'
 p20
 sS'elapsed_time'
 p21
-S'0:00:14.690201'
+S'0:00:14.723157'
 p22
 sS'final_loss'
 p23
@@ -176,7 +176,7 @@ p25
 g6
 sS'infile'
 p26
-S"<open file '00DATA/adultd@1l.bindata', mode 'r' at 0x1101da4b0>"
+S"<open file '00DATA/adultd@1l.bindata', mode 'r' at 0x10c31b4b0>"
 p27
 sS'C'
 p28
@@ -188,11 +188,11 @@ S'1.0.0'
 p31
 sS'start_time'
 p32
-S'2017-03-16T15:10:30.149588'
+S'2017-04-02T12:52:05.650319'
 p33
 sS'outfile'
 p34
-S"<open file '00MODEL/adultd@method=PR4-reg=1-eta=30.0-ltype=4-itype=3-try=1@1l.model', mode 'w' at 0x110ef6420>"
+S"<open file '00MODEL/adultd@method=PR4-reg=1-eta=30.0-ltype=4-itype=3-try=1@1l.model', mode 'w' at 0x10d039420>"
 p35
 sS'nos_samples'
 p36
@@ -208,7 +208,7 @@ S'30.0'
 p41
 sS'end_time'
 p42
-S'2017-03-16T15:10:44.839789'
+S'2017-04-02T12:52:20.373476'
 p43
 sS'sys_info'
 p44

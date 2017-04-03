@@ -7,12 +7,17 @@ import loss_funcs as lf # loss funcs that can be optimized subject to various co
 
 
 def train_test_classifier(filename, x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma):
+
+    y_train = np.array(y_train)
+    y_train = y_train.astype(float)
+    x_control_train[sensitive_attrs[0]] = x_control_train[sensitive_attrs[0]].astype(float)
+    x_control_test[sensitive_attrs[0]] = x_control_test[sensitive_attrs[0]].astype(float)
+
     w = ut.train_model(x_train, y_train, x_control_train, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
     #W is learned weight vector for the classifier
 
     #Calculate the accuracy by comparing against correct classification
     train_score, test_score, correct_answers_train, correct_answers_test = ut.check_accuracy(w, x_train, y_train, x_test, y_test, None, None)
-
     #Take the dot product of W and each element in the testing set
     distances_boundary_test = (np.dot(x_test, w)).tolist()
     #Classify class labels based off sign (+/-) of result of dot product
@@ -48,7 +53,7 @@ def train_test_classifier(filename, x_train, y_train, x_control_train, x_test, y
 
     f = open("RESULTS/"+filename, 'w')
     for i in range(0, len(y_test)-1):
-        line_of_data = ( str(converted_y_test[i]) + " " + str(converted_assigned_class_values[i]) + " " + str(x_control_test["sex"][i]))
+        line_of_data = ( str(converted_y_test[i]) + " " + str(converted_assigned_class_values[i]) + " " + str(x_control_test[sensitive_attrs[0]][i]))
         f.write(line_of_data)
         f.write("\n")
     f.close()

@@ -124,6 +124,8 @@ def train(X, y, ns, opt):
         trained classifier
     """
     if opt.ltype == 4:
+        print "ETA is: "
+        print opt.eta
         clr = LRwPRType4(eta=opt.eta, C=opt.C)
         clr.fit(X, y, ns, itype=opt.itype)
     else:

@@ -95,12 +95,9 @@ def train(X, y, ns, eta, C, ltype, itype):
         trained classifier
     """
     if ltype == 4:
-            print "ETA"
-            print eta
             clr = LRwPRType4(eta=eta, C=1)
+            print clr
             clr.fit(X, y, number_sensative_features, itype)
-
-
     else:
         sys.exit("Illegal likelihood fitting type")
 
@@ -112,8 +109,6 @@ def train(X, y, ns, eta, C, ltype, itype):
 
 def train_classify(X_train, y_train, X_test, y_test, number_sensative_features, fairness_param, x_control_test):
 
-    print "Fairness_param"
-    print fairness_param
     clr = None
     best_loss = np.inf
     best_trial = 0
@@ -123,7 +118,7 @@ def train_classify(X_train, y_train, X_test, y_test, number_sensative_features, 
 
         #Check top of file for parameters of regression_model_with_prejudice_remover
         #If you make fairness parameter too big, there will be no women in negative class in Kamishima's
-        #Cannot reproduce with fairness parameter at 30, leading me to believe something is wrong
+        #Cannot reproduce with fairness parameter at 30, leading me to believe something is wrong (not true but leaving for memory sake)
         regression_model_with_prejudice_remover = train(X_train, y_train, number_sensative_features, fairness_param, 1, 4, 3)
         if regression_model_with_prejudice_remover.f_loss_ < best_loss:
             clr = regression_model_with_prejudice_remover
@@ -175,13 +170,14 @@ def train_classify(X_train, y_train, X_test, y_test, number_sensative_features, 
     for j in y_test:
         if j == 1.0:
             y_test_updated.append(1)
-        elif j == -1.0:
+        elif j == -1.0 or j == 0.0:
             y_test_updated.append(0)
         else:
+            print j
             print "Invalid class value in y_control_test"
 
     f = open("RESULTS/kamishima:eta="+str(fairness_param), 'w')
-    for i in range(0, len(y_test)-1):
+    for i in range(0, len(y_test)):
         line_of_data = ( str(y_test_updated[i]) + " " + str(y_classified_results[i]) + " " + str(x_control_test["sex"][i]))
         f.write(line_of_data)
         f.write("\n")

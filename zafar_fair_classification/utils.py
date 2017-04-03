@@ -50,17 +50,15 @@ def train_model(x, y, x_control, loss_function, apply_fairness_constraints, appl
     w: the learned weight vector for the classifier
 
     """
-
     assert((apply_accuracy_constraint == 1 and apply_fairness_constraints == 1) == False) # both constraints cannot be applied at the same time
 
-    max_iter = 100000 # maximum number of iterations for the minimization algorithm
+    max_iter = 10000000 # maximum number of iterations for the minimization algorithm
 
     if apply_fairness_constraints == 0:
         constraints = []
     else:
         constraints = get_constraint_list_cov(x, y, x_control, sensitive_attrs, sensitive_attrs_to_cov_thresh)
     if apply_accuracy_constraint == 0: #its not the reverse problem, just train w with cross cov constraints
-
         f_args=(x, y)
         w = minimize(fun = loss_function,
             x0 = np.random.rand(x.shape[1],),
@@ -69,9 +67,7 @@ def train_model(x, y, x_control, loss_function, apply_fairness_constraints, appl
             options = {"maxiter":max_iter},
             constraints = constraints
             )
-
     else:
-
         # train on just the loss function
         w = minimize(fun = loss_function,
             x0 = np.random.rand(x.shape[1],),
@@ -104,7 +100,7 @@ def train_model(x, y, x_control, loss_function, apply_fairness_constraints, appl
 
 
 
-        if sep_constraint == True: # separate gemma for different people
+        if sep_constraint == True: # separate gamma for different people
             for i in range(0, len(predicted_labels)):
                 if predicted_labels[i] == 1.0 and x_control[sensitive_attrs[0]][i] == 1.0: # for now we are assuming just one sensitive attr for reverse constraint, later, extend the code to take into account multiple sensitive attrs
                     c = ({'type': 'ineq', 'fun': constraint_protected_people, 'args':(x[i], y[i])}) # this constraint makes sure that these people stay in the positive class even in the modified classifier

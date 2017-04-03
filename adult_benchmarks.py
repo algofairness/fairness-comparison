@@ -6,7 +6,8 @@ from load_dummy_data import *
 from prepare_adult_data import *
 from prejudice_regularizer import *
 from black_box_auditing import *
-from load_compas_data import *
+sys.path.insert(0, "/data/adult/")
+import prepare_adult_data
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
 import utils as ut
 import loss_funcs as lf # loss funcs that can be optimized subject to various constraints
@@ -14,10 +15,20 @@ import loss_funcs as lf # loss funcs that can be optimized subject to various co
 
 
 def test_adult_data():
+
 	#Variables for whole functions
-	sensitive_attrs = ["race"]
+	sensitive_attrs = ["sex"]
+	sensitive_attr = sensitive_attrs[0]
 	train_fold_size = 0.7
 
+
+	##############################################################################################################################################
+	"""
+	If need be Repair data using BlackBoxAudit
+	"""
+	##############################################################################################################################################
+
+	run_audit()
 
 	##############################################################################################################################################
 	"""
@@ -27,61 +38,78 @@ def test_adult_data():
 
 	""" Load the adult data """
 	print "\n"
-	X, y, x_control = load_adult_data("data/adult.data", load_data_size=16281) # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
+	X, y, x_control = load_adult_data("data/adult/adult.csv", load_data_size=16281)
+	X_repaired, y_repaired, x_control_repaired = load_adult_data("data/adult/repaired_adult.csv", load_data_size=16281)
+
+	#X, y, x_control = load_adult_data_from_kamashima("adultd.bindata")
+
 	X = ut.add_intercept(X) # add intercept to X before applying the linear classifier
-
-	# X_repair, y_repair, x_control_repair = load_adult_data("data/repair_new.csv", load_data_size=16000) # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
-	# X, y, x_control = load_adult_data_from_kamashima() # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
-	# X_repair = ut.add_intercept(X_repair) # add intercept to X before applying the linear classifier
-
+	X_repaired = ut.add_intercept(X)
 
 	""" Split the data into train and test """
 
 	x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, train_fold_size)
-	#repair_x_train, repair_y_train, repair_x_control_train, repair_x_test, repair_y_test, repair_x_control_test = ut.split_into_train_test(X_repair, y_repair, x_control_repair, train_fold_size)
+	x_train_repaired, y_train_repaired, x_control_train_repaired, x_test_repaired, y_test_repaired, x_control_test_repaired = ut.split_into_train_test(X_repaired, y_repaired, x_control_repaired, train_fold_size)
 
 
-	##############################################################################################################################################
+	#############################################################################################################################################
 	"""
-	Write/re-encode the audit data
+	Classify using SVM's on repaired/original data
 	"""
 	##############################################################################################################################################
 
-	encode_blackbox_audit()
+	print "\nClassify original and repaired data using SVM"
+	#svm_classify("svm_.8", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
+	svm_classify("repaired_svm_.8", sensitive_attr, x_train_repaired, y_train_repaired, x_control_train_repaired, x_test_repaired, y_test_repaired, x_control_test_repaired)
 
-	##############################################################################################################################################
+	#############################################################################################################################################
 	"""
 	Classify using Kamishima
 	"""
 	##############################################################################################################################################
 
-	x_train_with_sensitive_feature = []
-	for i in range(0, len(x_train)):
-		val =  x_control_train["sex"][i]
-		feature_array = np.append(x_train[i], val)
-		x_train_with_sensitive_feature.append(feature_array)
-	x_train_with_sensitive_feature = np.array(x_train_with_sensitive_feature)
-
-	x_test_with_sensitive_feature = []
-	for i in range(0, len(x_test)):
-		val =  x_control_test["sex"][i]
-		feature_array = np.append(x_test[i], val)
-		x_test_with_sensitive_feature.append(feature_array)
-	x_test_with_sensitive_feature = np.array(x_test_with_sensitive_feature)
-
-
-	print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 30"
-
-	y_classified_results = train_classify(x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
-
-	# print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 15"
+	# x_train_with_sensitive_feature = []
+	# for i in range(0, len(x_train)):
+	# 	val =  x_control_train["sex"][i]
+	# 	feature_array = np.append(x_train[i], val)
+	# 	x_train_with_sensitive_feature.append(feature_array)
+	# x_train_with_sensitive_feature = np.array(x_train_with_sensitive_feature)
 	#
-	# y_classified_results = train_classify(x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 15, x_control_test)
+	# x_test_with_sensitive_feature = []
+	# for i in range(0, len(x_test)):
+	# 	val =  x_control_test["sex"][i]
+	# 	feature_array = np.append(x_test[i], val)
+	# 	x_test_with_sensitive_feature.append(feature_array)
+	# x_test_with_sensitive_feature = np.array(x_test_with_sensitive_feature)
 	#
-	# print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 1"
+	# f = open("test_kamashima_data", 'w')
+	# for i in x_test_with_sensitive_feature:
+	#     for j in i:
+	#     	f.write(str(int(j))+" ")
+	#     f.write('\n')
+	# f.close()
 	#
-	# y_classified_results = train_classify(x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
-	#
+	# f = open("train_kamashima_data", 'w')
+	# for i in x_train_with_sensitive_feature:
+	#     for j in i:
+	#     	f.write(str(int(j))+" ")
+	#     f.write('\n')
+	# f.close()
+
+	print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 30 and 1"
+	print len(x_train)
+	for j in range(0, len(x_train)):
+		np.append(x_train[j], x_control_train["sex"][j])
+
+	print len(x_train)
+	for j in range(0, len(x_test)):
+		np.append(x_test[j], x_control_test["sex"][j])
+
+
+	y_classified_results = train_classify(x_train, y_train, x_test, y_test, 1, 30, x_control_test)
+
+
+	y_classified_results = train_classify(x_train, y_train, x_test, y_test, 1, 1, x_control_test)
 
 
 	##############################################################################################################################################
@@ -89,8 +117,8 @@ def test_adult_data():
 	Classify using Calder's Two Naive Bayes
 	"""
 	##############################################################################################################################################
-
-	run_two_naive_bayes("two_naive_bayes", x_train, y_train, x_control_train, x_test, y_test, x_control_test)
+	sensitive_attr = sensitive_attrs[0]
+	run_two_naive_bayes("two_naive_bayes", x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)
 	print "\n== Calder's Two Naive Bayes =="
 
 	##############################################################################################################################################

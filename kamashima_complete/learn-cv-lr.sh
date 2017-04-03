@@ -88,10 +88,15 @@ fi
 for t in ${tlist}; do
   ldata=${datastem}@${t}l.${dataext}
   tdata=${datastem}@${t}t.${dataext}
+  # ldata=${datadir}/"train_kamashima_data"
+  # ldata=${datadir}/"test_kamashima_data"
   model=${modstem}@${t}l.${modext}
 
+
   python ${lscript} -q --rseed=${rseed} ${cmdopt} -i $ldata -o $model
+
   python ${tscript} -q -m $model -i $tdata >> $result
+
   echo learning script: $lscript
   echo "test script: " + $tscript
   echo result file: $result

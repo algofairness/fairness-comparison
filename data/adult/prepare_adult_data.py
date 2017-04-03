@@ -4,6 +4,7 @@ import urllib2
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
 import utils as ut
 import numpy as np
+from fadm.util import *
 from fairness_metric_calculations import *
 from random import seed, shuffle
 SEED = 1122334455
@@ -57,8 +58,9 @@ def load_adult_data(filename, load_data_size=None):
         for line in open(f):
             line = line.strip()
             if line == "": continue # skip empty lines
-            line = line.split(", ")
-            #line = line.split(",")
+            if line[0] == "a": continue # skip line of feature categories, in csv
+
+            line = line.split(",")
             if len(line) != 15 or "?" in line: # if a line has missing attributes, ignore it
                 continue
 
@@ -87,6 +89,7 @@ def load_adult_data(filename, load_data_size=None):
                         attr_val = "high-school"
 
                 if attr_name in sensitive_attrs:
+                    #attrs_to_vals[attr_name].append(attr_val)
                     x_control[attr_name].append(attr_val)
                 elif attr_name in attrs_to_ignore:
                     pass
@@ -153,55 +156,27 @@ def load_adult_data(filename, load_data_size=None):
         for k in x_control.keys():
             x_control[k] = x_control[k][:load_data_size]
 
-
-    # #In case I want to run this data with Kamishima's classifiers
-    # new_y = []
-    # for i in y:
-    #     if i == -1:
-    #         new_y.append(0)
-    #     else:
-    #         new_y.append(1)
-    # f = open("zafar_data", "w")
-    # for i in range(0, len(new_y)-1):
-    #     line_of_data = X[i].tolist()
-    #     line_of_data.append(x_control["sex"][i])
-    #     line_of_data.append(new_y[i])
-    #     for j in line_of_data:
-    #         f.write('{}'.format(j))
-    #         f.write(" ")
-    #     f.write("\n")
-    # f.close()
+    
     return X, y, x_control
 
-def load_adult_data_from_kamashima():
-    X = []
-    y = []
-    x_control = {"sex": []}
-    lines = [line.rstrip('\n') for line in open('kamashima_complete/00DATA/adultd.bindata')]
-    for line in lines:
-        line = line.split()
-        print len(line)
-        y_val = line[-1]
-        del line[-1]
-        y.append(float(y_val))
+def load_adult_data_from_kamashima(filename):
 
-        x_control_val = line[-1]
-        del line[-1]
-        x_control["sex"].append(float(x_control_val))
+    N_NS = 1
 
-        x_val = line
-        X.append(x_val)
+    # read data
+    D = np.loadtxt(filename)
 
-    X = np.array(X, dtype=float)
-    new_y = []
-    for i in y:
-        if i == 0:
-            new_y.append(-1.0)
-        else:
-            new_y.append(1.0)
-
-    y = np.array(new_y)
-    for k, v in x_control.items(): x_control[k] = np.array(v, dtype=float)
-    print "Length: %f" % len(X)
-    print "X[0], y[0], x_control[0]"
+    # split data and process missing values
+    y = np.array(D[:, -1])
+    # if opt.ns:
+    #This is without sensitive attribute
+    x_without_S = fill_missing_with_mean(D[:, :-(1 + N_NS)])
+    # else:
+    X = fill_missing_with_mean(D[:, :-1])
+    S = np.atleast_2d(D[:, -(1 + N_NS):-1])
+    s = []
+    for j in S:
+        s.append(j[0])
+    s = np.array(s)
+    x_control = {'sex': s}
     return X, y, x_control

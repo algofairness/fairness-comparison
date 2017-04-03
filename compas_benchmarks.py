@@ -7,6 +7,7 @@ from prepare_adult_data import *
 from prejudice_regularizer import *
 from black_box_auditing import *
 from load_compas_data import *
+from load_dummy_data import *
 from sklearn import svm
 
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
@@ -14,11 +15,9 @@ import utils as ut
 import loss_funcs as lf # loss funcs that can be optimized subject to various constraints
 
 
-
-
-def test_adult_data():
+def test_compas_data():
     #Variables for whole functions
-    sensitive_attrs = ["race"]
+    sensitive_attrs = ["sex"]
     train_fold_size = 0.5
 
 
@@ -30,7 +29,8 @@ def test_adult_data():
 
     """ Load the adult data """
     print "\n"
-    X, y, x_control = load_compas_data() # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
+
+    X, y, x_control, feature_names = load_compas_data() # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
     sensitive_attrs = x_control.keys()
     sensitive_attr = sensitive_attrs[0]
 
@@ -85,44 +85,39 @@ def test_adult_data():
     Classify using standard SVM
     """
     ##############################################################################################################################################
+    #
+    # clf = svm.SVC()
+    # clf.fit(x_train, y_train)
+    # predictions = clf.predict(x_test)
 
-    clf = svm.SVC()
-    clf.fit(x_train, y_train)
-    predictions = clf.predict(x_test)
-
-    """
-    In ProPublica data we are estimating if an individual commits an act of recitivism
-    This is coded as a 1, and if they do not recitivize, a 0.
-
-    In this sense 1 is "negative" and 0 is "positive"
-
-    However the fairness metrics assume 1 is "positive" and 0 is "negative," so inverting the class labels
-    """
-    converted_y_test = []
-    for value in y_test:
-        if value == 0:
-            converted_y_test.append(1)
-        elif value == 1:
-            converted_y_test.append(0)
-        else:
-            print "Incorrect value in class values"
-
-    converted_assigned_class_values = []
-    for value in predictions:
-        if value == 1:
-            converted_assigned_class_values.append(0)
-        elif value == 0:
-            converted_assigned_class_values.append(1)
-        else:
-            print "Incorrect value in class values"
+    # """
+    #Doing this in loading compas data now
+    # """
+    # converted_y_test = []
+    # for value in y_test:
+    #     if value == 0:
+    #         converted_y_test.append(1)
+    #     elif value == 1:
+    #         converted_y_test.append(0)
+    #     else:
+    #         print "Incorrect value in class values"
+    #
+    # converted_assigned_class_values = []
+    # for value in predictions:
+    #     if value == 1:
+    #         converted_assigned_class_values.append(0)
+    #     elif value == 0:
+    #         converted_assigned_class_values.append(1)
+    #     else:
+    #         print "Incorrect value in class values"
 
 
-    f = open("results/pro_publica_svm_new", 'w')
-    for i in range(0, len(converted_y_test)-1):
-        line_of_data = (str (converted_y_test[i]) + " " + str(converted_assigned_class_values[i]) + " " + str(float(x_control_test[sensitive_attr][i])))
-        f.write(line_of_data)
-        f.write("\n")
-    f.close()
+    # f = open("results/pro_publica_svm_new", 'w')
+    # for i in range(0, len(converted_y_test)-1):
+    #     line_of_data = (str (y_test[i]) + " " + str(predictions[i]) + " " + str(float(x_control_test[sensitive_attr][i])))
+    #     f.write(line_of_data)
+    #     f.write("\n")
+    # f.close()
 
 
     ##############################################################################################################################################
@@ -131,43 +126,67 @@ def test_adult_data():
     """
     ##############################################################################################################################################
 
-    clf = svm.SVC()
-    clf.fit(x_train, y_train)
-    predictions = clf.predict(x_test)
+    # f = open("repaired_propublica", 'r')
+    # features = f.readline()
+    # X = []
+    # y = []
+    # x_control["race"]=[]
+    #
+    # for line in f:
+    #     line = line.split(",")
+    #     data = []
+    #     data.append(line[1])
+    #     data.append(line[2])
+    #     data.append(line[3])
+    #     data.append(line[5])
+    #     data.append(line[6])
+    #     data.append(line[7])
+    #     X.append(data)
+    #     y.append(int(line[8][0]))
+    #     x_control["race"].append(line[4])
+    #
+    # X = np.array(X)
+    # y = np.array(y)
+    # x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, train_fold_size)
+    #
+    # clf = svm.SVC()
+    # clf.fit(x_train, y_train)
+    # predictions = clf.predict(x_test)
 
-    """
-    In ProPublica data we are estimating if an individual commits an act of recitivism
-    This is coded as a 1, and if they do not recitivize, a 0.
-
-    In this sense 1 is "negative" and 0 is "positive"
-
-    However the fairness metrics assume 1 is "positive" and 0 is "negative," so inverting the class labels
-    """
-    converted_y_test = []
-    for value in y_test:
-        if value == 0:
-            converted_y_test.append(1)
-        elif value == 1:
-            converted_y_test.append(0)
-        else:
-            print "Incorrect value in class values"
-
-    converted_assigned_class_values = []
-    for value in predictions:
-        if value == 1:
-            converted_assigned_class_values.append(0)
-        elif value == 0:
-            converted_assigned_class_values.append(1)
-        else:
-            print "Incorrect value in class values"
-
-
-    f = open("results/pro_publica_svm_new", 'w')
-    for i in range(0, len(converted_y_test)-1):
-        line_of_data = (str (converted_y_test[i]) + " " + str(converted_assigned_class_values[i]) + " " + str(float(x_control_test[sensitive_attr][i])))
-        f.write(line_of_data)
-        f.write("\n")
-    f.close()
+    # """
+    # In ProPublica data we are estimating if an individual commits an act of recitivism
+    # This is coded as a 1, and if they do not recitivize, a 0.
+    #
+    # In this sense 1 is "negative" and 0 is "positive"
+    #
+    # However the fairness metrics assume 1 is "positive" and 0 is "negative," so inverting the class labels
+    # """
+    # converted_y_test = []
+    # for value in y_test:
+    #     if value == 0:
+    #         converted_y_test.append(1)
+    #     elif value == 1:
+    #         converted_y_test.append(0)
+    #     else:
+    #         print "Incorrect value in class values"
+    #
+    # converted_assigned_class_values = []
+    # for value in predictions:
+    #     if value == 1:
+    #         converted_assigned_class_values.append(0)
+    #     elif value == 0:
+    #         converted_assigned_class_values.append(1)
+    #     else:
+    #         print "Incorrect value in class values"
+    #
+    #
+    # f = open("results/repaired_pro_publica_svm", 'w')
+    # for i in range(0, len(converted_y_test)-1):
+    #     line_of_data = (str (converted_y_test[i]) + " " + str(converted_assigned_class_values[i]) + " " + str(float(x_control_test[sensitive_attr][i])))
+    #     f.write(line_of_data)
+    #     f.write("\n")
+    # f.close()
+    # print "Repaired Data on SVM"
 
 
     ##############################################################################################################################################
@@ -176,8 +195,8 @@ def test_adult_data():
     """
     ##############################################################################################################################################
 
-    run_two_naive_bayes("pro_publica_two_naive_bayes", x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)
-    print "\n== Calder's Two Naive Bayes =="
+    # run_two_naive_bayes("pro_publica_two_naive_bayes", x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)
+    # print "\n== Calder's Two Naive Bayes =="
 
     ##############################################################################################################################################
     """
@@ -204,7 +223,7 @@ def test_adult_data():
     apply_fairness_constraints = 1 # set this flag to one since we want to optimize accuracy subject to fairness constraints
     apply_accuracy_constraint = 0
     sep_constraint = 0
-    sensitive_attrs_to_cov_thresh = {"sex":0}
+    sensitive_attrs_to_cov_thresh = {"race":0}
     print "\n== Zafar:  Classifier with fairness constraint =="
     w_f_cons = train_test_classifier("pro_publica_opt_accuracy", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
 
@@ -238,7 +257,7 @@ def test_adult_data():
     return
 
 def main():
-    test_adult_data()
+    test_compas_data()
 
 
 if __name__ == '__main__':

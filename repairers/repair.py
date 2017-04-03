@@ -1,7 +1,7 @@
 import argparse
 import csv
 
-from repairers.GeneralRepairer import Repairer
+from GeneralRepairer import Repairer
 
 parser = argparse.ArgumentParser(description="Repair a CSV file.")
 parser.add_argument("input_csv", type=str,

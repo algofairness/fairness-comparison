@@ -127,6 +127,7 @@ class LRwPR(BaseEstimator, ClassifierMixin):
         self.penalty = penalty
         self.C = C
         self.eta = eta
+
         self.minor_type = 0
         self.f_loss_ = np.inf
 
@@ -293,6 +294,7 @@ class LRwPRFittingType1Mixin(LRwPR):
         self.f_loss_ = self.loss(self.coef_, X, y, s)
 
 class LRwPRObjetiveType4Mixin(LRwPR):
+
     """ objective function of logistic regression with prejudice remover
 
     Loss Function type 4: Weights for logistic regression are prepared for each
@@ -323,7 +325,6 @@ class LRwPRObjetiveType4Mixin(LRwPR):
 
         coef = coef_.reshape(self.n_sfv_, self.n_features_)
 
-#        print >> sys.stderr, "loss:", coef[0, :], coef[1, :]
 
         ### constants
 
@@ -460,7 +461,6 @@ class LRwPRType4\
     """
 
     def __init__(self, C=1.0, eta=1.0, fit_intercept=True, penalty='l2'):
-
         super(LRwPRType4, self).\
             __init__(C=C, eta=eta,
                      fit_intercept=fit_intercept, penalty=penalty)
