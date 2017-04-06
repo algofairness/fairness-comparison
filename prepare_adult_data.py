@@ -1,4 +1,3 @@
-"""To load data from Blackbox auditing, change line 59"""
 import os,sys
 import urllib2
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
@@ -156,7 +155,7 @@ def load_adult_data(filename, load_data_size=None):
         for k in x_control.keys():
             x_control[k] = x_control[k][:load_data_size]
 
-    
+
     return X, y, x_control
 
 def load_adult_data_from_kamashima(filename):

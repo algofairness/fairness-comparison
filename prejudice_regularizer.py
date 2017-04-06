@@ -107,7 +107,7 @@ def train(X, y, ns, eta, C, ltype, itype):
 
 ### main process
 
-def train_classify(X_train, y_train, X_test, y_test, number_sensative_features, fairness_param, x_control_test):
+def train_classify(dataname, X_train, y_train, X_test, y_test, number_sensative_features, fairness_param, x_control_test):
 
     clr = None
     best_loss = np.inf
@@ -176,7 +176,7 @@ def train_classify(X_train, y_train, X_test, y_test, number_sensative_features, 
             print j
             print "Invalid class value in y_control_test"
 
-    f = open("RESULTS/kamishima:eta="+str(fairness_param), 'w')
+    f = open("RESULTS/kamishima:eta="+str(fairness_param)+str(dataname), 'w')
     for i in range(0, len(y_test)):
         line_of_data = ( str(y_test_updated[i]) + " " + str(y_classified_results[i]) + " " + str(x_control_test["sex"][i]))
         f.write(line_of_data)

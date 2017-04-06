@@ -22,36 +22,28 @@ np.random.seed(SEED)
 
 def check_data_file(fname):
     files = os.listdir(".") # get the current directory listing
-    # print "Looking for file '%s' in the current directory..." % fname
-    #
-    # if fname not in files:
-    #     print "'%s' not found! Downloading from GitHub..." % fname
-    #     addr = "https://raw.githubusercontent.com/propublica/compas-analysis/master/compas-scores-two-years.csv"
-    #     response = urllib2.urlopen(addr)
-    #     data = response.read()
-    #     fileOut = open(fname, "w")
-    #     fileOut.write(data)
-    #     fileOut.close()
-    #     print "'%s' download and saved locally.." % fname
-    # else:
-    #     print "File found in current directory.."
-
 
 def load_compas_data():
-
+    """
+    "sex", "age", "age_cat", "race", "juv_fel_count", "juv_misd_count",\
+    "juv_other_count", "priors_count", "c_charge_degree",
+        "two_year_recid"
+    """
     #Race should not be used
-    FEATURES_CLASSIFICATION = ["age_cat", "sex", "race", "priors_count", "c_charge_degree"] #features to be used for classification
-    CONT_VARIABLES = ["priors_count"] # continuous features, will need to be handled separately from categorical features, categorical features will be encoded using one-hot
-    CLASS_FEATURE = "two_year_recid" # the decision variable
+    #Add back in age, charge description
+    FEATURES_CLASSIFICATION = ["age_cat", "sex", "race", "juv_fel_count",
+    "juv_other_count", "juv_misd_count", "priors_count", "c_charge_degree"] #features to be used for classification
+    CONT_VARIABLES = ["priors_count", "juv_fel_count", "juv_other_count", "juv_misd_count"] # continuous features, will need to be handled separately from categorical features, categorical features will be encoded using one-hot
+    CLASS_FEATURE = "is_violent_recid" # the decision variable
     SENSITIVE_ATTRS = ["race"]
 
 
-    COMPAS_INPUT_FILE = "compas-scores-two-years.csv"
+
+    COMPAS_INPUT_FILE = "data/propublica/compas-scores-two-years-violent.csv"
     check_data_file(COMPAS_INPUT_FILE)
 
     # load the data and get some stats
     df = pd.read_csv(COMPAS_INPUT_FILE)
-
 
     # convert to np array
     data = df.to_dict('list')
@@ -98,10 +90,10 @@ def load_compas_data():
         data[k] = data[k][idx]
 
 
-
     """ Feature normalization and one hot encoding """
 
     y = data[CLASS_FEATURE]
+
     """
     In ProPublica data we are estimating if an individual commits an act of recitivism
     This is coded as a 1, and if they do not recitivize, a 0.
@@ -120,10 +112,13 @@ def load_compas_data():
             print "Incorrect value in class values"
     y = np.array(swapped_y)
 
-    # print "\nNumber of people recidivating within two years"
-    # print pd.Series(y).value_counts()
-    # print "\n"
+    print "\nNumber of people violently recidivating within two years"
+    print pd.Series(y).value_counts()
+    print "\n"
 
+    print "\nNumber of people violently recidivating within two years"
+    print pd.Series(swapped_y).value_counts()
+    print "\n"
 
     X = np.array([]).reshape(len(y), 0) # empty array with num rows same as num examples, will hstack the features to it
     x_control = defaultdict(list)
@@ -180,8 +175,4 @@ def load_compas_data():
     feature_names = ["intercept"] + feature_names
     assert(len(feature_names) == X.shape[1])
     print "Features we will be using for classification are:", feature_names, "\n"
-
-    return X, swapped_y, x_control, feature_names
-
-
-load_compas_data()
+    return X, y, x_control, feature_names

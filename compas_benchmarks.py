@@ -2,13 +2,11 @@ import os,sys
 import numpy as np
 from two_naive_bayes import *
 from zafar_classifier import *
-from load_dummy_data import *
-from prepare_adult_data import *
 from prejudice_regularizer import *
 from black_box_auditing import *
-from load_compas_data import *
-from load_dummy_data import *
 from sklearn import svm
+#sys.path.insert(0, "/data/propublica/")
+from load_compas import *
 
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
 import utils as ut
@@ -17,9 +15,16 @@ import loss_funcs as lf # loss funcs that can be optimized subject to various co
 
 def test_compas_data():
     #Variables for whole functions
-    sensitive_attrs = ["sex"]
-    train_fold_size = 0.5
+    sensitive_attrs = ["race"]
+    train_fold_size = 0.7
 
+    ##############################################################################################################################################
+    """
+    Repair data if needed
+    """
+    ##############################################################################################################################################
+
+    # run_audit_compas()
 
     ##############################################################################################################################################
     """
@@ -27,7 +32,10 @@ def test_compas_data():
     """
     ##############################################################################################################################################
 
-    """ Load the adult data """
+    """ Load the compas data
+    y=0: recitivism
+    y=1: no recitivism
+    """
     print "\n"
 
     X, y, x_control, feature_names = load_compas_data() # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
@@ -35,96 +43,76 @@ def test_compas_data():
     sensitive_attr = sensitive_attrs[0]
 
     """ Split the data into train and test """
-
     x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, train_fold_size)
 
-    # ##############################################################################################################################################
-    # """
-    # Write/re-encode the audit data
-    # """
-    # ##############################################################################################################################################
-    #
-    # encode_blackbox_audit()
+    ##############################################################################################################################################
+    """
+    Classify using Calder's Two Naive Bayes
+    """
+    ##############################################################################################################################################
 
-    # ##############################################################################################################################################
-    # """
-    # Classify using Kamishima
-    # """
-    # ##############################################################################################################################################
-    #
-    # x_train_with_sensitive_feature = []
-    # for i in range(0, len(x_train)):
-    #     val =  x_control_train["sex"][i]
-    #     feature_array = np.append(x_train[i], val)
-    #     x_train_with_sensitive_feature.append(feature_array)
-    # x_train_with_sensitive_feature = np.array(x_train_with_sensitive_feature)
-    #
-    # x_test_with_sensitive_feature = []
-    # for i in range(0, len(x_test)):
-    #     val =  x_control_test["sex"][i]
-    #     feature_array = np.append(x_test[i], val)
-    #     x_test_with_sensitive_feature.append(feature_array)
-    # x_test_with_sensitive_feature = np.array(x_test_with_sensitive_feature)
-    #
-    #
-    # print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 30"
-    #
-    # y_classified_results = train_classify(x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
+    run_two_naive_bayes("pro_publica_two_naive_bayes", x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)
+    print "\n== Calder's Two Naive Bayes =="
 
-    # print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 15"
-    #
-    # y_classified_results = train_classify(x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 15, x_control_test)
-    #
-    # print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 1"
-    #
-    # y_classified_results = train_classify(x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
-    #
+    ##############################################################################################################################################
+    """
+    Classify using Kamishima
+    """
+    ##############################################################################################################################################
+
+    x_train_with_sensitive_feature = []
+    for i in range(0, len(x_train)):
+        val =  x_control_train[sensitive_attr][i]
+        feature_array = np.append(x_train[i], val)
+        x_train_with_sensitive_feature.append(feature_array)
+    x_train_with_sensitive_feature = np.array(x_train_with_sensitive_feature)
+
+    x_test_with_sensitive_feature = []
+    for i in range(0, len(x_test)):
+        val =  x_control_test[sensitive_attr][i]
+        feature_array = np.append(x_test[i], val)
+        x_test_with_sensitive_feature.append(feature_array)
+    x_test_with_sensitive_feature = np.array(x_test_with_sensitive_feature)
+
+
+    print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 30"
+
+    y_classified_results = train_classify(x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
+
+    print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 15"
+
+    y_classified_results = train_classify(x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 15, x_control_test)
+
+    print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 1"
+
+    y_classified_results = train_classify(x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
+
+
 
     ##############################################################################################################################################
     """
     Classify using standard SVM
     """
     ##############################################################################################################################################
-    #
-    # clf = svm.SVC()
-    # clf.fit(x_train, y_train)
-    # predictions = clf.predict(x_test)
 
+    clf = svm.SVC()
+    clf.fit(x_train, y_train)
+    predictions = clf.predict(x_test)
+
+    f = open("results/pro_publica_svm_new", 'w')
+    for i in range(0, len(predictions)):
+        line_of_data = (str (y_test[i]) + " " + str(predictions[i]) + " " + str(float(x_control_test[sensitive_attr][i])))
+        f.write(line_of_data)
+        f.write("\n")
+    f.close()
+
+    print "Standard SVM"
+
+    # ##############################################################################################################################################
     # """
-    #Doing this in loading compas data now
+    # Classify using repaired data and standard SVM
     # """
-    # converted_y_test = []
-    # for value in y_test:
-    #     if value == 0:
-    #         converted_y_test.append(1)
-    #     elif value == 1:
-    #         converted_y_test.append(0)
-    #     else:
-    #         print "Incorrect value in class values"
-    #
-    # converted_assigned_class_values = []
-    # for value in predictions:
-    #     if value == 1:
-    #         converted_assigned_class_values.append(0)
-    #     elif value == 0:
-    #         converted_assigned_class_values.append(1)
-    #     else:
-    #         print "Incorrect value in class values"
-
-
-    # f = open("results/pro_publica_svm_new", 'w')
-    # for i in range(0, len(converted_y_test)-1):
-    #     line_of_data = (str (y_test[i]) + " " + str(predictions[i]) + " " + str(float(x_control_test[sensitive_attr][i])))
-    #     f.write(line_of_data)
-    #     f.write("\n")
-    # f.close()
-
-
-    ##############################################################################################################################################
-    """
-    Classify using repaired data and standard SVM
-    """
-    ##############################################################################################################################################
+    # ##############################################################################################################################################
 
     # f = open("repaired_propublica", 'r')
     # features = f.readline()
@@ -186,17 +174,8 @@ def test_compas_data():
     #     f.write(line_of_data)
     #     f.write("\n")
     # f.close()
-    # print "Repaired Data on SVM"
 
 
-    ##############################################################################################################################################
-    """
-    Classify using Calder's Two Naive Bayes
-    """
-    ##############################################################################################################################################
-
-    # run_two_naive_bayes("pro_publica_two_naive_bayes", x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)
-    # print "\n== Calder's Two Naive Bayes =="
 
     ##############################################################################################################################################
     """

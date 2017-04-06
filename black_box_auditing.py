@@ -2,8 +2,23 @@ import os,sys
 from subprocess import call
 from sklearn.svm import SVC
 from repairers import *
-def run_audit():
 
+
+def run_audit_compas():
+
+    #First check if the data has already been repaired
+    path =  os.getcwd()
+    path = path+'/data/propublica'
+    data_files = os.listdir(path)
+
+    #if "repaired-compas-scores-two-years.csv" not in data_files:
+    print "Repairing compas data"
+    bash_call = "python repair.py data/propublica/compas-scores-two-years-violent-columns-removed.csv data/propublica/repaired-compas-scores-two-years-violent-columns-removed.csv .8 -p is_violent_recid"
+    os.system(bash_call)
+    print "Complete"
+
+
+def run_audit():
 
     #First check if the data has already been repaired
     path =  os.getcwd()
@@ -12,7 +27,7 @@ def run_audit():
 
     if "repaired_adult.csv" not in data_files:
         print "Repairing adult data"
-        bash_call = "python repairers/repair.py data/adult/adult.csv data/adult/repaired_adult.csv .1 -p income-per-year -i race"
+        bash_call = "python repairers/repair.py data/adult/adult.csv data/adult/repaired_adult.csv .8 -p income-per-year -i race"
         os.system(bash_call)
 
 
@@ -56,3 +71,5 @@ def svm_classify(filename, sensitive_attr, x_train, y_train, x_control_train, x_
         f.write(string)
         f.write('\n')
     f.close()
+
+run_audit_compas()

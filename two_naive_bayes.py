@@ -21,7 +21,6 @@ def splitDataByGender(X, x_control, y):
     men = []
     y_men = []
     #Loop through for every individual, split into two lists by gender
-    print X_control['sex']
     for i in range(len(X)):
 
         #Converting from numpy list to standard python list
@@ -47,8 +46,6 @@ def splitDataBySensitiveFeature(X, x_control, y, sensitive_attr):
 
     #Converting from numpy list to standard python list
     X = np.array(X, dtype=float)
-    X.tolist()
-    y.tolist()
 
     negative = []
     y_negative = []
@@ -123,53 +120,14 @@ def run_two_naive_bayes(filename, x_train, y_train, x_control_train, x_test, y_t
     """Take the train and test data, split it by gender, and train the two naive bayes classifiers
     """
 
-
-    # model = GaussianNB()
-    # X = np.array(x_train).astype(float)
-    # y = np.array(y_train).astype(float)
-    # X_test = np.array(x_test).astype(float)
-    # y_test = np.array(y_test).astype(float)
-    #
-    # model.fit(X, y)
-    #
-    # # make predictions
-    # expected = y_test
-    # predicted = model.predict(X_test)
-    # predicted = predicted.tolist()
-    #
-    # count = 0
-    # for i in range(0, len(expected)):
-    #     if expected[i] == predicted[i]:
-    #         count +=1
-    #
-    # print count
-    # print len(expected)
-    # print float(count)/float((len(expected)))
-
-
     protected_train, y_protected_train, unprotected_train, y_unprotected_train = splitDataBySensitiveFeature(x_train, x_control_train[sensitive_attrs], y_train, sensitive_attrs)
     protected_test, y_protected_test, unprotected_test, y_unprotected_test = splitDataBySensitiveFeature(x_test, x_control_test[sensitive_attrs], y_test, sensitive_attrs)
 
-
     women_predicted_class_status, women_expected_class_status = predict(protected_train, y_protected_train, protected_test, y_protected_test)
-
-    # count = 0
-    # for i in range(0, len(women_expected_class_status)):
-    #     if women_expected_class_status[i] == women_predicted_class_status[i]:
-    #         count +=1
-    # print count
-    # print float(count)/float((len(women_expected_class_status)))
-
     men_predicted_class_status, men_expected_class_status     = predict(unprotected_train, y_unprotected_train, unprotected_test, y_unprotected_test)
 
-
-    # count = 0
-    # for i in range(0, len(men_expected_class_status)):
-    #     if men_expected_class_status[i] == men_predicted_class_status[i]:
-    #         count +=1
-    # print count
-    # print float(count)/float((len(men_expected_class_status)))
-
+# 3 columns:
+# Correct Class, Estimated Class, Sensitive Variable,
 
 
     f = open("RESULTS/"+filename, 'w')
@@ -177,7 +135,7 @@ def run_two_naive_bayes(filename, x_train, y_train, x_control_train, x_test, y_t
 	    line_of_data = ( str(women_expected_class_status[i]) + " " + str(women_predicted_class_status[i]) + " 0.0")
 	    f.write(line_of_data)
 	    f.write("\n")
-    for i in range(0, len(men_predicted_class_status)-1):
+    for i in range(0, len(men_predicted_class_status)):
 	    line_of_data = ( str(men_expected_class_status[i]) + " " + str(men_predicted_class_status[i]) + " 1.0")
 	    f.write(line_of_data)
 	    f.write("\n")

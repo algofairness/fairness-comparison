@@ -49,3 +49,6 @@ Pr[E=1 | S=1] - Pr[E=1 | S=0] = -0.0123535949388732
 ### P-Score score ###
 P-Rule between Sensitive feature and correct class: Pr[C=0 | S=1] / Pr[C=1 | S=1] = 39.2597574281145
 P-Rule between Sensitive feature and estimated class: Pr[E=0 | S=1] / Pr[E=1 | S=1] = 105.188509874327
+
+### Balanced error rate ###
+Balanced error rate: 0.188776

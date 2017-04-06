@@ -2,7 +2,6 @@ import os,sys
 import numpy as np
 from two_naive_bayes import *
 from zafar_classifier import *
-from load_dummy_data import *
 from prepare_adult_data import *
 from prejudice_regularizer import *
 from black_box_auditing import *
@@ -40,7 +39,6 @@ def test_adult_data():
 	print "\n"
 	X, y, x_control = load_adult_data("data/adult/adult.csv", load_data_size=16281)
 	X_repaired, y_repaired, x_control_repaired = load_adult_data("data/adult/repaired_adult.csv", load_data_size=16281)
-
 	#X, y, x_control = load_adult_data_from_kamashima("adultd.bindata")
 
 	X = ut.add_intercept(X) # add intercept to X before applying the linear classifier
@@ -68,20 +66,20 @@ def test_adult_data():
 	"""
 	##############################################################################################################################################
 
-	# x_train_with_sensitive_feature = []
-	# for i in range(0, len(x_train)):
-	# 	val =  x_control_train["sex"][i]
-	# 	feature_array = np.append(x_train[i], val)
-	# 	x_train_with_sensitive_feature.append(feature_array)
-	# x_train_with_sensitive_feature = np.array(x_train_with_sensitive_feature)
-	#
-	# x_test_with_sensitive_feature = []
-	# for i in range(0, len(x_test)):
-	# 	val =  x_control_test["sex"][i]
-	# 	feature_array = np.append(x_test[i], val)
-	# 	x_test_with_sensitive_feature.append(feature_array)
-	# x_test_with_sensitive_feature = np.array(x_test_with_sensitive_feature)
-	#
+	x_train_with_sensitive_feature = []
+	for i in range(0, len(x_train)):
+		val =  x_control_train["sex"][i]
+		feature_array = np.append(x_train[i], val)
+		x_train_with_sensitive_feature.append(feature_array)
+	x_train_with_sensitive_feature = np.array(x_train_with_sensitive_feature)
+
+	x_test_with_sensitive_feature = []
+	for i in range(0, len(x_test)):
+		val =  x_control_test["sex"][i]
+		feature_array = np.append(x_test[i], val)
+		x_test_with_sensitive_feature.append(feature_array)
+	x_test_with_sensitive_feature = np.array(x_test_with_sensitive_feature)
+
 	# f = open("test_kamashima_data", 'w')
 	# for i in x_test_with_sensitive_feature:
 	#     for j in i:
@@ -97,19 +95,18 @@ def test_adult_data():
 	# f.close()
 
 	print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 30 and 1"
-	print len(x_train)
-	for j in range(0, len(x_train)):
-		np.append(x_train[j], x_control_train["sex"][j])
-
-	print len(x_train)
-	for j in range(0, len(x_test)):
-		np.append(x_test[j], x_control_test["sex"][j])
-
-
-	y_classified_results = train_classify(x_train, y_train, x_test, y_test, 1, 30, x_control_test)
+	# for j in range(0, len(x_train)):
+	# 	np.append(x_train[j], x_control_train["sex"][j])
+	#
+	# print len(x_train[12])
+	# for j in range(0, len(x_test)):
+	# 	np.append(x_test[j], x_control_test["sex"][j])
 
 
-	y_classified_results = train_classify(x_train, y_train, x_test, y_test, 1, 1, x_control_test)
+	y_classified_results = train_classify("adult", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
+
+
+	y_classified_results = train_classify("adult", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
 
 
 	##############################################################################################################################################
