@@ -6,6 +6,7 @@ import numpy as np
 from fadm.util import *
 from fairness_metric_calculations import *
 from random import seed, shuffle
+from sklearn import preprocessing
 SEED = 1122334455
 seed(SEED) # set the random seed so that the random permutations can be reproduced again
 np.random.seed(SEED)
@@ -24,8 +25,9 @@ def load_adult_data(filename, load_data_size=None):
 
     attrs = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country'] # all attributes
     int_attrs = ['age', 'fnlwgt', 'education_num', 'capital_gain', 'capital_loss', 'hours_per_week'] # attributes with integer values -- the rest are categorical
+    #int_attrs = ['age', 'fnlwgt', 'education_num', 'capital_loss', 'hours_per_week'] # attributes with integer values -- the rest are categorical
     sensitive_attrs = ['sex'] # the fairness constraints will be used for this feature
-    attrs_to_ignore = ['fnlwgt']
+    attrs_to_ignore = ['fnlwgt', 'sex']
     #attrs_to_ignore = ['sex', 'race' ,'fnlwgt'] # sex and race are sensitive feature so we will not use them in classification, we will not consider fnlwght for classification since its computed externally and it highly predictive for the class (for details, see documentation of the adult data)
     attrs_for_classification = set(attrs) - set(attrs_to_ignore)
 
@@ -50,6 +52,7 @@ def load_adult_data(filename, load_data_size=None):
             pass
         else:
             attrs_to_vals[k] = []
+
     attrs_to_vals['sex'] = []
 
     for f in data_files:
@@ -81,11 +84,20 @@ def load_adult_data(filename, load_data_size=None):
                 if attr_name == "native_country":
                     if attr_val!="United-States":
                         attr_val = "Non-United-Stated"
+
                 elif attr_name == "education":
                     if attr_val in ["Preschool", "1st-4th", "5th-6th", "7th-8th"]:
                         attr_val = "prim-middle-school"
                     elif attr_val in ["9th", "10th", "11th", "12th"]:
                         attr_val = "high-school"
+
+                # elif attr_name == "capital_gain":
+                #     if int(attr_val) > 10000:
+                #         attr_val = "high"
+                #     elif int(attr_val) > 0:
+                #         attr_val = "medium"
+                #     else:
+                #         attr_val = "none"
 
                 if attr_name in sensitive_attrs:
                     #attrs_to_vals[attr_name].append(attr_val)
@@ -99,18 +111,43 @@ def load_adult_data(filename, load_data_size=None):
 
     def convert_attrs_to_ints(d): # discretize the string attributes
         for attr_name, attr_vals in d.items():
-            if attr_name in int_attrs: continue
-            uniq_vals = sorted(list(set(attr_vals))) # get unique values
 
-            # compute integer codes for the unique values
-            val_dict = {}
-            for i in range(0,len(uniq_vals)):
-                val_dict[uniq_vals[i]] = i
+            #Scale int_attrs
+            if attr_name in int_attrs:
 
-            # replace the values with their integer encoding
-            for i in range(0,len(attr_vals)):
-                attr_vals[i] = val_dict[attr_vals[i]]
-            d[attr_name] = attr_vals
+                #print attr_vals[50:100]
+
+                #Numpy and Sklearn gymnastics to scale values
+                attr_vals=np.array(attr_vals)
+                attr_vals = attr_vals.reshape(-1, 1)
+                min_max_scaler = preprocessing.MinMaxScaler(feature_range=(0,1))
+                min_max_scaled = min_max_scaler.fit_transform(attr_vals)
+                min_max_scaler.fit(attr_vals)
+                scaled_attr_val = min_max_scaler.transform(attr_vals)
+                scaled_attr_val = scaled_attr_val.ravel()
+                scaled_attr_val = scaled_attr_val.tolist()
+
+                #print scaled_attr_val[50:100]
+
+                #Getting back to 1D python list
+                d[attr_name] = scaled_attr_val
+                #d[attr_name] = attr_vals
+
+            else:
+
+                uniq_vals = sorted(list(set(attr_vals))) # get unique values
+
+                # compute integer codes for the unique values
+                val_dict = {}
+                for i in range(0,len(uniq_vals)):
+                    val_dict[uniq_vals[i]] = i
+
+                # replace the values with their integer encoding
+                for i in range(0,len(attr_vals)):
+                    attr_vals[i] = val_dict[attr_vals[i]]
+
+                #if attr_name != "sex":
+                d[attr_name] = attr_vals
 
 
     # convert the discrete values to their integer representations
@@ -122,7 +159,7 @@ def load_adult_data(filename, load_data_size=None):
     #One-hot encoding takes categorical data and encodes it as yes/no binary membership, creating many additional columns
 
 
-    # if the integer vals are not binary, we need to get one-hot encoding for them
+    # if the integer vals are categorical and not binary, we need to get one-hot encoding for them
     for attr_name in attrs_for_classification:
         attr_vals = attrs_to_vals[attr_name]
         if attr_name in int_attrs or attr_name == "native_country": # the way we encoded native country, its binary now so no need to apply one hot encoding on it
@@ -156,26 +193,4 @@ def load_adult_data(filename, load_data_size=None):
             x_control[k] = x_control[k][:load_data_size]
 
 
-    return X, y, x_control
-
-def load_adult_data_from_kamashima(filename):
-
-    N_NS = 1
-
-    # read data
-    D = np.loadtxt(filename)
-
-    # split data and process missing values
-    y = np.array(D[:, -1])
-    # if opt.ns:
-    #This is without sensitive attribute
-    x_without_S = fill_missing_with_mean(D[:, :-(1 + N_NS)])
-    # else:
-    X = fill_missing_with_mean(D[:, :-1])
-    S = np.atleast_2d(D[:, -(1 + N_NS):-1])
-    s = []
-    for j in S:
-        s.append(j[0])
-    s = np.array(s)
-    x_control = {'sex': s}
     return X, y, x_control

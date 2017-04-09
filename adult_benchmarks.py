@@ -6,7 +6,7 @@ from prepare_adult_data import *
 from prejudice_regularizer import *
 from black_box_auditing import *
 sys.path.insert(0, "/data/adult/")
-import prepare_adult_data
+from load_adult import *
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
 import utils as ut
 import loss_funcs as lf # loss funcs that can be optimized subject to various constraints
@@ -27,7 +27,7 @@ def test_adult_data():
 	"""
 	##############################################################################################################################################
 
-	run_audit()
+	run_adult_repair()
 
 	##############################################################################################################################################
 	"""
@@ -38,27 +38,39 @@ def test_adult_data():
 	""" Load the adult data """
 	print "\n"
 	X, y, x_control = load_adult_data("data/adult/adult.csv", load_data_size=16281)
-	X_repaired, y_repaired, x_control_repaired = load_adult_data("data/adult/repaired_adult.csv", load_data_size=16281)
-	#X, y, x_control = load_adult_data_from_kamashima("adultd.bindata")
+	X_repaired_8, y_repaired_8, x_control_repaired_8 = load_adult_data("data/adult/sex_repaired_adult_.8.csv", load_data_size=16281)
+	X_repaired_9, y_repaired_9, x_control_repaired_9 = load_adult_data("data/adult/sex_repaired_adult_.9.csv", load_data_size=16281)
+	X_repaired_1, y_repaired_1, x_control_repaired_1 = load_adult_data("data/adult/sex_repaired_adult_1.csv", load_data_size=16281)
+
 
 	X = ut.add_intercept(X) # add intercept to X before applying the linear classifier
-	X_repaired = ut.add_intercept(X)
+	X_repaired_8 = ut.add_intercept(X)
+	X_repaired_9 = ut.add_intercept(X)
+	X_repaired_1 = ut.add_intercept(X)
+
 
 	""" Split the data into train and test """
 
 	x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, train_fold_size)
-	x_train_repaired, y_train_repaired, x_control_train_repaired, x_test_repaired, y_test_repaired, x_control_test_repaired = ut.split_into_train_test(X_repaired, y_repaired, x_control_repaired, train_fold_size)
+	x_train_repaired_8, y_train_repaired_8, x_control_train_repaired_8, x_test_repaired_8, y_test_repaired_8, x_control_test_repaired_8 = ut.split_into_train_test(X_repaired_8, y_repaired_8, x_control_repaired_8, train_fold_size)
+	x_train_repaired_9, y_train_repaired_9, x_control_train_repaired_9, x_test_repaired_9, y_test_repaired_9, x_control_test_repaired_9 = ut.split_into_train_test(X_repaired_9, y_repaired_9, x_control_repaired_9, train_fold_size)
+	x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1 = ut.split_into_train_test(X_repaired_1, y_repaired_1, x_control_repaired_1, train_fold_size)
 
 
 	#############################################################################################################################################
 	"""
-	Classify using SVM's on repaired/original data
+	Classify using SVM, logistic regression, and NB on repaired/original data
 	"""
 	##############################################################################################################################################
 
-	print "\nClassify original and repaired data using SVM"
+	print "\nClassify original and repaired data using SVM/Naive Bayes/Logistic Regression"
 	#svm_classify("svm_.8", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
-	svm_classify("repaired_svm_.8", sensitive_attr, x_train_repaired, y_train_repaired, x_control_train_repaired, x_test_repaired, y_test_repaired, x_control_test_repaired)
+	classify_adult("sex_adult_repaired_.8", sensitive_attr, x_train_repaired_8, y_train_repaired_8, x_control_train_repaired_8, x_test_repaired_8, y_test_repaired_8, x_control_test_repaired_8)
+	classify_adult("sex_adult_repaired_.9", sensitive_attr, x_train_repaired_9, y_train_repaired_9, x_control_train_repaired_9, x_test_repaired_9, y_test_repaired_9, x_control_test_repaired_9)
+	classify_adult("sex_adult_repaired_1", sensitive_attr, x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1)
+
+
+	classify_adult("adult_original_data", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
 
 	#############################################################################################################################################
 	"""
@@ -80,33 +92,12 @@ def test_adult_data():
 		x_test_with_sensitive_feature.append(feature_array)
 	x_test_with_sensitive_feature = np.array(x_test_with_sensitive_feature)
 
-	# f = open("test_kamashima_data", 'w')
-	# for i in x_test_with_sensitive_feature:
-	#     for j in i:
-	#     	f.write(str(int(j))+" ")
-	#     f.write('\n')
-	# f.close()
-	#
-	# f = open("train_kamashima_data", 'w')
-	# for i in x_train_with_sensitive_feature:
-	#     for j in i:
-	#     	f.write(str(int(j))+" ")
-	#     f.write('\n')
-	# f.close()
 
 	print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 30 and 1"
-	# for j in range(0, len(x_train)):
-	# 	np.append(x_train[j], x_control_train["sex"][j])
-	#
-	# print len(x_train[12])
-	# for j in range(0, len(x_test)):
-	# 	np.append(x_test[j], x_control_test["sex"][j])
-
 
 	y_classified_results = train_classify("adult", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
-
-
-	y_classified_results = train_classify("adult", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
+	y_classified_results = train_classify("adult", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 0, x_control_test)
+	# y_classified_results = train_classify("adult", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
 
 
 	##############################################################################################################################################
@@ -115,7 +106,7 @@ def test_adult_data():
 	"""
 	##############################################################################################################################################
 	sensitive_attr = sensitive_attrs[0]
-	run_two_naive_bayes("two_naive_bayes", x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)
+	run_two_naive_bayes("adult_two_naive_bayes", x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)
 	print "\n== Calder's Two Naive Bayes =="
 
 	##############################################################################################################################################
@@ -137,7 +128,7 @@ def test_adult_data():
 	apply_fairness_constraints = 0
 	apply_accuracy_constraint = 0
 	sep_constraint = 0
-	w_uncons = train_test_classifier("unconstrained", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
+	w_uncons = train_test_classifier("adult_unconstrained", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
 
 	""" Now classify such that we optimize for accuracy while achieving perfect fairness """
 	apply_fairness_constraints = 1 # set this flag to one since we want to optimize accuracy subject to fairness constraints
@@ -145,7 +136,7 @@ def test_adult_data():
 	sep_constraint = 0
 	sensitive_attrs_to_cov_thresh = {"sex":0}
 	print "\n== Zafar:  Classifier with fairness constraint =="
-	w_f_cons = train_test_classifier("opt_accuracy", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
+	w_f_cons = train_test_classifier("adult_opt_accuracy", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
 
 	""" Classify such that we optimize for fairness subject to a certain loss in accuracy """
 	apply_fairness_constraints = 0 # flag for fairness constraint is set back to0 since we want to apply the accuracy constraint now
@@ -153,7 +144,7 @@ def test_adult_data():
 	sep_constraint = 0
 	gamma = 0.5 # gamma controls how much loss in accuracy we are willing to incur to achieve fairness -- increase gamme to allow more loss in accuracy
 	print "\n== Zafar:  Classifier with accuracy constraint =="
-	w_a_cons = train_test_classifier("opt_fairness", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
+	w_a_cons = train_test_classifier("adult_opt_fairness", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
 
 	"""
 	Classify such that we optimize for fairness subject to a certain loss in accuracy
@@ -165,7 +156,7 @@ def test_adult_data():
 	sep_constraint = 1 # set the separate constraint flag to one, since in addition to accuracy constrains, we also want no misclassifications for certain points (details in demo README.md)
 	gamma = 1000.0
 	print "\n== Zafar: Classifier with accuracy constraint (no +ve misclassification) =="
-	w_a_cons_fine = train_test_classifier("no_positive_misclassification", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
+	w_a_cons_fine = train_test_classifier("adult_no_positive_misclassification", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
 
 	##############################################################################################################################################
 	"""

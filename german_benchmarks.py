@@ -17,7 +17,7 @@ def test_adult_data():
 	#Variables for whole functions
 	sensitive_attrs = ["sex"]
 	sensitive_attr = sensitive_attrs[0]
-	train_fold_size = 0.5
+	train_fold_size = 0.3
 
 
 	##############################################################################################################################################
@@ -26,7 +26,7 @@ def test_adult_data():
 	"""
 	##############################################################################################################################################
 
-	run_audit()
+	run_german_repair()
 
 	##############################################################################################################################################
 	"""
@@ -34,14 +34,20 @@ def test_adult_data():
 	"""
 	##############################################################################################################################################
 
-	""" Load the adult data """
+	""" Load the german data """
 	print "\n"
-	X, y, x_control = load_german_data()
-	X = np.array(X)
-	X = X.astype(float)
+	X, y, x_control = load_german_data("german_credit_data.csv")
 	X = ut.add_intercept(X) # add intercept to X before applying the linear classifier
-	y = np.array(y)
-	y = y.astype(float)
+
+	X_repaired_8, y_repaired_8, x_control_repaired_8 = load_german_data("repaired_german_credit_data_.8.csv")
+	X_repaired_8 = ut.add_intercept(X) # add intercept to X before applying the linear classifier
+
+	X_repaired_9, y_repaired_9, x_control_repaired_9 = load_german_data("repaired_german_credit_data_.9.csv")
+	X_repaired_9 = ut.add_intercept(X) # add intercept to X before applying the linear classifier
+
+	X_repaired_1, y_repaired_1, x_control_repaired_1 = load_german_data("repaired_german_credit_data_1.csv")
+	X_repaired_1 = ut.add_intercept(X) # add intercept to X before applying the linear classifier
+
 
 	""" Split the data into train and test """
 
@@ -49,6 +55,23 @@ def test_adult_data():
 
 	x_control_train["sex"] = np.array(x_control_train["sex"])
 	x_control_test["sex"] = np.array(x_control_test["sex"])
+
+	x_train_repaired_8, y_train_repaired_8, x_control_train_repaired_8, x_test_repaired_8, y_test_repaired_8, x_control_test_repaired_8 = ut.split_into_train_test(X_repaired_8, y_repaired_8, x_control_repaired_8, train_fold_size)
+
+	x_control_train_repaired_8["sex"] = np.array(x_control_train_repaired_8["sex"])
+	x_control_test_repaired_8["sex"] = np.array(x_control_test_repaired_8["sex"])
+
+	x_train_repaired_9, y_train_repaired_9, x_control_train_repaired_9, x_test_repaired_9, y_test_repaired_9, x_control_test_repaired_9 = ut.split_into_train_test(X_repaired_9, y_repaired_9, x_control_repaired_9, train_fold_size)
+
+	x_control_train_repaired_9["sex"] = np.array(x_control_train_repaired_9["sex"])
+	x_control_test_repaired_9["sex"] = np.array(x_control_test_repaired_9["sex"])
+
+
+	x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1 = ut.split_into_train_test(X_repaired_1, y_repaired_1, x_control_repaired_1, train_fold_size)
+
+	x_control_train_repaired_1["sex"] = np.array(x_control_train_repaired_1["sex"])
+	x_control_test_repaired_1["sex"] = np.array(x_control_test_repaired_1["sex"])
+
 
 	#############################################################################################################################################
 	"""
@@ -75,6 +98,22 @@ def test_adult_data():
 	y_classified_results = train_classify("german", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
 
 	y_classified_results = train_classify("german", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
+
+
+	#############################################################################################################################################
+	"""
+	Classify using SVM, logistic regression, and NB on repaired/original data
+	"""
+	##############################################################################################################################################
+
+	print "\nClassify original and repaired data using SVM/Naive Bayes/Logistic Regression"
+	#svm_classify("svm_.8", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
+	classify_german("adult_repaired_.8", sensitive_attr, x_train_repaired_8, y_train_repaired_8, x_control_train_repaired_8, x_test_repaired_8, y_test_repaired_8, x_control_test_repaired_8)
+	classify_german("adult_repaired_.9", sensitive_attr, x_train_repaired_9, y_train_repaired_9, x_control_train_repaired_9, x_test_repaired_9, y_test_repaired_9, x_control_test_repaired_9)
+	classify_german("adult_repaired_1", sensitive_attr, x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1)
+
+
+	classify_german("adult_original_data", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
 
 
 	##############################################################################################################################################

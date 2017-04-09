@@ -15,7 +15,6 @@ parser.add_argument("-i", "--ignored", type=str, nargs="+")
 
 args = parser.parse_args()
 
-print args
 with open(args.input_csv) as f:
   data = [line for line in csv.reader(f)]
   headers = data.pop(0)

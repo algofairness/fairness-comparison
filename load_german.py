@@ -1,3 +1,5 @@
+import numpy as np
+
 """
 0 = women
 1 = man
@@ -5,15 +7,17 @@
 0 = bad credit
 """
 
-def load_german_data():
+def load_german_data(filename):
     X = []
     y = []
     x_control = []
-    for line in open("data/german/german_data"):
+    for line in open("data/german/"+filename):
         line = line.strip()
         if line == "": continue # skip empty lines
-        if line[0] == "a": continue # skip line of feature categories, in csv
-        line = line.split(" ")
+
+        #This should be more programatic
+        if line[0] == "s": continue # skip line of feature categories, in csv
+        line = line.split(",")
 
         """
         Get class label
@@ -24,6 +28,7 @@ def load_german_data():
         elif class_label == "2":
             class_label = 0
         else:
+            print class_label
             raise Exception("Invalid class label value")
         y.append(class_label)
 
@@ -144,4 +149,10 @@ def load_german_data():
         X.append(x_val)
 
     x_control = {"sex": x_control}
+    X = np.array(X)
+    X = X.astype(float)
+    y = np.array(y)
+    y = y.astype(float)
+
+
     return X, y, x_control
