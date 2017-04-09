@@ -108,12 +108,12 @@ def test_adult_data():
 
 	print "\nClassify original and repaired data using SVM/Naive Bayes/Logistic Regression"
 	#svm_classify("svm_.8", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
-	classify_german("adult_repaired_.8", sensitive_attr, x_train_repaired_8, y_train_repaired_8, x_control_train_repaired_8, x_test_repaired_8, y_test_repaired_8, x_control_test_repaired_8)
-	classify_german("adult_repaired_.9", sensitive_attr, x_train_repaired_9, y_train_repaired_9, x_control_train_repaired_9, x_test_repaired_9, y_test_repaired_9, x_control_test_repaired_9)
-	classify_german("adult_repaired_1", sensitive_attr, x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1)
+	classify_german("german_repaired_.8", sensitive_attr, x_train_repaired_8, y_train_repaired_8, x_control_train_repaired_8, x_test_repaired_8, y_test_repaired_8, x_control_test_repaired_8)
+	classify_german("german_repaired_.9", sensitive_attr, x_train_repaired_9, y_train_repaired_9, x_control_train_repaired_9, x_test_repaired_9, y_test_repaired_9, x_control_test_repaired_9)
+	classify_german("german_repaired_1", sensitive_attr, x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1)
 
 
-	classify_german("adult_original_data", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
+	classify_german("german_original_data", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
 
 
 	##############################################################################################################################################
@@ -144,7 +144,7 @@ def test_adult_data():
 	apply_fairness_constraints = 0
 	apply_accuracy_constraint = 0
 	sep_constraint = 0
-	w_uncons = train_test_classifier("unconstrained", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
+	w_uncons = train_test_classifier("german_unconstrained", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
 
 	""" Now classify such that we optimize for accuracy while achieving perfect fairness """
 	apply_fairness_constraints = 1 # set this flag to one since we want to optimize accuracy subject to fairness constraints
@@ -152,7 +152,7 @@ def test_adult_data():
 	sep_constraint = 0
 	sensitive_attrs_to_cov_thresh = {"sex":0}
 	print "\n== Zafar:  Classifier with fairness constraint =="
-	w_f_cons = train_test_classifier("opt_accuracy", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
+	w_f_cons = train_test_classifier("german_opt_accuracy", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
 
 	""" Classify such that we optimize for fairness subject to a certain loss in accuracy """
 	apply_fairness_constraints = 0 # flag for fairness constraint is set back to0 since we want to apply the accuracy constraint now
@@ -160,7 +160,7 @@ def test_adult_data():
 	sep_constraint = 0
 	gamma = 0.5 # gamma controls how much loss in accuracy we are willing to incur to achieve fairness -- increase gamme to allow more loss in accuracy
 	print "\n== Zafar:  Classifier with accuracy constraint =="
-	w_a_cons = train_test_classifier("opt_fairness", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
+	w_a_cons = train_test_classifier("german_opt_fairness", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
 
 	"""
 	Classify such that we optimize for fairness subject to a certain loss in accuracy
@@ -172,7 +172,7 @@ def test_adult_data():
 	sep_constraint = 1 # set the separate constraint flag to one, since in addition to accuracy constrains, we also want no misclassifications for certain points (details in demo README.md)
 	gamma = 1000.0
 	print "\n== Zafar: Classifier with accuracy constraint (no +ve misclassification) =="
-	w_a_cons_fine = train_test_classifier("no_positive_misclassification", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
+	w_a_cons_fine = train_test_classifier("german_no_positive_misclassification", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
 
 	##############################################################################################################################################
 	"""
