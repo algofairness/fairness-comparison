@@ -91,14 +91,6 @@ def load_adult_data(filename, load_data_size=None):
                     elif attr_val in ["9th", "10th", "11th", "12th"]:
                         attr_val = "high-school"
 
-                # elif attr_name == "capital_gain":
-                #     if int(attr_val) > 10000:
-                #         attr_val = "high"
-                #     elif int(attr_val) > 0:
-                #         attr_val = "medium"
-                #     else:
-                #         attr_val = "none"
-
                 if attr_name in sensitive_attrs:
                     #attrs_to_vals[attr_name].append(attr_val)
                     x_control[attr_name].append(attr_val)
@@ -118,20 +110,20 @@ def load_adult_data(filename, load_data_size=None):
                 #print attr_vals[50:100]
 
                 #Numpy and Sklearn gymnastics to scale values
-                attr_vals=np.array(attr_vals)
-                attr_vals = attr_vals.reshape(-1, 1)
-                min_max_scaler = preprocessing.MinMaxScaler(feature_range=(0,1))
-                min_max_scaled = min_max_scaler.fit_transform(attr_vals)
-                min_max_scaler.fit(attr_vals)
-                scaled_attr_val = min_max_scaler.transform(attr_vals)
-                scaled_attr_val = scaled_attr_val.ravel()
-                scaled_attr_val = scaled_attr_val.tolist()
+                # attr_vals=np.array(attr_vals)
+                # attr_vals = attr_vals.reshape(-1, 1)
+                # min_max_scaler = preprocessing.MinMaxScaler(feature_range=(0,1))
+                # min_max_scaled = min_max_scaler.fit_transform(attr_vals)
+                # min_max_scaler.fit(attr_vals)
+                # scaled_attr_val = min_max_scaler.transform(attr_vals)
+                # scaled_attr_val = scaled_attr_val.ravel()
+                # scaled_attr_val = scaled_attr_val.tolist()
 
                 #print scaled_attr_val[50:100]
 
                 #Getting back to 1D python list
-                d[attr_name] = scaled_attr_val
-                #d[attr_name] = attr_vals
+                #d[attr_name] = scaled_attr_val
+                d[attr_name] = attr_vals
 
             else:
 
@@ -176,13 +168,6 @@ def load_adult_data(filename, load_data_size=None):
     y = np.array(y, dtype = float)
     for k, v in x_control.items(): x_control[k] = np.array(v, dtype=float)
 
-    # shuffle the data
-    perm = range(0,len(y)) # shuffle the data before creating each fold
-    shuffle(perm)
-    X = X[perm]
-    y = y[perm]
-    for k in x_control.keys():
-        x_control[k] = x_control[k][perm]
 
     # see if we need to subsample the data
     if load_data_size is not None:

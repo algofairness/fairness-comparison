@@ -38,12 +38,10 @@ for protected in args.protected:
     index_to_repair = headers.index(protected)
   except ValueError as e:
     raise Exception("Response header '{}' was not found in the following headers: {}".format(protected, headers))
-
   try:
     ignored_features = [headers.index(feature) for feature in args.ignored] if args.ignored else []
   except ValueError as e:
     raise Exception("One or more ignored-features were not found in the headers: {}".format(headers))
-
   repairer = Repairer(data, index_to_repair,
                       args.repair_level, features_to_ignore=ignored_features)
 

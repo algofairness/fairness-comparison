@@ -23,7 +23,7 @@ np.random.seed(SEED)
 def check_data_file(fname):
     files = os.listdir(".") # get the current directory listing
 
-def load_compas_data():
+def load_compas_data(filename):
     """
     "sex", "age", "age_cat", "race", "juv_fel_count", "juv_misd_count",\
     "juv_other_count", "priors_count", "c_charge_degree",
@@ -39,7 +39,7 @@ def load_compas_data():
 
 
 
-    COMPAS_INPUT_FILE = "data/propublica/compas-scores-two-years-violent.csv"
+    COMPAS_INPUT_FILE = "data/propublica/"+filename
     check_data_file(COMPAS_INPUT_FILE)
 
     # load the data and get some stats
@@ -75,12 +75,9 @@ def load_compas_data():
     # If the charge date of a defendants Compas scored crime was not within 30 days from when the person was arrested, we assume that because of data quality reasons, that we do not have the right offense.
     idx = np.logical_and(data["days_b_screening_arrest"]<=30, data["days_b_screening_arrest"]>=-30)
     # We coded the recidivist flag -- is_recid -- to be -1 if we could not find a compas case at all.
-    idx = np.logical_and(idx, data["is_recid"] != -1)
+    idx = np.logical_and(idx, data["is_violent_recid"] != -1)
     # In a similar vein, ordinary traffic offenses -- those with a c_charge_degree of 'O' -- will not result in Jail time are removed (only two of them).
     idx = np.logical_and(idx, data["c_charge_degree"] != "O") # F: felony, M: misconduct
-
-    # We filtered the underlying data from Broward county to include only those rows representing people who had either recidivated in two years, or had at least two years outside of a correctional facility.
-    idx = np.logical_and(idx, data["score_text"] != "NA")
 
     # we will only consider blacks and whites for this analysis
     idx = np.logical_and(idx, np.logical_or(data["race"] == "African-American", data["race"] == "Caucasian"))
@@ -102,6 +99,10 @@ def load_compas_data():
 
     However the fairness metrics assume 1 is "positive" and 0 is "negative," so inverting the class labels
     """
+    print "\nNumber of people violently recidivating within two years"
+    print pd.Series(y).value_counts()
+    print "\n"
+
     swapped_y = []
     for value in y:
         if value == 0:
@@ -114,10 +115,6 @@ def load_compas_data():
 
     print "\nNumber of people violently recidivating within two years"
     print pd.Series(y).value_counts()
-    print "\n"
-
-    print "\nNumber of people violently recidivating within two years"
-    print pd.Series(swapped_y).value_counts()
     print "\n"
 
     X = np.array([]).reshape(len(y), 0) # empty array with num rows same as num examples, will hstack the features to it
@@ -161,13 +158,13 @@ def load_compas_data():
         x_control[k] = np.array(x_control[k]).flatten()
 
 
-    """permute the date randomly"""
-    perm = range(0,X.shape[0])
-    shuffle(perm)
-    X = X[perm]
-    y = y[perm]
-    for k in x_control.keys():
-        x_control[k] = x_control[k][perm]
+    # """permute the date randomly"""
+    # perm = range(0,X.shape[0])
+    # shuffle(perm)
+    # X = X[perm]
+    # y = y[perm]
+    # for k in x_control.keys():
+    #     x_control[k] = x_control[k][perm]
 
 
     X = ut.add_intercept(X)

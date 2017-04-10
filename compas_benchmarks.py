@@ -16,6 +16,7 @@ import loss_funcs as lf # loss funcs that can be optimized subject to various co
 def test_compas_data():
     #Variables for whole functions
     sensitive_attrs = ["race"]
+    sensitive_attr = sensitive_attrs[0]
     train_fold_size = 0.7
 
     ##############################################################################################################################################
@@ -24,7 +25,7 @@ def test_compas_data():
     """
     ##############################################################################################################################################
 
-    # run_audit_compas()
+    run_compas_repair()
 
     ##############################################################################################################################################
     """
@@ -38,12 +39,49 @@ def test_compas_data():
     """
     print "\n"
 
-    X, y, x_control, feature_names = load_compas_data() # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
-    sensitive_attrs = x_control.keys()
-    sensitive_attr = sensitive_attrs[0]
+    X, y, x_control, feature_names = load_compas_data("compas-scores-two-years-violent-columns-removed.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
+
+    X_repaired_8, y_repaired_8, x_control_repaired_8, feature_names = load_compas_data("repaired-compas-scores-two-years-violent-columns-removed_.8.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
+    X_repaired_9, y_repaired_9, x_control_repaired_9, feature_names = load_compas_data("repaired-compas-scores-two-years-violent-columns-removed_.9.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
+    X_repaired_1, y_repaired_1, x_control_repaired_1, feature_names = load_compas_data("repaired-compas-scores-two-years-violent-columns-removed_1.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
+
+    # shuffle the data
+    perm = range(0,len(y)) # shuffle the data before creating each fold
+    shuffle(perm)
+    X = X[perm]
+    X_repaired_8 = X_repaired_8[perm]
+    X_repaired_9 = X_repaired_9[perm]
+    X_repaired_1 = X_repaired_1[perm]
+
+    y = y[perm]
+
+    for k in x_control.keys():
+        x_control[k] = x_control[k][perm]
+
 
     """ Split the data into train and test """
     x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, train_fold_size)
+
+    x_train_8, y_train_8, x_control_train_8, x_test_8, y_test_8, x_control_test_8 = ut.split_into_train_test(X_repaired_8, y_repaired_8, x_control_repaired_8, train_fold_size)
+    x_train_9, y_train_9, x_control_train_9, x_test_9, y_test_9, x_control_test_9 = ut.split_into_train_test(X_repaired_9, y_repaired_9, x_control_repaired_9, train_fold_size)
+    x_train_1, y_train_1, x_control_train_1, x_test_1, y_test_1, x_control_test_1 = ut.split_into_train_test(X_repaired_1, y_repaired_1, x_control_repaired_1, train_fold_size)
+
+
+    ##############################################################################################################################################
+    """
+    Naive Bayes, Logistic Regression, and SVM on Original/Repaired Data
+    """
+    ##############################################################################################################################################
+
+    classify_compas("compas_repaired_.9", sensitive_attr, x_train_8, y_train, x_control_train, x_test_9, y_test, x_control_test)
+    classify_compas("compas_repaired_.8", sensitive_attr, x_train_9, y_train, x_control_train, x_test_9, y_test, x_control_test)
+    classify_compas("compas_repaired_1", sensitive_attr, x_train_1, y_train, x_control_train, x_test_9, y_test, x_control_test)
+
+    classify_compas("compas_original", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
+
+    print "SVM, NB, LR on Repaired/Original Data"
+
+
 
     ##############################################################################################################################################
     """
@@ -77,104 +115,15 @@ def test_compas_data():
 
     print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 30"
 
-    y_classified_results = train_classify(x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
+    y_classified_results = train_classify(sensitive_attr, "compas", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
 
     print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 15"
 
-    y_classified_results = train_classify(x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 15, x_control_test)
+    y_classified_results = train_classify(sensitive_attr, "compas", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 15, x_control_test)
 
     print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 1"
 
-    y_classified_results = train_classify(x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
-
-
-
-    ##############################################################################################################################################
-    """
-    Classify using standard SVM
-    """
-    ##############################################################################################################################################
-
-    clf = svm.SVC()
-    clf.fit(x_train, y_train)
-    predictions = clf.predict(x_test)
-
-    f = open("results/pro_publica_svm_new", 'w')
-    for i in range(0, len(predictions)):
-        line_of_data = (str (y_test[i]) + " " + str(predictions[i]) + " " + str(float(x_control_test[sensitive_attr][i])))
-        f.write(line_of_data)
-        f.write("\n")
-    f.close()
-
-    print "Standard SVM"
-
-    # ##############################################################################################################################################
-    # """
-    # Classify using repaired data and standard SVM
-    # """
-    # ##############################################################################################################################################
-
-    # f = open("repaired_propublica", 'r')
-    # features = f.readline()
-    # X = []
-    # y = []
-    # x_control["race"]=[]
-    #
-    # for line in f:
-    #     line = line.split(",")
-    #     data = []
-    #     data.append(line[1])
-    #     data.append(line[2])
-    #     data.append(line[3])
-    #     data.append(line[5])
-    #     data.append(line[6])
-    #     data.append(line[7])
-    #     X.append(data)
-    #     y.append(int(line[8][0]))
-    #     x_control["race"].append(line[4])
-    #
-    # X = np.array(X)
-    # y = np.array(y)
-    # x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, train_fold_size)
-    #
-    # clf = svm.SVC()
-    # clf.fit(x_train, y_train)
-    # predictions = clf.predict(x_test)
-
-    # """
-    # In ProPublica data we are estimating if an individual commits an act of recitivism
-    # This is coded as a 1, and if they do not recitivize, a 0.
-    #
-    # In this sense 1 is "negative" and 0 is "positive"
-    #
-    # However the fairness metrics assume 1 is "positive" and 0 is "negative," so inverting the class labels
-    # """
-    # converted_y_test = []
-    # for value in y_test:
-    #     if value == 0:
-    #         converted_y_test.append(1)
-    #     elif value == 1:
-    #         converted_y_test.append(0)
-    #     else:
-    #         print "Incorrect value in class values"
-    #
-    # converted_assigned_class_values = []
-    # for value in predictions:
-    #     if value == 1:
-    #         converted_assigned_class_values.append(0)
-    #     elif value == 0:
-    #         converted_assigned_class_values.append(1)
-    #     else:
-    #         print "Incorrect value in class values"
-    #
-    #
-    # f = open("results/repaired_pro_publica_svm", 'w')
-    # for i in range(0, len(converted_y_test)-1):
-    #     line_of_data = (str (converted_y_test[i]) + " " + str(converted_assigned_class_values[i]) + " " + str(float(x_control_test[sensitive_attr][i])))
-    #     f.write(line_of_data)
-    #     f.write("\n")
-    # f.close()
-
+    y_classified_results = train_classify(sensitive_attr, "compas", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
 
 
     ##############################################################################################################################################

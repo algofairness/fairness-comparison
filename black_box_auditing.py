@@ -19,15 +19,15 @@ def run_compas_repair():
     path = path+'/data/propublica'
     data_files = os.listdir(path)
 
-    if "repaired-compas-scores-two-years_.8.csv" not in data_files:
+    if "repaired-compas-scores-two-years-violent-columns-removed_.8.csv" not in data_files:
         print "Repairing compas data"
-        bash_call = "python repair.py data/propublica/compas-scores-two-years-violent-columns-removed.csv data/propublica/repaired-compas-scores-two-years-violent-columns-removed_.8.csv .8 -p is_violent_recid"
+        bash_call = "python repair.py data/propublica/compas-scores-two-years-violent-columns-removed.csv data/propublica/repaired-compas-scores-two-years-violent-columns-removed_.8.csv .8 -p race -i is_violent_recid id days_b_screening_arrest"
         os.system(bash_call)
-        bash_call = "python repair.py data/propublica/compas-scores-two-years-violent-columns-removed.csv data/propublica/repaired-compas-scores-two-years-violent-columns-removed_.9.csv .8 -p is_violent_recid"
+        bash_call = "python repair.py data/propublica/compas-scores-two-years-violent-columns-removed.csv data/propublica/repaired-compas-scores-two-years-violent-columns-removed_.9.csv .9 -p race -i is_violent_recid id days_b_screening_arrest"
         os.system(bash_call)
-        bash_call = "python repair.py data/propublica/compas-scores-two-years-violent-columns-removed.csv data/propublica/repaired-compas-scores-two-years-violent-columns-removed_1.csv 1 -p is_violent_recid"
+        bash_call = "python repair.py data/propublica/compas-scores-two-years-violent-columns-removed.csv data/propublica/repaired-compas-scores-two-years-violent-columns-removed_1.csv 1 -p race -i is_violent_recid id days_b_screening_arrest"
         os.system(bash_call)
-    print "Complete"
+        print "Complete"
 
 def run_german_repair():
 
@@ -54,37 +54,29 @@ def run_adult_repair():
     path = path+'/data/adult'
     data_files = os.listdir(path)
 
-    if "sex_repaired_adult_.8.csv" not in data_files:
+    if "repaired_adult_.8.csv" not in data_files:
         path =  os.getcwd()
         print path
         print "Repairing adult data"
-        # bash_call = "python repair.py data/adult/adult.csv data/adult/repaired_adult_.8.csv .8 -p income-per-year -i race"
-        # os.system(bash_call)
-        # bash_call = "python repair.py data/adult/adult.csv data/adult/repaired_adult_.9.csv .9 -p income-per-year -i race"
-        # os.system(bash_call)
-        # bash_call = "python repair.py data/adult/adult.csv data/adult/repaired_adult_1.csv 1 -p income-per-year -i race"
-        # os.system(bash_call)
+        bash_call = "python repair.py data/adult/adult.csv data/adult/repaired_adult_.8.csv .8 -p race -i income-per-year race"
+        os.system(bash_call)
+        bash_call = "python repair.py data/adult/adult.csv data/adult/repaired_adult_.9.csv .9 -p race -i income-per-year race"
+        os.system(bash_call)
+        bash_call = "python repair.py data/adult/adult.csv data/adult/repaired_adult_1.csv 1 -p race -i income-per-year race"
+        os.system(bash_call)
 
 
-        bash_call = "python repair.py data/adult/adult.csv data/adult/sex_repaired_adult_.8.csv .8 -p sex -i race"
-        os.system(bash_call)
-        bash_call = "python repair.py data/adult/adult.csv data/adult/sex_repaired_adult_.9.csv .9 -p sex -i race"
-        os.system(bash_call)
-        bash_call = "python repair.py data/adult/adult.csv data/adult/sex_repaired_adult_1.csv 1 -p sex -i race"
-        os.system(bash_call)
+        # bash_call = "python repair.py data/adult/adult.csv data/adult/sex_repaired_adult_.8.csv .8 -p sex -i race"
+        # os.system(bash_call)
+        # bash_call = "python repair.py data/adult/adult.csv data/adult/sex_repaired_adult_.9.csv .9 -p sex -i race"
+        # os.system(bash_call)
+        # bash_call = "python repair.py data/adult/adult.csv data/adult/sex_repaired_adult_1.csv 1 -p sex -i race"
+        # os.system(bash_call)
 
 
 def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test):
 
     clf = SVC()
-
-    count = 0
-    for y in y_train:
-        if y == 1.:
-            count +=1
-
-    print filename
-    print count
 
 
     clf.fit(x_train, y_train)
@@ -132,6 +124,10 @@ def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, 
     nb.fit(x_train, y_train)
     predictions = nb.predict(x_test)
     score = nb.score(x_test, y_test)
+
+    print "NB Score+"+filename
+    print score
+    print "\n"
 
     f = open("RESULTS/nb+"+filename, 'w')
     new_predictions = []
@@ -195,12 +191,7 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
     clf.fit(x_train, y_train)
     predictions = clf.predict(x_test)
     score = clf.score(x_test, y_test)
-    print y_train[10:30]
-    count = 0
-    for j in predictions:
-        if j == 0:
-            count +=1
-    print count
+
     """
     How Kamashima takes data:
     1 = Male (non-sensitive), 0 = Female (sensitive) in data
@@ -224,6 +215,7 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
             new_y_test.append(0)
         elif y_test[j] == 1.:
             new_y_test.append(1)
+
 
     for i in range(0, len(x_test)):
         string = (str(new_y_test[int(i)])+" " + str(new_predictions[i]) + " " +str(x_control_test[sensitive_attr][int(i)]))
@@ -285,11 +277,76 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
             new_y_test.append(1)
 
 
+    assert(len(new_y_test) == len(y_test))
+    assert(len(new_predictions) == len(predictions))
+
     for i in range(0, len(x_test)):
         """
         Convert floats to ints for Kamashima's classifier
         """
         string = (str(new_y_test[int(i)])+" " + str(new_predictions[i]) + " " +str(x_control_test[sensitive_attr][int(i)]))
+        f.write(string)
+        f.write('\n')
+    f.close()
+
+
+
+def classify_compas(filename, sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test):
+
+    clf = SVC()
+    clf.fit(x_train, y_train)
+    predictions = clf.predict(x_test)
+    score = clf.score(x_test, y_test)
+
+    print "LR Score+"+filename
+    print score
+    print "\n"
+
+    """
+    How Kamashima takes data:
+    1 = Male (non-sensitive), 0 = Female (sensitive) in data
+    3 columns:
+    Correct Class, Estimated Class, Sensitive Variable
+    How data comes from Blackbox/feldmen code:
+    Pre-Repaired Feature, Response, Prediction
+    """
+    f = open("RESULTS/svm+"+filename, 'w')
+
+    for i in range(0, len(x_test)):
+        string = (str(y_test[int(i)])+" " + str(predictions[i]) + " " +str(x_control_test[sensitive_attr][int(i)]))
+        f.write(string)
+        f.write('\n')
+    f.close()
+
+
+    nb = GaussianNB()
+    nb.fit(x_train, y_train)
+    predictions = nb.predict(x_test)
+    score = nb.score(x_test, y_test)
+
+    print "NB Score+"+filename
+    print score
+    print "\n"
+
+    f = open("RESULTS/nb+"+filename, 'w')
+
+    for i in range(0, len(x_test)):
+        """
+        Convert -1 to 0 for Kamashima's classifiers
+        """
+        string = (str(y_test[int(i)])+" " + str(predictions[i]) + " " +str(x_control_test[sensitive_attr][int(i)]))
+        f.write(string)
+        f.write('\n')
+    f.close()
+
+    lr = LogisticRegression()
+    lr.fit(x_train, y_train)
+    predictions = lr.predict(x_test)
+    score = lr.score(x_test, y_test)
+    f = open("RESULTS/lr+"+filename, 'w')
+
+    for i in range(0, len(x_test)):
+        string = (str(y_test[int(i)])+" " + str(predictions[i]) + " " +str(x_control_test[sensitive_attr][int(i)]))
         f.write(string)
         f.write('\n')
     f.close()
