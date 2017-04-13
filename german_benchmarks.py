@@ -37,16 +37,16 @@ def test_adult_data():
     """ Load the german data """
     print "\n"
     X, y, x_control = load_german_data("german_credit_data.csv")
-    X = ut.add_intercept(X) # add intercept to X before applying the linear classifier
+    #X = ut.add_intercept(X) # add intercept to X before applying the linear classifier
 
     X_repaired_8, y_repaired_8, x_control_repaired_8 = load_german_data("repaired_german_credit_data_.8.csv")
-    X_repaired_8 = ut.add_intercept(X) # add intercept to X before applying the linear classifier
+    #X_repaired_8 = ut.add_intercept(X_repaired_8) # add intercept to X before applying the linear classifier
 
     X_repaired_9, y_repaired_9, x_control_repaired_9 = load_german_data("repaired_german_credit_data_.9.csv")
-    X_repaired_9 = ut.add_intercept(X) # add intercept to X before applying the linear classifier
+    #X_repaired_9 = ut.add_intercept(X_repaired_9) # add intercept to X before applying the linear classifier
 
     X_repaired_1, y_repaired_1, x_control_repaired_1 = load_german_data("repaired_german_credit_data_1.csv")
-    X_repaired_1 = ut.add_intercept(X) # add intercept to X before applying the linear classifier
+    #X_repaired_1 = ut.add_intercept(X_repaired_1) # add intercept to X before applying the linear classifier
 
     # shuffle the data
     perm = range(0,len(y)) # shuffle the data before creating each fold
@@ -90,6 +90,12 @@ def test_adult_data():
     x_control_test_repaired_1["sex"] = np.array(x_control_test_repaired_1["sex"])
 
 
+
+    
+
+
+
+
     #############################################################################################################################################
     """
     Classify using SVM, logistic regression, and NB on repaired/original data
@@ -100,7 +106,6 @@ def test_adult_data():
     classify_german("german_repaired_.8", sensitive_attr, x_train_repaired_8, y_train, x_control_train, x_test_repaired_8, y_test, x_control_test)
     classify_german("german_repaired_.9", sensitive_attr, x_train_repaired_9, y_train, x_control_train, x_test_repaired_9, y_test, x_control_test)
     classify_german("german_repaired_1", sensitive_attr, x_train_repaired_1, y_train, x_control_train, x_test_repaired_1, y_test, x_control_test)
-
 
     classify_german("german_original_data", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
 

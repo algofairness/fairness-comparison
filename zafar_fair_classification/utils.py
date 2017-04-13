@@ -478,7 +478,7 @@ def print_covariance_sensitive_attrs(model, x_arr, y_arr_dist_boundary, x_contro
 
     arr = []
     if model is None:
-        arr = y_arr_dist_boundary # simplt the output labels
+        arr = y_arr_dist_boundary # simply the output labels
     else:
         arr = np.dot(model, x_arr.T) # the product with the weight vector -- the sign of this is the output label
 

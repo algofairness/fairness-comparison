@@ -26,8 +26,8 @@ def load_adult_data(filename, load_data_size=None):
     attrs = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country'] # all attributes
     int_attrs = ['age', 'fnlwgt', 'education_num', 'capital_gain', 'capital_loss', 'hours_per_week'] # attributes with integer values -- the rest are categorical
     #int_attrs = ['age', 'fnlwgt', 'education_num', 'capital_loss', 'hours_per_week'] # attributes with integer values -- the rest are categorical
-    sensitive_attrs = ['sex'] # the fairness constraints will be used for this feature
-    attrs_to_ignore = ['fnlwgt', 'sex']
+    sensitive_attrs = ['race'] # the fairness constraints will be used for this feature
+    attrs_to_ignore = ['fnlwgt', 'sex', 'race']
     #attrs_to_ignore = ['sex', 'race' ,'fnlwgt'] # sex and race are sensitive feature so we will not use them in classification, we will not consider fnlwght for classification since its computed externally and it highly predictive for the class (for details, see documentation of the adult data)
     attrs_for_classification = set(attrs) - set(attrs_to_ignore)
 
@@ -53,8 +53,6 @@ def load_adult_data(filename, load_data_size=None):
         else:
             attrs_to_vals[k] = []
 
-    attrs_to_vals['sex'] = []
-
     for f in data_files:
 
         for line in open(f):
@@ -63,8 +61,8 @@ def load_adult_data(filename, load_data_size=None):
             if line[0] == "a": continue # skip line of feature categories, in csv
 
             line = line.split(",")
-            if len(line) != 15 or "?" in line: # if a line has missing attributes, ignore it
-                continue
+            # if len(line) != 15 or "?" in line: # if a line has missing attributes, ignore it
+            #     continue
 
             class_label = line[-1]
             if class_label in ["<=50K.", "<=50K"]:
@@ -92,7 +90,6 @@ def load_adult_data(filename, load_data_size=None):
                         attr_val = "high-school"
 
                 if attr_name in sensitive_attrs:
-                    #attrs_to_vals[attr_name].append(attr_val)
                     x_control[attr_name].append(attr_val)
                 elif attr_name in attrs_to_ignore:
                     pass
@@ -144,13 +141,13 @@ def load_adult_data(filename, load_data_size=None):
 
     # convert the discrete values to their integer representations
     #Not part of convert_attrs_to_ints function
+
+
     convert_attrs_to_ints(x_control)
     convert_attrs_to_ints(attrs_to_vals)
 
 
     #One-hot encoding takes categorical data and encodes it as yes/no binary membership, creating many additional columns
-
-
     # if the integer vals are categorical and not binary, we need to get one-hot encoding for them
     for attr_name in attrs_for_classification:
         attr_vals = attrs_to_vals[attr_name]
@@ -176,6 +173,7 @@ def load_adult_data(filename, load_data_size=None):
         y = y[:load_data_size]
         for k in x_control.keys():
             x_control[k] = x_control[k][:load_data_size]
+
 
 
     return X, y, x_control

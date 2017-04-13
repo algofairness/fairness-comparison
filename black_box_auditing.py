@@ -12,6 +12,7 @@ However, need to standardize positive/negative classification outcomes as 1/0,
 So using a seperate, repetetive function per dataset right now.
 """
 
+
 def run_compas_repair():
 
     #First check if the data has already been repaired
@@ -38,11 +39,11 @@ def run_german_repair():
 
     if "repaired_german_credit_data_.8.csv" not in data_files:
         print "Repairing German data"
-        bash_call = "python repair.py data/german/german_credit_data.csv data/german/repaired_german_credit_data_.8.csv .8 -p personal_status"
+        bash_call = "python repair.py data/german/german_credit_data.csv data/german/repaired_german_credit_data_.8.csv .8 -p personal_status -i credit"
         os.system(bash_call)
-        bash_call = "python repair.py data/german/german_credit_data.csv data/german/repaired_german_credit_data_.9.csv .9 -p personal_status"
+        bash_call = "python repair.py data/german/german_credit_data.csv data/german/repaired_german_credit_data_.9.csv .9 -p personal_status -i credit"
         os.system(bash_call)
-        bash_call = "python repair.py data/german/german_credit_data.csv data/german/repaired_german_credit_data_1.csv 1 -p personal_status"
+        bash_call = "python repair.py data/german/german_credit_data.csv data/german/repaired_german_credit_data_1.csv 1 -p personal_status  -i credit"
         os.system(bash_call)
         print "Repair Complete"
 
@@ -54,24 +55,21 @@ def run_adult_repair():
     path = path+'/data/adult'
     data_files = os.listdir(path)
 
-    if "repaired_adult_.8.csv" not in data_files:
+    # bash_call = "python repair.py data/adult/adult-?.csv data/adult/race_repaired_adult_5.csv .5 -p race -i income-per-year fnlwgt sex"
+    # os.system(bash_call)
+
+    if "race_repaired_adult_.8.csv" not in data_files:
         path =  os.getcwd()
-        print path
         print "Repairing adult data"
-        bash_call = "python repair.py data/adult/adult.csv data/adult/repaired_adult_.8.csv .8 -p race -i income-per-year race"
+        bash_call = "python repair.py data/adult/adult-?.csv data/adult/race_repaired_adult_.8.csv .8 -p race -i income-per-year fnlwgt sex "
         os.system(bash_call)
-        bash_call = "python repair.py data/adult/adult.csv data/adult/repaired_adult_.9.csv .9 -p race -i income-per-year race"
+        bash_call = "python repair.py data/adult/adult-?.csv data/adult/race_repaired_adult_.9.csv .9 -p race -i income-per-year fnlwgt sex"
         os.system(bash_call)
-        bash_call = "python repair.py data/adult/adult.csv data/adult/repaired_adult_1.csv 1 -p race -i income-per-year race"
+        bash_call = "python repair.py data/adult/adult-?.csv data/adult/race_repaired_adult_1.csv 1.0 -p race -i income-per-year fnlwgt sex"
         os.system(bash_call)
 
 
-        # bash_call = "python repair.py data/adult/adult.csv data/adult/sex_repaired_adult_.8.csv .8 -p sex -i race"
-        # os.system(bash_call)
-        # bash_call = "python repair.py data/adult/adult.csv data/adult/sex_repaired_adult_.9.csv .9 -p sex -i race"
-        # os.system(bash_call)
-        # bash_call = "python repair.py data/adult/adult.csv data/adult/sex_repaired_adult_1.csv 1 -p sex -i race"
-        # os.system(bash_call)
+
 
 
 def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test):
@@ -120,6 +118,8 @@ def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, 
     f.close()
 
 
+
+
     nb = GaussianNB()
     nb.fit(x_train, y_train)
     predictions = nb.predict(x_test)
@@ -132,6 +132,8 @@ def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, 
     f = open("RESULTS/nb+"+filename, 'w')
     new_predictions = []
     new_y_test = []
+
+    print predictions[10:50]
 
     for j in range(0, len(predictions)):
         if predictions[j] == -1.:

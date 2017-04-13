@@ -73,10 +73,9 @@ def test_compas_data():
     """
     ##############################################################################################################################################
 
-    classify_compas("compas_repaired_.9", sensitive_attr, x_train_8, y_train, x_control_train, x_test_9, y_test, x_control_test)
-    classify_compas("compas_repaired_.8", sensitive_attr, x_train_9, y_train, x_control_train, x_test_9, y_test, x_control_test)
-    classify_compas("compas_repaired_1", sensitive_attr, x_train_1, y_train, x_control_train, x_test_9, y_test, x_control_test)
-
+    classify_compas("compas_repaired_.8", sensitive_attr, x_train_8, y_train, x_control_train, x_test_8, y_test, x_control_test)
+    classify_compas("compas_repaired_.9", sensitive_attr, x_train_9, y_train, x_control_train, x_test_9, y_test, x_control_test)
+    classify_compas("compas_repaired_1", sensitive_attr, x_train_1, y_train, x_control_train, x_test_1, y_test, x_control_test)
     classify_compas("compas_original", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
 
     print "SVM, NB, LR on Repaired/Original Data"
