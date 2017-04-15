@@ -40,11 +40,10 @@ def test_adult_data():
 
     """ Load the adult data """
     print "\n"
-    X, y, x_control = load_adult_data("data/adult/adult-?.csv")#, load_data_size=8000) #, load_data_size=16281)
-    X_repaired_8, y_repaired_8, x_control_repaired_8 = load_adult_data("data/adult/repaired_adult_.8.csv")#, load_data_size=8000)
-    X_repaired_9, y_repaired_9, x_control_repaired_9 = load_adult_data("data/adult/repaired_adult_.9.csv")#, load_data_size=8000)
-    X_repaired_1, y_repaired_1, x_control_repaired_1 = load_adult_data("data/adult/repaired_adult_1.csv")#, load_data_size=8000)
-    X_repaired_5, y_repaired_5, x_control_repaired_5 = load_adult_data("data/adult/repaired_adult_5.csv")#, load_data_size=15000)
+    X, y, x_control = load_adult_data("data/adult/adult-?-new-columns-no.csv")#, load_data_size=8000) #, load_data_size=16281)
+    X_repaired_8, y_repaired_8, x_control_repaired_8 = load_adult_data("data/adult/Repaired_Data_Files/Fixed_Adult_Data_8.csv")#, load_data_size=8000)
+    X_repaired_9, y_repaired_9, x_control_repaired_9 = load_adult_data("data/adult/Repaired_Data_Files/Fixed_Adult_Data_9.csv")#, load_data_size=8000)
+    X_repaired_1, y_repaired_1, x_control_repaired_1 = load_adult_data("data/adult/Repaired_Data_Files/Fixed_Adult_Data_1.csv")#, load_data_size=8000)
 
     # X = ut.add_intercept(X) # add intercept to X before applying the linear classifier
     # X_repaired_8 = ut.add_intercept(X_repaired_8)
@@ -53,16 +52,16 @@ def test_adult_data():
     #X_repaired_5 = ut.add_intercept(X_repaired_5)
 
     # shuffle the data
-    perm = range(0,len(y)) # shuffle the data before creating each fold
-    shuffle(perm)
-    X = X[perm]
-    X_repaired_8 = X_repaired_8[perm]
-    X_repaired_9 = X_repaired_9[perm]
-    X_repaired_1 = X_repaired_1[perm]
-    y = y[perm]
-
-    for k in x_control.keys():
-        x_control[k] = x_control[k][perm]
+    # perm = range(0,len(y)) # shuffle the data before creating each fold
+    # shuffle(perm)
+    # X = X[perm]
+    # X_repaired_8 = X_repaired_8[perm]
+    # X_repaired_9 = X_repaired_9[perm]
+    # X_repaired_1 = X_repaired_1[perm]
+    # y = y[perm]
+    #
+    # for k in x_control.keys():
+    #     x_control[k] = x_control[k][perm]
 
 
     """ Split the data into train and test """
@@ -73,96 +72,97 @@ def test_adult_data():
     x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1 = ut.split_into_train_test(X_repaired_1, y_repaired_1, x_control_repaired_1, train_fold_size)
     x_train_repaired_5, y_train_repaired_5, x_control_train_repaired_5, x_test_repaired_5, y_test_repaired_5, x_control_test_repaired_5 = ut.split_into_train_test(X_repaired_5, y_repaired_5, x_control_repaired_5, train_fold_size)
 
-
-    print "Repaired_1"
-
-    #lr = SVC(kernel='linear')
-    lr = LogisticRegression()
-    lr.fit(x_train_repaired_1, y_train)
-    predictions = lr.predict(x_test_repaired_1)
-    score = lr.score(x_test_repaired_1, y_test)
-
-    "Calculate decision boundary"
-    distances_boundary_test = (np.dot(x_test_repaired_1, lr.coef_.T)).tolist()
-    #Classify class labels based off sign (+/-) of result of dot product
-    all_class_labels_assigned_test = np.sign(distances_boundary_test)
-    cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test_repaired_8, distances_boundary_test, x_control_test_repaired_8, sensitive_attrs)
-
-    print "Covariance"
-    print cov_dict_test["race"]
-
-    count_non_white = 0
-    count_white = 0
-    positive_non_white = 0
-    positive_white = 0
-    for j in range(0, len(predictions)):
-        if x_control_test["race"][j] == 1:
-            count_white +=1
-            if predictions[j] == 1.:
-                positive_white +=1
-        else:
-            count_non_white +=1
-            if predictions[j] == 1.:
-                positive_non_white +=1
-
-    print count_white
-    print count_non_white
-    print "Positive non-white: " + str(positive_non_white)
-    print "Positive white: " + str(positive_white)
-    x = float(positive_non_white)/float(count_non_white)
-    j = float(positive_white)/float(count_white)
-    print "Percent black positive: " + str(x)
-    print "Percent men positive: " + str(j)
-    print "DI: " + str(x/j)
-
-
-    print "\n"
-    print "Original"
-    lr = LogisticRegression()
-    lr.fit(x_train, y_train)
-    new_predictions = lr.predict(x_test)
-    score = lr.score(x_test, y_test)
-    print score
-
-
-    "Calculate decision boundary"
-    distances_boundary_test = (np.dot(x_test, lr.coef_.T)).tolist()
-    #Classify class labels based off sign (+/-) of result of dot product
-    all_class_labels_assigned_test = np.sign(distances_boundary_test)
-    cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test, distances_boundary_test, x_control_test, sensitive_attrs)
-
-    print "Covariance"
-    print cov_dict_test["race"]
-
-    count_women = 0
-    count_men = 0
-    positive_women = 0
-    positive_men = 0
-    negative_women = 0
-    negative_men = 0
-
-    count_non_white = 0
-    count_white = 0
-    positive_non_white = 0
-    positive_white = 0
-    for j in range(0, len(new_predictions)):
-        if x_control_test["race"][j] == 1:
-            count_white +=1
-            if new_predictions[j] == 1.:
-                positive_white +=1
-        else:
-            count_non_white +=1
-            if new_predictions[j] == 1.:
-                positive_non_white +=1
-
-
-    print "Positive black: " + str(positive_non_white)
-    print "Positive white: " + str(positive_white)
-    x = float(positive_non_white)/float(count_non_white)
-    j = float(positive_white)/float(count_white)
-    print "Percent black positive: " + str(x)
-    print "Percent men positive: " + str(j)
-    print "DI: " + str(x/j)
+    #
+    # print "Repaired_1"
+    #
+    # #lr = SVC(kernel='linear')
+    # lr = LogisticRegression()
+    # lr.fit(x_train_repaired_8, y_train)
+    # predictions = lr.predict(x_test_repaired_8)
+    # score = lr.score(x_test_repaired_8, y_test)
+    # print score
+    # "Calculate decision boundary"
+    # distances_boundary_test = (np.dot(x_test_repaired_8, lr.coef_.T)).tolist()
+    # print len(distances_boundary_test)
+    # #Classify class labels based off sign (+/-) of result of dot product
+    # all_class_labels_assigned_test = np.sign(distances_boundary_test)
+    # cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test_repaired_8, distances_boundary_test, x_control_test_repaired_8, sensitive_attrs)
+    #
+    # print "Covariance"
+    # print cov_dict_test["race"]
+    #
+    # count_non_white = 0
+    # count_white = 0
+    # positive_non_white = 0
+    # positive_white = 0
+    # for j in range(0, len(predictions)):
+    #     if x_control_test["race"][j] == 0:
+    #         count_white +=1
+    #         if predictions[j] == 1.:
+    #             positive_white +=1
+    #     else:
+    #         count_non_white +=1
+    #         if predictions[j] == 1.:
+    #             positive_non_white +=1
+    #
+    # print count_white
+    # print count_non_white
+    # print "Positive non-white: " + str(positive_non_white)
+    # print "Positive white: " + str(positive_white)
+    # x = float(positive_non_white)/float(count_non_white)
+    # j = float(positive_white)/float(count_white)
+    # print "Percent non-white positive: " + str(x)
+    # print "Percent white positive: " + str(j)
+    # print "DI: " + str(x/j)
+    #
+    #
+    # print "\n"
+    # print "Original"
+    # lr = LogisticRegression()
+    # lr.fit(x_train, y_train)
+    # new_predictions = lr.predict(x_test)
+    # score = lr.score(x_test, y_test)
+    # print score
+    #
+    #
+    # "Calculate decision boundary"
+    # distances_boundary_test = (np.dot(x_test, lr.coef_.T)).tolist()
+    # #Classify class labels based off sign (+/-) of result of dot product
+    # all_class_labels_assigned_test = np.sign(distances_boundary_test)
+    # cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test, distances_boundary_test, x_control_test, sensitive_attrs)
+    #
+    # print "Covariance"
+    # print cov_dict_test["race"]
+    #
+    # count_women = 0
+    # count_men = 0
+    # positive_women = 0
+    # positive_men = 0
+    # negative_women = 0
+    # negative_men = 0
+    #
+    # count_non_white = 0
+    # count_white = 0
+    # positive_non_white = 0
+    # positive_white = 0
+    # for j in range(0, len(new_predictions)):
+    #     if x_control_test["race"][j] == 0:
+    #         count_white +=1
+    #         if new_predictions[j] == 1.:
+    #             positive_white +=1
+    #     else:
+    #         count_non_white +=1
+    #         if new_predictions[j] == 1.:
+    #             positive_non_white +=1
+    #
+    #
+    # print "Positive black: " + str(positive_non_white)
+    # print "Positive white: " + str(positive_white)
+    # x = float(positive_non_white)/float(count_non_white)
+    # j = float(positive_white)/float(count_white)
+    # print "Percent black positive: " + str(x)
+    # print "Percent men positive: " + str(j)
+    # print "DI: " + str(x/j)
 
     #############################################################################################################################################
     """
@@ -206,7 +206,7 @@ def test_adult_data():
 
     print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 30 and 1"
 
-    y_classified_results = train_classify(sensitive_attr, "race_adult", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
+    y_classified_results = train_classify(sensitive_attr, "race_adult", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 300, x_control_test)
     y_classified_results = train_classify(sensitive_attr, "race_adult", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 0, x_control_test)
 
 

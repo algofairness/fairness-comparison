@@ -30,9 +30,11 @@ def load_compas_data(filename):
         "two_year_recid"
     """
     #Race should not be used
+    #Neither should Sex
     #Add back in age, charge description
-    FEATURES_CLASSIFICATION = ["age_cat", "sex", "race", "juv_fel_count",
-    "juv_other_count", "juv_misd_count", "priors_count", "c_charge_degree"] #features to be used for classification
+    #Remove non-ordered categorical features
+    FEATURES_CLASSIFICATION = ["age_cat", "age", "race", "juv_fel_count",
+    "juv_other_count", "juv_misd_count", "priors_count"] #features to be used for classification
     CONT_VARIABLES = ["priors_count", "juv_fel_count", "juv_other_count", "juv_misd_count"] # continuous features, will need to be handled separately from categorical features, categorical features will be encoded using one-hot
     CLASS_FEATURE = "is_violent_recid" # the decision variable
     SENSITIVE_ATTRS = ["race"]
