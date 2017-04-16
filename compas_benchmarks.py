@@ -6,11 +6,14 @@ from prejudice_regularizer import *
 from black_box_auditing import *
 from sklearn import svm
 #sys.path.insert(0, "/data/propublica/")
-from load_compas import *
+from load_numerical_compas import *
+from load_compas import old_load_compas_data
 
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
 import utils as ut
 import loss_funcs as lf # loss funcs that can be optimized subject to various constraints
+
+from sklearn.svm import SVC
 
 
 def test_compas_data():
@@ -25,7 +28,7 @@ def test_compas_data():
     """
     ##############################################################################################################################################
 
-    run_compas_repair()
+    #run_compas_repair()
 
     ##############################################################################################################################################
     """
@@ -39,32 +42,34 @@ def test_compas_data():
     """
     print "\n"
 
-    X, y, x_control, feature_names = load_compas_data("compas-scores-two-years-violent-columns-removed.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
+    X, y, x_control = load_compas_data("compas-scores-violent-columns-removed-all-numeric.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
+    # X_repaired_8, y_repaired_8, x_control_repaired_8 = load_compas_data("Fixed_ProPublica_8.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
+    # X_repaired_9, y_repaired_9, x_control_repaired_9 = load_compas_data("Fixed_ProPublica_9.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
+    # X_repaired_1, y_repaired_1, x_control_repaired_1 = load_compas_data("Fixed_ProPublica_1.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
 
-    X_repaired_8, y_repaired_8, x_control_repaired_8, feature_names = load_compas_data("repaired-compas-scores-two-years-violent-columns-removed_.8.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
-    X_repaired_9, y_repaired_9, x_control_repaired_9, feature_names = load_compas_data("repaired-compas-scores-two-years-violent-columns-removed_.9.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
-    X_repaired_1, y_repaired_1, x_control_repaired_1, feature_names = load_compas_data("repaired-compas-scores-two-years-violent-columns-removed_1.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
-
-    # shuffle the data
-    perm = range(0,len(y)) # shuffle the data before creating each fold
-    shuffle(perm)
-    X = X[perm]
-    X_repaired_8 = X_repaired_8[perm]
-    X_repaired_9 = X_repaired_9[perm]
-    X_repaired_1 = X_repaired_1[perm]
-
-    y = y[perm]
-
-    for k in x_control.keys():
-        x_control[k] = x_control[k][perm]
+    # # shuffle the data
+    # perm = range(0,len(y)) # shuffle the data before creating each fold
+    # shuffle(perm)
+    # X = X[perm]
+    # X_repaired_8 = X_repaired_8[perm]
+    # X_repaired_9 = X_repaired_9[perm]
+    # X_repaired_1 = X_repaired_1[perm]
+    #
+    # y = y[perm]
+    #
+    # for k in x_control.keys():
+    #     x_control[k] = x_control[k][perm]
 
 
     """ Split the data into train and test """
     x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, train_fold_size)
+    #x_train_old, y_train_old, x_control_train_old, x_test_old, y_test_old, x_control_test_old = ut.split_into_train_test(X_old, y_old, x_control_old, train_fold_size)
 
-    x_train_8, y_train_8, x_control_train_8, x_test_8, y_test_8, x_control_test_8 = ut.split_into_train_test(X_repaired_8, y_repaired_8, x_control_repaired_8, train_fold_size)
-    x_train_9, y_train_9, x_control_train_9, x_test_9, y_test_9, x_control_test_9 = ut.split_into_train_test(X_repaired_9, y_repaired_9, x_control_repaired_9, train_fold_size)
-    x_train_1, y_train_1, x_control_train_1, x_test_1, y_test_1, x_control_test_1 = ut.split_into_train_test(X_repaired_1, y_repaired_1, x_control_repaired_1, train_fold_size)
+    # x_train_8, y_train_8, x_control_train_8, x_test_8, y_test_8, x_control_test_8 = ut.split_into_train_test(X_repaired_8, y_repaired_8, x_control_repaired_8, train_fold_size)
+    # x_train_9, y_train_9, x_control_train_9, x_test_9, y_test_9, x_control_test_9 = ut.split_into_train_test(X_repaired_9, y_repaired_9, x_control_repaired_9, train_fold_size)
+    # x_train_1, y_train_1, x_control_train_1, x_test_1, y_test_1, x_control_test_1 = ut.split_into_train_test(X_repaired_1, y_repaired_1, x_control_repaired_1, train_fold_size)
+
+
 
 
     ##############################################################################################################################################
@@ -73,10 +78,10 @@ def test_compas_data():
     """
     ##############################################################################################################################################
 
-    classify_compas("compas_repaired_.8", sensitive_attr, x_train_8, y_train, x_control_train, x_test_8, y_test, x_control_test)
-    classify_compas("compas_repaired_.9", sensitive_attr, x_train_9, y_train, x_control_train, x_test_9, y_test, x_control_test)
-    classify_compas("compas_repaired_1", sensitive_attr, x_train_1, y_train, x_control_train, x_test_1, y_test, x_control_test)
-    classify_compas("compas_original", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
+    # classify_compas("propublica_repaired_.8", sensitive_attr, x_train_8, y_train, x_control_train, x_test_8, y_test, x_control_test)
+    # classify_compas("propublica_repaired_.9", sensitive_attr, x_train_9, y_train, x_control_train, x_test_9, y_test, x_control_test)
+    # classify_compas("propublica_repaired_1", sensitive_attr, x_train_1, y_train, x_control_train, x_test_1, y_test, x_control_test)
+    classify_compas("propublica_original", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
 
     print "SVM, NB, LR on Repaired/Original Data"
 
@@ -88,8 +93,9 @@ def test_compas_data():
     """
     ##############################################################################################################################################
 
-    run_two_naive_bayes("pro_publica_two_naive_bayes", x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)
+    run_two_naive_bayes(0.0, "propublica_race_nb_0", x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)
     print "\n== Calder's Two Naive Bayes =="
+
 
     ##############################################################################################################################################
     """
@@ -114,15 +120,11 @@ def test_compas_data():
 
     print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 30"
 
-    y_classified_results = train_classify(sensitive_attr, "compas", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
-
-    print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 15"
-
-    y_classified_results = train_classify(sensitive_attr, "compas", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 15, x_control_test)
+    y_classified_results = train_classify(sensitive_attr, "propublica", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
 
     print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 1"
 
-    y_classified_results = train_classify(sensitive_attr, "compas", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
+    y_classified_results = train_classify(sensitive_attr, "propublica", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
 
 
     ##############################################################################################################################################
@@ -145,6 +147,7 @@ def test_compas_data():
     apply_accuracy_constraint = 0
     sep_constraint = 0
     w_uncons = train_test_classifier("pro_publica_unconstrained", x_train, y_train, x_control_train, x_test, y_test, x_control_test, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
+
 
     """ Now classify such that we optimize for accuracy while achieving perfect fairness """
     apply_fairness_constraints = 1 # set this flag to one since we want to optimize accuracy subject to fairness constraints

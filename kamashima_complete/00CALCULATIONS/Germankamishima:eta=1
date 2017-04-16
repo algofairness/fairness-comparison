@@ -1,24 +1,24 @@
 ### Contingency Table ###
 [ TP(1,1), FN(1,0) ] = [    189,     18 ]
-[ FP(0,1), TN(0,0) ] = [     45,     48 ]
+[ FP(0,1), TN(0,0) ] = [     43,     50 ]
 
 ### Marginal/Total Counts ###
 True [ P, N ] = [    207,     93 ]
-Est  [ P, N ] = [    234,     66 ]
+Est  [ P, N ] = [    232,     68 ]
 Total       = 300
 
 ### Accuracy ###
-Acc / S.D. = [ 0.79, 0.0235159520326097 ]
+Acc / S.D. = [ 0.796666666666667, 0.0232371031534261 ]
 
 ### Mutual Information (natual log) ###
-I(C;E) = 0.108340611372921
-[ I(C;E)/H(C), I(C;E)/H(E) ] = [ 0.174996761590365, 0.205615817758014 ]
-Arithmetic Mean = 0.19030628967419
-Geometric Mean = 0.189689489006131
+I(C;E) = 0.117367459612503
+[ I(C;E)/H(C), I(C;E)/H(E) ] = [ 0.18957734397103, 0.219289417874667 ]
+Arithmetic Mean = 0.204433380922848
+Geometric Mean = 0.203892877270474
 
 ### Contingency Table with Sensitive Attribute ###
 S=0 [ TP(1,1), FN(1,0) ] = [     50,     10 ]
-    [ FP(0,1), TN(0,0) ] = [     15,     19 ]
+    [ FP(0,1), TN(0,0) ] = [     13,     21 ]
 S=1 [ TP(1,1), FN(1,0) ] = [    139,      8 ]
     [ FP(0,1), TN(0,0) ] = [     30,     29 ]
 
@@ -29,26 +29,26 @@ Arithmetic Mean = 0.00453043734705557
 Geometric Mean = 0.00453042708437034
 
 ### Mutual Information (Estimated, Sensitive) ###
-I(C;S) = 0.010012617760133
-[ I(C;S)/H(C), I(C;ES)/H(S) ] = [ 0.0190025934186552, 0.0161041410562858 ]
-Arithmetic Mean = 0.0175533672374705
-Geometric Mean = 0.0174934400518958
+I(C;S) = 0.0132696153526961
+[ I(C;S)/H(C), I(C;ES)/H(S) ] = [ 0.024792955694199, 0.0213426461013365 ]
+Arithmetic Mean = 0.0230678008977677
+Geometric Mean = 0.0230032014986481
 
 ### KL-Divergence Given Sensitive ###
-D(C|S || E|S) = 0.0254488955473594
-D(E|S || C|S) = 0.0229825095141221
+D(C|S || E|S) = 0.024141048471664
+D(E|S || C|S) = 0.0217168680611015
 
 ### Hellinger distance jointed with S ###
-d_H(P(C,S), P(E,S)) = 0.109853661633357
-Normalized = 0.0776782690791189
+d_H(P(C,S), P(E,S)) = 0.106886862587942
+Normalized = 0.0755804253556884
 
 ### Caldars-Verwer score ###
 Pr[C=1 | S=1] - Pr[C=1 | S=0] = 0.0752943606692832
-Pr[E=1 | S=1] - Pr[E=1 | S=0] = 0.128898987812435
+Pr[E=1 | S=1] - Pr[E=1 | S=0] = 0.150175583557116
 
 ### P-Score score ###
 P-Rule between Sensitive feature and correct class: Pr[C=0 | S=1] / Pr[C=1 | S=1] = 89.448545375597
-P-Rule between Sensitive feature and estimated class: Pr[E=0 | S=1] / Pr[E=1 | S=1] = 84.2880523731588
+P-Rule between Sensitive feature and estimated class: Pr[E=0 | S=1] / Pr[E=1 | S=1] = 81.6945738386
 
 ### Balanced error rate ###
-Balanced error rate: 0.225212
+Balanced error rate: 0.214573

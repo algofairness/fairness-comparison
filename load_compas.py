@@ -23,7 +23,7 @@ np.random.seed(SEED)
 def check_data_file(fname):
     files = os.listdir(".") # get the current directory listing
 
-def load_compas_data(filename):
+def old_load_compas_data(filename):
     """
     "sex", "age", "age_cat", "race", "juv_fel_count", "juv_misd_count",\
     "juv_other_count", "priors_count", "c_charge_degree",
