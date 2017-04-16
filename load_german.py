@@ -23,13 +23,6 @@ def load_german_data(filename):
         Get class label
         """
         class_label = line[-1]
-        if class_label == "1":
-            class_label = 1
-        elif class_label == "2":
-            class_label = 0
-        else:
-            print class_label
-            raise Exception("Invalid class label value")
         y.append(class_label)
 
 
