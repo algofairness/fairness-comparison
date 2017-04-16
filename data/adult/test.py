@@ -1,4 +1,4 @@
-# new_lines = []
+ # new_lines = []
 # count = 0
 # for line in open("adult.csv"):
 #     line = line.strip()
@@ -28,19 +28,26 @@
 
 
 new_lines = []
-for line in open("adult-?-new-columns-nixed.csv"):
+for line in open("Fixed_Adult_Data_1_sex"):
     line = line.strip()
     if line == "": continue # skip empty lines
     if line[0] == "a": continue # skip line of feature categories, in csv
     line = line.split(",")
-    if str(line[3]) == "White":
-        line[3] = 0
+    if str(line[6]) == ">50K":
+        line[6] = 1
     else:
-        line[3] = 1
+        line[6] = 0
+
+    if str(line[7]) == 'Male':
+        line[7] = 1
+    else:
+        print line[7]
+        line[7] = 0
+
     new_lines.append(line)
 
 
-f = open("adult-?-new-columns-no.csv", 'w')
+f = open("adult-all-numerical.csv", 'w')
 for i in new_lines:
     """
     Convert -1 to 0 for Kamashima's classifiers

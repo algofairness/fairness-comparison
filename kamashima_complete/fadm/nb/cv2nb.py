@@ -51,10 +51,10 @@ class CaldersVerwerTwoNaiveBayes(BaseEstimator,
                                  BayesianClassifierMixin,
                                  ClassifierMixin):
     """ Calders and Verwer's two naive Bayes method
-    
+
     A single and binary sensitive feature is assumed.
     The number of classes must be two.
-    
+
     Parameters
     ----------
     n_features : int
@@ -134,8 +134,6 @@ class CaldersVerwerTwoNaiveBayes(BaseEstimator,
 
         # modify joint statistics of y and s
         numpos, disc = self._get_stats(X, y)
-#        print >> sys.stderr, "numpos, disc =", numpos, disc
-#        print >> sys.stderr, "pys_ =", self.pys_[0, :], self.pys_[1, :]
         pos_flag = True
         while disc > 0.0 and pos_flag == True:
             if numpos < d_numpos:
@@ -153,8 +151,6 @@ class CaldersVerwerTwoNaiveBayes(BaseEstimator,
                     self.pys_[1, 1] += delta * self.pys_[1, 0]
                     pos_flag = False
             numpos, disc = self._get_stats(X, y)
-#            print >> sys.stderr, "numpos, disc =", numpos, disc
-#            print >> sys.stderr, "pys_ =", self.pys_[0, :], self.pys_[1, :]
 
     def _get_stats(self, X, y):
         """ get statistics

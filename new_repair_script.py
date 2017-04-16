@@ -128,7 +128,7 @@ def setup_and_call_repair(quickname, filepath, repair_directory, identifier_col_
     # return to beginning of original file
     orig_file.seek(0)
     file_reader.next()
-    with open(repair_dir+"Fixed_Adult_Data_1.csv", 'wb') as fixed_data:
+    with open(repair_dir+"Fixed_Adult_Data_1_sex.csv", 'wb') as fixed_data:
     	writer = csv.writer(fixed_data, delimiter = ',')
     	# write original column names to file with X and I cols
     	repaired_col_names = filter(lambda x: col_type_dict[x] in 'YC', col_names)
@@ -213,13 +213,23 @@ def perform_repair(quickname, repair_directory, col_names, col_type_dict, safe_c
 # 				stratify_col_names, repair_amount, requested_repair_type):
 #age,workclass,fnlwgt,education,education-num,marital-status,occupation,relationship,race,sex,capital-gain,capital-loss,hours-per-week,native-country,income-per-year
 
+
+# Identifier columns contain information that should be irrelevant to a classfier. These columns will be ignored
+#	Examples: applicant IDs, phone numbers
+# Proected columns contain information that should not be used in a classifier
+# 	Examples: race, gender, religion
+# Statify columns contain values of groups which should be treated equally by a classifier. There must be a least one Statify column per data set
+# Class columns contain the outcomes assigned to applicants. There must be exactly one Class column per data set
+#	The last column in any data set
+
+
 identifier_col_names = ["workclass", "education", "fnlwgt", "occupation", "relationship", "marital-status", "native-country"]
-stratify_col_names = ["race"]
-#repair_values = [i*1.0/10 for i in range(11)]
+stratify_col_names = ["sex"]
+protected_col_names = ["race"]
 repair_values = 1.0
 requested_repair_type = "0"
 print "Call repair"
-setup_and_call_repair("name", "data/adult/adult-?-new.csv", "data/adult", identifier_col_names, ["sex"], stratify_col_names, repair_values, requested_repair_type)
+setup_and_call_repair("name", "data/adult/adult-all-numerical.csv", "data/adult", identifier_col_names, protected_col_names, stratify_col_names, repair_values, requested_repair_type)
 print "Done"
 
 

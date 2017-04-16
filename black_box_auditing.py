@@ -97,19 +97,17 @@ def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, 
     f = open("RESULTS/svm+"+filename, 'w')
     new_predictions = []
     new_y_test = []
-
     for j in range(0, len(predictions)):
-        if predictions[j] == -1.:
+        if predictions[j] == 0.0:
             new_predictions.append(0)
         elif predictions[j] == 1.:
             new_predictions.append(1)
 
     for j in range(0, len(y_test)):
-        if y_test[j] == -1.:
+        if y_test[j] == 0.0:
             new_y_test.append(0)
         elif y_test[j] == 1.:
             new_y_test.append(1)
-
 
     for i in range(0, len(x_test)):
         string = (str(new_y_test[int(i)])+" " + str(new_predictions[i]) + " " +str(x_control_test[sensitive_attr][int(i)]))
@@ -133,16 +131,14 @@ def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, 
     new_predictions = []
     new_y_test = []
 
-    print predictions[10:50]
-
     for j in range(0, len(predictions)):
-        if predictions[j] == -1.:
+        if predictions[j] == 0.0:
             new_predictions.append(0)
         elif predictions[j] == 1.:
             new_predictions.append(1)
 
     for j in range(0, len(y_test)):
-        if y_test[j] == -1.:
+        if y_test[j] == 0.0:
             new_y_test.append(0)
         elif y_test[j] == 1.:
             new_y_test.append(1)
@@ -166,13 +162,13 @@ def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, 
     new_y_test = []
 
     for j in range(0, len(predictions)):
-        if predictions[j] == -1.:
+        if predictions[j] == 0.0:
             new_predictions.append(0)
         elif predictions[j] == 1.:
             new_predictions.append(1)
 
     for j in range(0, len(y_test)):
-        if y_test[j] == -1.:
+        if y_test[j] == 0.0:
             new_y_test.append(0)
         elif y_test[j] == 1.:
             new_y_test.append(1)

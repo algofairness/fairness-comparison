@@ -1,0 +1,54 @@
+### Contingency Table ###
+[ TP(1,1), FN(1,0) ] = [    612,   1693 ]
+[ FP(0,1), TN(0,0) ] = [    252,   6492 ]
+
+### Marginal/Total Counts ###
+True [ P, N ] = [   2305,   6744 ]
+Est  [ P, N ] = [    864,   8185 ]
+Total       = 9049
+
+### Accuracy ###
+Acc / S.D. = [ 0.785059122554978, 0.00431827600339856 ]
+
+### Mutual Information (natual log) ###
+I(C;E) = 0.0487588043394324
+[ I(C;E)/H(C), I(C;E)/H(E) ] = [ 0.0859237418909108, 0.154771760047543 ]
+Arithmetic Mean = 0.120347750969227
+Geometric Mean = 0.115319420577486
+
+### Contingency Table with Sensitive Attribute ###
+S=0 [ TP(1,1), FN(1,0) ] = [     58,    156 ]
+    [ FP(0,1), TN(0,0) ] = [     29,   1037 ]
+S=1 [ TP(1,1), FN(1,0) ] = [    554,   1537 ]
+    [ FP(0,1), TN(0,0) ] = [    223,   5455 ]
+
+### Mutual Information (Correct, Sensitive) ###
+I(C;S) = 0.00358943447059734
+[ I(C;S)/H(C), I(C;ES)/H(S) ] = [ 0.00632537333850329, 0.0088064674795298 ]
+Arithmetic Mean = 0.00756592040901654
+Geometric Mean = 0.0074635242748593
+
+### Mutual Information (Estimated, Sensitive) ###
+I(C;S) = 0.000783223720066784
+[ I(C;S)/H(C), I(C;ES)/H(S) ] = [ 0.00248613384409195, 0.00192159357594196 ]
+Arithmetic Mean = 0.00220386371001695
+Geometric Mean = 0.00218571242933259
+
+### KL-Divergence Given Sensitive ###
+D(C|S || E|S) = 0.106161254551121
+D(E|S || C|S) = 0.0820296640949685
+
+### Hellinger distance jointed with S ###
+d_H(P(C,S), P(E,S)) = 0.215110132147133
+Normalized = 0.152105833143172
+
+### Caldars-Verwer score ###
+Pr[C=1 | S=1] - Pr[C=1 | S=0] = 0.101959108315098
+Pr[E=1 | S=1] - Pr[E=1 | S=0] = 0.0320441216694555
+
+### P-Score score ###
+P-Rule between Sensitive feature and correct class: Pr[C=0 | S=1] / Pr[C=1 | S=1] = 62.1176321138211
+P-Rule between Sensitive feature and estimated class: Pr[E=0 | S=1] / Pr[E=1 | S=1] = 67.9600024131274
+
+### Balanced error rate ###
+Balanced error rate: 0.185536

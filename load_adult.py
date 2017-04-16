@@ -27,11 +27,11 @@ def load_adult_data(filename, load_data_size=None):
     #Original attributes
     #attrs = ['age', 'workclass', 'fnlwgt', 'education', 'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week', 'native_country'] # all attributes
 
-    attrs = ['age', 'education-num', 'race', 'capital-gain', 'capital-loss', 'hours-per-week', "income-per-year"] # all attributes
-    int_attrs = ['age', 'education-num', 'race', 'capital-gain', 'capital-loss', 'hours-per-week'] # attributes with integer values -- the rest are categorical
+    attrs = ['age', 'education-num', 'capital-gain', 'capital-loss', 'hours-per-week', "sex"]# "income-per-year"] # all attributes
+    int_attrs = ['age', 'education-num', 'capital-gain', 'capital-loss', 'hours-per-week'] # attributes with integer values -- the rest are categorical
     #int_attrs = ['age', 'fnlwgt', 'education_num', 'capital_loss', 'hours_per_week'] # attributes with integer values -- the rest are categorical
 
-    sensitive_attrs = ['race'] # the fairness constraints will be used for this feature
+    sensitive_attrs = ['sex'] # the fairness constraints will be used for this feature
     attrs_to_ignore = ['fnlwgt', 'sex', 'race', "workclass", "native-country"]
     #attrs_to_ignore = ['sex', 'race' ,'fnlwgt'] # sex and race are sensitive feature so we will not use them in classification, we will not consider fnlwght for classification since its computed externally and it highly predictive for the class (for details, see documentation of the adult data)
     attrs_for_classification = set(attrs) - set(attrs_to_ignore)
@@ -58,7 +58,6 @@ def load_adult_data(filename, load_data_size=None):
         else:
             attrs_to_vals[k] = []
 
-
     for f in data_files:
 
         for line in open(f):
@@ -70,14 +69,13 @@ def load_adult_data(filename, load_data_size=None):
 
             # if len(line) != 15 or "?" in line: # if a line has missing attributes, ignore it
             #     continue
-
             class_label = line[-1]
-            if class_label in ["<=50K.", "<=50K"]:
-                class_label = -1
-            elif class_label in [">50K.", ">50K"]:
-                class_label = +1
-            else:
-                raise Exception("Invalid class label value")
+            # if class_label in ["0", 0]:
+            #     class_label = -1
+            # elif class_label in ["1", 1]:
+            #     class_label = +1
+            # else:
+            #     raise Exception("Invalid class label value")
 
             y.append(class_label)
 
@@ -85,15 +83,15 @@ def load_adult_data(filename, load_data_size=None):
                 attr_name = attrs[i]
                 attr_val = line[i]
                 # reducing dimensionality of some very sparse features
-                if attr_name == "native_country":
-                    if attr_val!="United-States":
-                        attr_val = "Non-United-Stated"
-
-                elif attr_name == "education":
-                    if attr_val in ["Preschool", "1st-4th", "5th-6th", "7th-8th"]:
-                        attr_val = "prim-middle-school"
-                    elif attr_val in ["9th", "10th", "11th", "12th"]:
-                        attr_val = "high-school"
+                # if attr_name == "native_country":
+                #     if attr_val!="United-States":
+                #         attr_val = "Non-United-Stated"
+                #
+                # elif attr_name == "education":
+                #     if attr_val in ["Preschool", "1st-4th", "5th-6th", "7th-8th"]:
+                #         attr_val = "prim-middle-school"
+                #     elif attr_val in ["9th", "10th", "11th", "12th"]:
+                #         attr_val = "high-school"
 
                 if attr_name in sensitive_attrs:
                     x_control[attr_name].append(attr_val)
@@ -112,18 +110,19 @@ def load_adult_data(filename, load_data_size=None):
 
                 #print attr_vals[50:100]
                 #Numpy and Sklearn gymnastics to scale values
-                # attr_vals=np.array(attr_vals)
-                # attr_vals = attr_vals.reshape(-1, 1)
-                # min_max_scaler = preprocessing.MinMaxScaler(feature_range=(0,1))
-                # min_max_scaled = min_max_scaler.fit_transform(attr_vals)
-                # min_max_scaler.fit(attr_vals)
-                # scaled_attr_val = min_max_scaler.transform(attr_vals)
-                # scaled_attr_val = scaled_attr_val.ravel()
-                # scaled_attr_val = scaled_attr_val.tolist()
-                #print scaled_attr_val[50:100]
+                attr_vals=np.array(attr_vals)
+                attr_vals = attr_vals.reshape(-1, 1)
+
+                min_max_scaler = preprocessing.MinMaxScaler(feature_range=(0,1))
+                min_max_scaled = min_max_scaler.fit_transform(attr_vals)
+                min_max_scaler.fit(attr_vals)
+                scaled_attr_val = min_max_scaler.transform(attr_vals)
+                scaled_attr_val = scaled_attr_val.ravel()
+                scaled_attr_val = scaled_attr_val.tolist()
+
                 #Getting back to 1D python list
-                #d[attr_name] = scaled_attr_val
-                d[attr_name] = attr_vals
+                d[attr_name] = scaled_attr_val
+                # d[attr_name] = attr_vals
 
             else:
 
@@ -147,10 +146,12 @@ def load_adult_data(filename, load_data_size=None):
 
 
     #convert_attrs_to_ints(x_control)
+
     convert_attrs_to_ints(attrs_to_vals)
 
     #One-hot encoding takes categorical data and encodes it as yes/no binary membership, creating many additional columns
     # if the integer vals are categorical and not binary, we need to get one-hot encoding for them
+
     for attr_name in attrs_for_classification:
         attr_vals = attrs_to_vals[attr_name]
         if attr_name in int_attrs or attr_name == "native_country": # the way we encoded native country, its binary now so no need to apply one hot encoding on it
@@ -162,11 +163,9 @@ def load_adult_data(filename, load_data_size=None):
                 X.append(inner_col)
 
     # convert to numpy arrays for easy handline
-
     X = np.array(X, dtype=float).T
     y = np.array(y, dtype = float)
     for k, v in x_control.items(): x_control[k] = np.array(v, dtype=float)
-
 
     # see if we need to subsample the data
     if load_data_size is not None:
@@ -177,8 +176,4 @@ def load_adult_data(filename, load_data_size=None):
             x_control[k] = x_control[k][:load_data_size]
 
 
-    print len(X[0])
-    print X[0]
-    print y[0]
-    print x_control["race"][0]
     return X, y, x_control
