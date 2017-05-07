@@ -94,7 +94,7 @@ def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, 
     How data comes from Blackbox/feldmen code:
     Pre-Repaired Feature, Response, Prediction
     """
-    f = open("RESULTS/svm+"+filename, 'w')
+    f = open("00RESULT/svm+"+filename, 'w')
     new_predictions = []
     new_y_test = []
     for j in range(0, len(predictions)):
@@ -127,7 +127,7 @@ def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, 
     print score
     print "\n"
 
-    f = open("RESULTS/nb+"+filename, 'w')
+    f = open("00RESULT/nb+"+filename, 'w')
     new_predictions = []
     new_y_test = []
 
@@ -157,7 +157,7 @@ def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, 
     lr.fit(x_train, y_train)
     predictions = lr.predict(x_test)
     score = lr.score(x_test, y_test)
-    f = open("RESULTS/lr+"+filename, 'w')
+    f = open("00RESULT/lr+"+filename, 'w')
     new_predictions = []
     new_y_test = []
 
@@ -198,7 +198,7 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
     How data comes from Blackbox/feldmen code:
     Pre-Repaired Feature, Response, Prediction
     """
-    f = open("RESULTS/svm+"+filename, 'w')
+    f = open("00RESULT/svm+"+filename, 'w')
     new_predictions = []
     new_y_test = []
 
@@ -227,7 +227,7 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
     predictions = nb.predict(x_test)
     score = nb.score(x_test, y_test)
 
-    f = open("RESULTS/nb+"+filename, 'w')
+    f = open("00RESULT/nb+"+filename, 'w')
     new_predictions = []
     new_y_test = []
 
@@ -258,7 +258,7 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
     predictions = lr.predict(x_test)
     score = lr.score(x_test, y_test)
 
-    f = open("RESULTS/lr+"+filename, 'w')
+    f = open("00RESULT/lr+"+filename, 'w')
     new_predictions = []
     new_y_test = []
 
@@ -308,10 +308,24 @@ def classify_compas(filename, sensitive_attr, x_train, y_train, x_control_train,
     How data comes from Blackbox/feldmen code:
     Pre-Repaired Feature, Response, Prediction
     """
-    f = open("RESULTS/svm+"+filename, 'w')
+    f = open("00RESULT/svm+"+filename, 'w')
+
+    new_predictions = []
+    new_y_test = []
+    for j in range(0, len(predictions)):
+        if predictions[j] == 0.:
+            new_predictions.append(0)
+        elif predictions[j] == 1.:
+            new_predictions.append(1)
+
+    for j in range(0, len(y_test)):
+        if y_test[j] == 0.:
+            new_y_test.append(0)
+        elif y_test[j] == 1.:
+            new_y_test.append(1)
 
     for i in range(0, len(x_test)):
-        string = (str(y_test[int(i)])+" " + str(predictions[i]) + " " +str(x_control_test[sensitive_attr][int(i)]))
+        string = (str(new_y_test[int(i)])+" " + str(new_predictions[i]) + " " +str(x_control_test[sensitive_attr][int(i)]))
         f.write(string)
         f.write('\n')
     f.close()
@@ -326,13 +340,27 @@ def classify_compas(filename, sensitive_attr, x_train, y_train, x_control_train,
     print score
     print "\n"
 
-    f = open("RESULTS/nb+"+filename, 'w')
+    new_predictions = []
+    new_y_test = []
+    for j in range(0, len(predictions)):
+        if predictions[j] == 0.:
+            new_predictions.append(0)
+        elif predictions[j] == 1.:
+            new_predictions.append(1)
+
+    for j in range(0, len(y_test)):
+        if y_test[j] == 0.:
+            new_y_test.append(0)
+        elif y_test[j] == 1.:
+            new_y_test.append(1)
+
+    f = open("00RESULT/nb+"+filename, 'w')
 
     for i in range(0, len(x_test)):
         """
         Convert -1 to 0 for Kamashima's classifiers
         """
-        string = (str(y_test[int(i)])+" " + str(predictions[i]) + " " +str(x_control_test[sensitive_attr][int(i)]))
+        string = (str(new_y_test[int(i)])+" " + str(new_predictions[i]) + " " +str(x_control_test[sensitive_attr][int(i)]))
         f.write(string)
         f.write('\n')
     f.close()
@@ -341,10 +369,24 @@ def classify_compas(filename, sensitive_attr, x_train, y_train, x_control_train,
     lr.fit(x_train, y_train)
     predictions = lr.predict(x_test)
     score = lr.score(x_test, y_test)
-    f = open("RESULTS/lr+"+filename, 'w')
+    f = open("00RESULT/lr+"+filename, 'w')
+
+    new_predictions = []
+    new_y_test = []
+    for j in range(0, len(predictions)):
+        if predictions[j] == 0.:
+            new_predictions.append(0)
+        elif predictions[j] == 1.:
+            new_predictions.append(1)
+
+    for j in range(0, len(y_test)):
+        if y_test[j] == 0.:
+            new_y_test.append(0)
+        elif y_test[j] == 1.:
+            new_y_test.append(1)
 
     for i in range(0, len(x_test)):
-        string = (str(y_test[int(i)])+" " + str(predictions[i]) + " " +str(x_control_test[sensitive_attr][int(i)]))
+        string = (str(new_y_test[int(i)])+" " + str(new_predictions[i]) + " " +str(x_control_test[sensitive_attr][int(i)]))
         f.write(string)
         f.write('\n')
     f.close()

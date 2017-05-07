@@ -128,7 +128,7 @@ def setup_and_call_repair(quickname, filepath, repair_directory, identifier_col_
     # return to beginning of original file
     orig_file.seek(0)
     file_reader.next()
-    with open(repair_dir+"Fixed_ProPublica_8.csv", 'wb') as fixed_data:
+    with open(repair_dir+"Fixed_Adult_1.csv", 'wb') as fixed_data:
     	writer = csv.writer(fixed_data, delimiter = ',')
     	# write original column names to file with X and I cols
     	repaired_col_names = filter(lambda x: col_type_dict[x] in 'YC', col_names)
@@ -138,7 +138,7 @@ def setup_and_call_repair(quickname, filepath, repair_directory, identifier_col_
             writer.writerow(repaired_row)
 
     print "Repair Process Complete. Repaired Data can be found at: ", repair_dir
-    return repair_dir+"Fixed_Data_1.csv"
+    return repair_dir+"Fixed_Data_9.csv"
 
 
 def perform_repair(quickname, repair_directory, col_names, col_type_dict, safe_col_names, all_stratified_groups,
@@ -224,12 +224,12 @@ def perform_repair(quickname, repair_directory, col_names, col_type_dict, safe_c
 
 
 identifier_col_names = []
-stratify_col_names = ["race"]
+stratify_col_names = ["sex"]
 protected_col_names = []
-repair_values = 0.8
+repair_values = 1.0
 requested_repair_type = "0"
 print "Call repair"
-setup_and_call_repair("name", "data/propublica/compas-scores-violent-columns-removed-all-numeric.csv", "data/propublica", identifier_col_names, protected_col_names, stratify_col_names, repair_values, requested_repair_type)
+setup_and_call_repair("name", "data/adult/adult-all-numerical-converted.csv", "data/adult", identifier_col_names, protected_col_names, stratify_col_names, repair_values, requested_repair_type)
 print "Done"
 
 

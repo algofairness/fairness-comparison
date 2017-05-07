@@ -129,25 +129,26 @@ def run_two_naive_bayes(gamma, filename, x_train, y_train, x_control_train, x_te
 
     discrimination = 100.0
     while discrimination > gamma:
-
         #C+ S- is Women Positive
         #C- S- is Women Negative
         #C- S+ is Men Negative
         #C+ S+ is Men Positive
         print "men negative %f" % men_negative
-
         print "women_positive %f" % women_positive
 
-
         if men_positive+women_positive < total_positive:
+
+            print "increasing protected group"
+
             goal_women_positive = women_positive + .01*men_negative
             goal_women_negative = women_negative - .01*men_negative
 
             print "Women positive %f" % women_positive
-            print "GW positive %f" % goal_women_positive
+            print "Goal women positive %f" % goal_women_positive
             for i in range(0, len(y_protected_train)):
                 if (goal_women_positive - women_positive) > 0:
-                    if (y_protected_train[i] == 0.0):
+                    # Whether the negative class is representred as -1.0 or 0.0 is an ongoing headache throughout this project
+                    if (y_protected_train[i] == 0.0 or y_protected_train[i] == -1.0):
                         y_protected_train[i] = 1.0
                         women_positive +=1
                     else:
@@ -159,7 +160,7 @@ def run_two_naive_bayes(gamma, filename, x_train, y_train, x_control_train, x_te
             print "GWN %f" % goal_women_negative
             for i in range(0, len(y_protected_train)):
                 if (women_negative - goal_women_negative) > 0:
-                    if y_protected_train[i] == 0.0:
+                    if y_protected_train[i] == 0.0 or y_protected_train[i] == -1.0:
                         y_protected_train[i] = 1.0
                         women_negative -=1
                     else:
@@ -248,7 +249,7 @@ def run_two_naive_bayes(gamma, filename, x_train, y_train, x_control_train, x_te
         discrimination = men_ratio - women_ratio
         print "Discrimination: %f" % discrimination
 
-    f = open("RESULTS/"+filename, 'w')
+    f = open("00RESULT/"+filename, 'w')
     for i in range(0, len(women_predicted_class_status)):
         line_of_data = ( str(women_expected_class_status[i]) + " " + str(women_predicted_class_status[i]) + " 0.0")
         f.write(line_of_data)

@@ -325,7 +325,6 @@ class LRwPRObjetiveType4Mixin(LRwPR):
 
         coef = coef_.reshape(self.n_sfv_, self.n_features_)
 
-
         ### constants
 
         # sigma = Pr[y=0|x,s] = sigmoid(w(s)^T x)

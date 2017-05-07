@@ -175,8 +175,7 @@ def train_classify(sensitive_attr, dataname, X_train, y_train, X_test, y_test, n
         else:
             print j
             print "Invalid class value in y_control_test"
-
-    f = open("RESULTS/"+str(dataname)+ "kamishima:eta="+str(fairness_param), 'w')
+    f = open("00RESULT/"+str(dataname)+ "kamishima:eta="+str(fairness_param), 'w')
     for i in range(0, len(y_test)):
         line_of_data = ( str(y_test_updated[i]) + " " + str(y_classified_results[i]) + " " + str(x_control_test[sensitive_attr][i]))
         f.write(line_of_data)

@@ -1,4 +1,4 @@
-age,education-num,capital-gain,capital-loss,hours-per-week,sex,income-per-year
+age,education-num,capital_gain,capital_loss,hours_per_week,sex,income-per-year
 39,13,2174,0,40,1,0
 50,13,0,0,13,1,0
 38,9,0,0,40,1,0

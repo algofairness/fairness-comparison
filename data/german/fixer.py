@@ -1,20 +1,6 @@
 new_lines = []
 count = 0
 
-# for line in open("german.data-numeric"):
-#     line = line.strip()
-#     if line == "": continue # skip empty lines
-#     if line[0] == "a": continue # skip line of feature categories, in csv
-#     line = line.split(" ")
-#     just_numbers = []
-#     for j in line:
-#         if len(j) > 0:
-#             just_numbers.append(j)
-#
-#     if len(just_numbers) != 25:
-#         count +=1
-#     new_lines.append(just_numbers)
-# print count
 for line in open("german_numeric.csv"):
     line = line.strip()
     if line == "": continue # skip empty lines

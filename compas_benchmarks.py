@@ -5,9 +5,7 @@ from zafar_classifier import *
 from prejudice_regularizer import *
 from black_box_auditing import *
 from sklearn import svm
-#sys.path.insert(0, "/data/propublica/")
-from load_numerical_compas import *
-from load_compas import old_load_compas_data
+from data.propublica.load_numerical_compas import *
 
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
 import utils as ut
@@ -42,7 +40,7 @@ def test_compas_data():
     """
     print "\n"
 
-    X, y, x_control = load_compas_data("compas-scores-violent-columns-removed-all-numeric.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
+    X, y, x_control = load_compas_data("all_numeric.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
     # X_repaired_8, y_repaired_8, x_control_repaired_8 = load_compas_data("Fixed_ProPublica_8.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
     # X_repaired_9, y_repaired_9, x_control_repaired_9 = load_compas_data("Fixed_ProPublica_9.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
     # X_repaired_1, y_repaired_1, x_control_repaired_1 = load_compas_data("Fixed_ProPublica_1.csv") # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
@@ -72,61 +70,61 @@ def test_compas_data():
 
 
 
-    ##############################################################################################################################################
-    """
-    Naive Bayes, Logistic Regression, and SVM on Original/Repaired Data
-    """
-    ##############################################################################################################################################
-
+    # ##############################################################################################################################################
+    # """
+    # Naive Bayes, Logistic Regression, and SVM on Original/Repaired Data
+    # """
+    # ##############################################################################################################################################
+    #
     # classify_compas("propublica_repaired_.8", sensitive_attr, x_train_8, y_train, x_control_train, x_test_8, y_test, x_control_test)
     # classify_compas("propublica_repaired_.9", sensitive_attr, x_train_9, y_train, x_control_train, x_test_9, y_test, x_control_test)
     # classify_compas("propublica_repaired_1", sensitive_attr, x_train_1, y_train, x_control_train, x_test_1, y_test, x_control_test)
-    classify_compas("propublica_original", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
-
-    print "SVM, NB, LR on Repaired/Original Data"
-
-
-
-    ##############################################################################################################################################
-    """
-    Classify using Calder's Two Naive Bayes
-    """
-    ##############################################################################################################################################
-
-    run_two_naive_bayes(0.0, "propublica_race_nb_0", x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)
-    print "\n== Calder's Two Naive Bayes =="
-
-
-    ##############################################################################################################################################
-    """
-    Classify using Kamishima
-    """
-    ##############################################################################################################################################
-
-    x_train_with_sensitive_feature = []
-    for i in range(0, len(x_train)):
-        val =  x_control_train[sensitive_attr][i]
-        feature_array = np.append(x_train[i], val)
-        x_train_with_sensitive_feature.append(feature_array)
-    x_train_with_sensitive_feature = np.array(x_train_with_sensitive_feature)
-
-    x_test_with_sensitive_feature = []
-    for i in range(0, len(x_test)):
-        val =  x_control_test[sensitive_attr][i]
-        feature_array = np.append(x_test[i], val)
-        x_test_with_sensitive_feature.append(feature_array)
-    x_test_with_sensitive_feature = np.array(x_test_with_sensitive_feature)
-
-
-    print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 30"
-
-    y_classified_results = train_classify(sensitive_attr, "propublica", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
-
-    print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 1"
-
-    y_classified_results = train_classify(sensitive_attr, "propublica", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
-
-
+    # classify_compas("propublica_original", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
+    #
+    # print "SVM, NB, LR on Repaired/Original Data"
+    #
+    #
+    #
+    # ##############################################################################################################################################
+    # """
+    # Classify using Calder's Two Naive Bayes
+    # """
+    # ##############################################################################################################################################
+    #
+    # run_two_naive_bayes(0.0, "propublica_race_nb_0", x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)
+    # print "\n== Calder's Two Naive Bayes =="
+    #
+    #
+    # ##############################################################################################################################################
+    # """
+    # Classify using Kamishima
+    # """
+    # ##############################################################################################################################################
+    #
+    # x_train_with_sensitive_feature = []
+    # for i in range(0, len(x_train)):
+    #     val =  x_control_train[sensitive_attr][i]
+    #     feature_array = np.append(x_train[i], val)
+    #     x_train_with_sensitive_feature.append(feature_array)
+    # x_train_with_sensitive_feature = np.array(x_train_with_sensitive_feature)
+    #
+    # x_test_with_sensitive_feature = []
+    # for i in range(0, len(x_test)):
+    #     val =  x_control_test[sensitive_attr][i]
+    #     feature_array = np.append(x_test[i], val)
+    #     x_test_with_sensitive_feature.append(feature_array)
+    # x_test_with_sensitive_feature = np.array(x_test_with_sensitive_feature)
+    #
+    #
+    # print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 30"
+    #
+    # y_classified_results = train_classify(sensitive_attr, "propublica", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
+    #
+    # print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 1"
+    #
+    # y_classified_results = train_classify(sensitive_attr, "propublica", x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
+    #
+    #
     ##############################################################################################################################################
     """
     Zafar Code

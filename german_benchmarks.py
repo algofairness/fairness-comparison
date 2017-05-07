@@ -5,19 +5,19 @@ from zafar_classifier import *
 from prepare_adult_data import *
 from prejudice_regularizer import *
 from black_box_auditing import *
-from load_german_from_numeric import *
+from data.german.load_german_from_numeric import *
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
 import utils as ut
 import loss_funcs as lf # loss funcs that can be optimized subject to various constraints
 
 
 
-def test_adult_data():
+def test_german_data():
 
     #Variables for whole functions
     sensitive_attrs = ["sex"]
     sensitive_attr = sensitive_attrs[0]
-    train_fold_size = 0.7
+    train_fold_size = 0.3
 
 
     ##############################################################################################################################################
@@ -38,11 +38,15 @@ def test_adult_data():
     print "\n"
     X, y, x_control = load_german_data("german_numeric_sex_encoded.csv")
 
-    X_repaired_8, y_repaired_8, x_control_repaired_8 = load_german_data("Fixed_German_Data_8_sex.csv")
+    """
+    Repair script currently maybe not working, so not running experiments with fixed (repaired) data.
+    This leads to various code being commented out throughout the rest of the code.
+    """
+    #X_repaired_8, y_repaired_8, x_control_repaired_8 = load_german_data("Fixed_German_Data_8_sex.csv")
 
-    X_repaired_9, y_repaired_9, x_control_repaired_9 = load_german_data("Fixed_German_Data_9_sex.csv")
+    #X_repaired_9, y_repaired_9, x_control_repaired_9 = load_german_data("Fixed_German_Data_9_sex.csv")
 
-    X_repaired_1, y_repaired_1, x_control_repaired_1 = load_german_data("Fixed_German_Data_1_sex.csv")
+    #X_repaired_1, y_repaired_1, x_control_repaired_1 = load_german_data("Fixed_German_Data_1_sex.csv")
 
     # # shuffle the data
     # perm = range(0,len(y)) # shuffle the data before creating each fold
@@ -69,21 +73,21 @@ def test_adult_data():
     x_control_train["sex"] = np.array(x_control_train["sex"])
     x_control_test["sex"] = np.array(x_control_test["sex"])
 
-    x_train_repaired_8, y_train_repaired_8, x_control_train_repaired_8, x_test_repaired_8, y_test_repaired_8, x_control_test_repaired_8 = ut.split_into_train_test(X_repaired_8, y_repaired_8, x_control_repaired_8, train_fold_size)
-
-    x_control_train_repaired_8["sex"] = np.array(x_control_train_repaired_8["sex"])
-    x_control_test_repaired_8["sex"] = np.array(x_control_test_repaired_8["sex"])
-
-    x_train_repaired_9, y_train_repaired_9, x_control_train_repaired_9, x_test_repaired_9, y_test_repaired_9, x_control_test_repaired_9 = ut.split_into_train_test(X_repaired_9, y_repaired_9, x_control_repaired_9, train_fold_size)
-
-    x_control_train_repaired_9["sex"] = np.array(x_control_train_repaired_9["sex"])
-    x_control_test_repaired_9["sex"] = np.array(x_control_test_repaired_9["sex"])
-
-
-    x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1 = ut.split_into_train_test(X_repaired_1, y_repaired_1, x_control_repaired_1, train_fold_size)
-
-    x_control_train_repaired_1["sex"] = np.array(x_control_train_repaired_1["sex"])
-    x_control_test_repaired_1["sex"] = np.array(x_control_test_repaired_1["sex"])
+    # x_train_repaired_8, y_train_repaired_8, x_control_train_repaired_8, x_test_repaired_8, y_test_repaired_8, x_control_test_repaired_8 = ut.split_into_train_test(X_repaired_8, y_repaired_8, x_control_repaired_8, train_fold_size)
+    #
+    # x_control_train_repaired_8["sex"] = np.array(x_control_train_repaired_8["sex"])
+    # x_control_test_repaired_8["sex"] = np.array(x_control_test_repaired_8["sex"])
+    #
+    # x_train_repaired_9, y_train_repaired_9, x_control_train_repaired_9, x_test_repaired_9, y_test_repaired_9, x_control_test_repaired_9 = ut.split_into_train_test(X_repaired_9, y_repaired_9, x_control_repaired_9, train_fold_size)
+    #
+    # x_control_train_repaired_9["sex"] = np.array(x_control_train_repaired_9["sex"])
+    # x_control_test_repaired_9["sex"] = np.array(x_control_test_repaired_9["sex"])
+    #
+    #
+    # x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1 = ut.split_into_train_test(X_repaired_1, y_repaired_1, x_control_repaired_1, train_fold_size)
+    #
+    # x_control_train_repaired_1["sex"] = np.array(x_control_train_repaired_1["sex"])
+    # x_control_test_repaired_1["sex"] = np.array(x_control_test_repaired_1["sex"])
 
     #############################################################################################################################################
     """
@@ -92,9 +96,9 @@ def test_adult_data():
     ##############################################################################################################################################
 
     print "\nClassify original and repaired data using SVM/Naive Bayes/Logistic Regression"
-    classify_german("German_Repaired_8", sensitive_attr, x_train_repaired_8, y_train, x_control_train, x_test_repaired_8, y_test, x_control_test)
-    classify_german("German_Repaired_9", sensitive_attr, x_train_repaired_9, y_train, x_control_train, x_test_repaired_9, y_test, x_control_test)
-    classify_german("German_Repaired_1", sensitive_attr, x_train_repaired_1, y_train, x_control_train, x_test_repaired_1, y_test, x_control_test)
+    # classify_german("German_Repaired_8", sensitive_attr, x_train_repaired_8, y_train, x_control_train, x_test_repaired_8, y_test, x_control_test)
+    # classify_german("German_Repaired_9", sensitive_attr, x_train_repaired_9, y_train, x_control_train, x_test_repaired_9, y_test, x_control_test)
+    # classify_german("German_Repaired_1", sensitive_attr, x_train_repaired_1, y_train, x_control_train, x_test_repaired_1, y_test, x_control_test)
 
     classify_german("German_Original", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
 
@@ -198,7 +202,7 @@ def test_adult_data():
     return
 
 def main():
-    test_adult_data()
+    test_german_data()
 
 
 if __name__ == '__main__':
