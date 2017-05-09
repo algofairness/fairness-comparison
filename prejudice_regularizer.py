@@ -67,7 +67,6 @@ from fadm.util import fill_missing_with_mean
 from fadm.lr.pr import *
 site.addsitedir('..')
 
-from prepare_adult_data import *
 #==============================================================================
 # Constants
 #==============================================================================
@@ -96,7 +95,6 @@ def train(X, y, ns, eta, C, ltype, itype):
     """
     if ltype == 4:
             clr = LRwPRType4(eta=eta, C=1)
-            print clr
             clr.fit(X, y, number_sensative_features, itype)
     else:
         sys.exit("Illegal likelihood fitting type")

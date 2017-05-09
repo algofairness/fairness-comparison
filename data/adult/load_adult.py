@@ -4,7 +4,6 @@ sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classificat
 import utils as ut
 import numpy as np
 from fadm.util import *
-from fairness_metric_calculations import *
 from random import seed, shuffle
 from sklearn import preprocessing
 SEED = 1122334455

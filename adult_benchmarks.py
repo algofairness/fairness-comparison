@@ -2,7 +2,6 @@ import os,sys
 import numpy as np
 from two_naive_bayes import *
 from zafar_classifier import *
-from prepare_adult_data import *
 from prejudice_regularizer import *
 from black_box_auditing import *
 sys.path.insert(0, "/data/adult/")
