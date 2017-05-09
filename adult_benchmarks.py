@@ -6,7 +6,6 @@ from prepare_adult_data import *
 from prejudice_regularizer import *
 from black_box_auditing import *
 sys.path.insert(0, "/data/adult/")
-from load_adult import *
 from data.adult.load_adult import *
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
 import utils as ut
@@ -18,6 +17,7 @@ from sklearn.svm import SVC
 
 
 def test_adult_data():
+    print "\n######################## Running Adult Benchmarks ################### \n "
 
     #Variables for whole functions
     sensitive_attrs = ["sex"]

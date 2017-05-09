@@ -20,6 +20,8 @@ def test_compas_data():
     sensitive_attr = sensitive_attrs[0]
     train_fold_size = 0.7
 
+    print "\n######################## Running ProPublica/COMPAS Benchmarks ################### \n "
+
     ##############################################################################################################################################
     """
     Repair data if needed

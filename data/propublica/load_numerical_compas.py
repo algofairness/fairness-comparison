@@ -31,11 +31,10 @@ def load_compas_data(filename):
     headers = "sex,age,age_cat,juv_fel_count,juv_misd_count,juv_other_count,priors_count,c_charge_degree"
     headers = headers.split(",")
 
-    print headers
 
     for k in headers:
         x_vals_to_convert[k] = []
-    print filename
+        
     for line in open("data/propublica/"+filename):
         line = line.strip()
         if line == "": continue # skip empty lines
