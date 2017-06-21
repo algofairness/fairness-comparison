@@ -1,0 +1,3 @@
+[submodule "BlackBoxAuditing"]
+	path = BlackBoxAuditing
+	url = https://github.com/dbroth/BlackBoxAuditing.git
