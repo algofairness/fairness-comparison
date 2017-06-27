@@ -221,7 +221,6 @@ def test_adult_data_new():
     X_repaired_8, y_repaired_8, x_control_repaired_8 = load_adult_data("data/adult/Repaired_Data_Files/Fixed_Adult_8.csv")#, load_data_size=8000)
     X_repaired_9, y_repaired_9, x_control_repaired_9 = load_adult_data("data/adult/Repaired_Data_Files/Fixed_Adult_9.csv")#, load_data_size=8000)
     X_repaired_1, y_repaired_1, x_control_repaired_1 = load_adult_data("data/adult/Repaired_Data_Files/Fixed_Adult_1.csv")#, load_data_size=8000)
-    # X_repaired_5, y_repaired_5, x_control_repaired_5 = load_adult_data("data/adult/Repaired_Data_Files/Fixed_Adult_5.csv")#, load_data_size=8000)
     _new, y_new, x_control_new = load_adult_data("data/adult/adult-all-numerical-converted.csv", load_data_size=10000)
     ut.compute_p_rule(x_control["sex"], y) # compute the p-rule in the original data
 
@@ -229,7 +228,6 @@ def test_adult_data_new():
     X_repaired_8 = ut.add_intercept(X_repaired_8)
     X_repaired_9 = ut.add_intercept(X_repaired_9)
     X_repaired_1 = ut.add_intercept(X_repaired_1)
-    # X_repaired_5 = ut.add_intercept(X_repaired_5)
 
     """
     Should be shuffling the data

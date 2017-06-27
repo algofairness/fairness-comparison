@@ -3,6 +3,7 @@ from subprocess import call
 from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
+import numpy as np
 from repairers import *
 
 
@@ -22,11 +23,11 @@ def run_compas_repair():
 
     if "repaired-compas-scores-two-years-violent-columns-removed_.8.csv" not in data_files:
         print "Repairing compas data"
-        bash_call = "python BlackBoxAuditing/repair.py data/propublica/compas-scores-two-years-violent-columns-removed.csv data/propublica/repaired-compas-scores-two-years-violent-columns-removed_.8.csv .8 -p race -i is_violent_recid id days_b_screening_arrest"
+        bash_call = "python BlackBoxAuditing/repair.py data/propublica/compas-scores-two-years-violent.csv  data/propublica/repaired-compas-scores-two-years-violent_.8.csv .8 -p race -i is_violent_recid id days_b_screening_arrest"
         os.system(bash_call)
-        bash_call = "python BlackBoxAuditing/repair.py data/propublica/compas-scores-two-years-violent-columns-removed.csv data/propublica/repaired-compas-scores-two-years-violent-columns-removed_.9.csv .9 -p race -i is_violent_recid id days_b_screening_arrest"
+        bash_call = "python BlackBoxAuditing/repair.py data/propublica/compas-scores-two-years-violent.csv data/propublica/repaired-compas-scores-two-years-violent_.9.csv .9 -p race -i is_violent_recid id days_b_screening_arrest"
         os.system(bash_call)
-        bash_call = "python BlackBoxAuditing/repair.py data/propublica/compas-scores-two-years-violent-columns-removed.csv data/propublica/repaired-compas-scores-two-years-violent-columns-removed_1.csv 1 -p race -i is_violent_recid id days_b_screening_arrest"
+        bash_call = "python BlackBoxAuditing/repair.py data/propublica/compas-scores-two-years-violent.csv data/propublica/repaired-compas-scores-two-years-violent_1.csv 1 -p race -i is_violent_recid id days_b_screening_arrest"
         os.system(bash_call)
         print "Complete"
 
@@ -39,11 +40,11 @@ def run_german_repair():
 
     if "repaired_german_credit_data_.8.csv" not in data_files:
         print "Repairing German data"
-        bash_call = "python BlackBoxAuditing/repair.py data/german/german_credit_data.csv data/german/repaired_german_credit_data_.8.csv .8 -p personal_status -i credit"
+        bash_call = "python BlackBoxAuditing/repair.py data/german/german_numeric_sex_encoded_fixed.csv data/german/repaired_german_credit_data_.8.csv .8 -p gender -i Credit"
         os.system(bash_call)
-        bash_call = "python BlackBoxAuditing/repair.py data/german/german_credit_data.csv data/german/repaired_german_credit_data_.9.csv .9 -p personal_status -i credit"
+        bash_call = "python BlackBoxAuditing/repair.py data/german/german_numeric_sex_encoded_fixed.csv data/german/repaired_german_credit_data_.9.csv .9 -p gender -i Credit"
         os.system(bash_call)
-        bash_call = "python BlackBoxAuditing/repair.py data/german/german_credit_data.csv data/german/repaired_german_credit_data_1.csv 1 -p personal_status  -i credit"
+        bash_call = "python BlackBoxAuditing/repair.py data/german/german_numeric_sex_encoded_fixed.csv data/german/repaired_german_credit_data_1.csv 1 -p gender -i Credit"
         os.system(bash_call)
         print "Repair Complete"
 
@@ -75,7 +76,6 @@ def run_adult_repair():
 def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test):
 
     clf = SVC()
-
     clf.fit(x_train, y_train)
     predictions = clf.predict(x_test)
     score = clf.score(x_test, y_test)
@@ -187,7 +187,7 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
     clf.fit(x_train, y_train)
     predictions = clf.predict(x_test)
     score = clf.score(x_test, y_test)
-
+    
     """
     How Kamashima takes data:
     1 = Male (non-sensitive), 0 = Female (sensitive) in data
@@ -201,15 +201,15 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
     new_y_test = []
 
     for j in range(0, len(predictions)):
-        if predictions[j] == 0.:
+        if int(predictions[j]) == 0:
             new_predictions.append(0)
-        elif predictions[j] == 1.:
+        elif int(predictions[j]) == 1:
             new_predictions.append(1)
 
     for j in range(0, len(y_test)):
-        if y_test[j] == 0.:
+        if int(y_test[j]) == 0:
             new_y_test.append(0)
-        elif y_test[j] == 1.:
+        elif int(y_test[j]) == 1:
             new_y_test.append(1)
 
 
@@ -221,24 +221,24 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
 
 
     nb = GaussianNB()
-    nb.fit(x_train, y_train)
-    predictions = nb.predict(x_test)
-    score = nb.score(x_test, y_test)
+    nb.fit(x_train.astype(np.float), y_train.astype(np.float))
+    predictions = nb.predict(x_test.astype(np.float))
+    score = nb.score(x_test.astype(np.float), y_test.astype(np.float))
 
     f = open("00RESULT/nb+"+filename, 'w')
     new_predictions = []
     new_y_test = []
 
     for j in range(0, len(predictions)):
-        if predictions[j] == 0.:
+        if int(predictions[j]) == 0:
             new_predictions.append(0)
-        elif predictions[j] == 1.:
+        elif int(predictions[j]) == 1:
             new_predictions.append(1)
 
     for j in range(0, len(y_test)):
-        if y_test[j] == 0.:
+        if int(y_test[j]) == 0:
             new_y_test.append(0)
-        elif y_test[j] == 1.:
+        elif int(y_test[j]) == 1:
             new_y_test.append(1)
 
 
@@ -252,26 +252,25 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
     f.close()
 
     lr = LogisticRegression()
-    lr.fit(x_train, y_train)
-    predictions = lr.predict(x_test)
-    score = lr.score(x_test, y_test)
+    lr.fit(x_train.astype(np.float), y_train.astype(np.float))
+    predictions = lr.predict(x_test.astype(np.float))
+    score = lr.score(x_test.astype(np.float), y_test.astype(np.float))
 
     f = open("00RESULT/lr+"+filename, 'w')
     new_predictions = []
     new_y_test = []
 
     for j in range(0, len(predictions)):
-        if predictions[j] == 0.:
+        if int(predictions[j]) == 0:
             new_predictions.append(0)
-        elif predictions[j] == 1.:
+        elif int(predictions[j]) == 1:
             new_predictions.append(1)
 
     for j in range(0, len(y_test)):
-        if y_test[j] == 0.:
+        if int(y_test[j]) == 0:
             new_y_test.append(0)
-        elif y_test[j] == 1.:
+        elif int(y_test[j]) == 1:
             new_y_test.append(1)
-
 
     assert(len(new_y_test) == len(y_test))
     assert(len(new_predictions) == len(predictions))

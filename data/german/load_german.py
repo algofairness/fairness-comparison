@@ -1,7 +1,7 @@
 import numpy as np
 
 """
-0 = women
+0 = woman
 1 = man
 1 = good credit
 0 = bad credit
@@ -149,3 +149,5 @@ def load_german_data(filename):
 
 
     return X, y, x_control
+
+print load_german_data("german_credit_data.csv")

@@ -13,9 +13,9 @@ def load_german_data(filename):
     y = []
     x_control = []
     x_vals_to_convert = {}
+    #headers = []
     headers = "One,Two,three,four,Five,Six,Seven,eight,nine,Ten,Eleven,Twelve,13,14,15,16,17,18,19,20,21,22,23"
     headers = headers.split(",")
-    print headers
     for k in headers:
         x_vals_to_convert[k] = []
     for line in open("data/german/"+filename):
@@ -80,6 +80,13 @@ def load_german_data(filename):
     X = X.astype(float)
     y = np.array(y)
     y = y.astype(float)
-
+    print(X)
+    print(y)
 
     return X, y, x_control
+
+def test():
+  load_german_data("repaired_german_credit_data_1.csv")
+
+if __name__ == "__main__":
+  test()
