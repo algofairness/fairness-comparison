@@ -23,13 +23,22 @@ def run_compas_repair():
 
     if "repaired-compas-scores-two-years-violent-columns-removed_.8.csv" not in data_files:
         print "Repairing compas data"
-        bash_call = "python BlackBoxAuditing/repair.py data/propublica/compas-scores-two-years-violent.csv  data/propublica/repaired-compas-scores-two-years-violent_.8.csv .8 -p race -i is_violent_recid id days_b_screening_arrest"
+	bash_call = "python BlackBoxAuditing/repair.py data/propublica/all_numeric.csv  data/propublica/repaired-compas-scores-two-years-violent_.8.csv .8 -p race -i is_violent_recid"
         os.system(bash_call)
-        bash_call = "python BlackBoxAuditing/repair.py data/propublica/compas-scores-two-years-violent.csv data/propublica/repaired-compas-scores-two-years-violent_.9.csv .9 -p race -i is_violent_recid id days_b_screening_arrest"
+        bash_call = "python BlackBoxAuditing/repair.py data/propublica/all_numeric.csv data/propublica/repaired-compas-scores-two-years-violent_.9.csv .9 -p race -i is_violent_recid"
         os.system(bash_call)
-        bash_call = "python BlackBoxAuditing/repair.py data/propublica/compas-scores-two-years-violent.csv data/propublica/repaired-compas-scores-two-years-violent_1.csv 1 -p race -i is_violent_recid id days_b_screening_arrest"
+        bash_call = "python BlackBoxAuditing/repair.py data/propublica/all_numeric.csv data/propublica/repaired-compas-scores-two-years-violent_1.csv 1 -p race -i is_violent_recid"
         os.system(bash_call)
         print "Complete"
+
+
+        # bash_call = "python BlackBoxAuditing/repair.py data/propublica/compas-scores-two-years-violent.csv  data/propublica/repaired-compas-scores-two-years-violent_.8.csv .8 -p race -i is_violent_recid id days_b_screening_arrest"
+        # os.system(bash_call)
+        # bash_call = "python BlackBoxAuditing/repair.py data/propublica/compas-scores-two-years-violent.csv data/propublica/repaired-compas-scores-two-years-violent_.9.csv .9 -p race -i is_violent_recid id days_b_screening_arrest"
+        # os.system(bash_call)
+        # bash_call = "python BlackBoxAuditing/repair.py data/propublica/compas-scores-two-years-violent.csv data/propublica/repaired-compas-scores-two-years-violent_1.csv 1 -p race -i is_violent_recid id days_b_screening_arrest"
+        # os.system(bash_call)
+        # print "Complete"
 
 def run_german_repair():
 
