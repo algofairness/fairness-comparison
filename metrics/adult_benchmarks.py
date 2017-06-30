@@ -360,7 +360,7 @@ def test_adult_data_new():
     return
 
 def main():
-    test_adult_data()
+    test_adult_data_new()
 
 
 if __name__ == '__main__':
