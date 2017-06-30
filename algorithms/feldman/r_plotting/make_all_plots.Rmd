@@ -1,0 +1,41 @@
+---
+title: "Figures for KDD 2016 submission"
+author: "cscheid"
+date: "February 9, 2016"
+output: pdf_document
+---
+
+First all the preamble stuff.
+
+To run this file, you'll need RStudio, and you'll need to install the libraries below. The easiest way is to type
+
+    install.packages(c("ggplot2", "dplyr", "tidyr", "stringr"))
+    
+To reconstruct the output PDF, open this file in RStudio and then hit "Knit PDF".
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(stringr)
+
+root <- "~/papers/fairness/audits/experiments"
+setwd(root)
+```
+
+One diagram at a time:
+
+```{r}
+data.frames <- Sys.glob("*/accuracy.png.data")
+for (filename in data.frames) {
+    df <- read.csv(filename)
+    cat("generating plot for", filename, ":")
+    tidy <- df %>% gather_("Column.Name", "Accuracy", colnames(df)[-1])
+    p <- ggplot(tidy, aes(x=Repair.Level, y=Accuracy, colour=Column.Name)) + 
+        geom_line() +
+        scale_color_discrete(breaks=(subset(tidy, Repair.Level==1.0) %>% arrange(desc(Accuracy)))$"Column.Name")
+    print(p)
+    ggsave(filename=str_c(filename, "_ggplot_out.png"), plot=p)
+}
+```
+
