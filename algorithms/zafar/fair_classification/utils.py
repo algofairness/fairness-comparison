@@ -233,6 +233,7 @@ def compute_cross_validation_error(x_all, y_all, x_control_all, num_folds, loss_
 
 def print_classifier_fairness_stats(acc_arr, correlation_dict_arr, cov_dict_arr, s_attr_name):
     
+    print "COR DICT ARR: ", correlation_dict_arr
     correlation_dict = get_avg_correlation_dict(correlation_dict_arr)
     non_prot_pos = correlation_dict[s_attr_name][1][1]
     prot_pos = correlation_dict[s_attr_name][0][1]
@@ -433,7 +434,6 @@ def print_covariance_sensitive_attrs(model, x_arr, y_arr_dist_boundary, x_contro
 
 def get_correlations(model, x_test, y_predicted, x_control_test, sensitive_attrs):
     
-
     """
     returns the fraction in positive class for sensitive feature values
     """
