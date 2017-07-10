@@ -346,6 +346,14 @@ def check_accuracy(model, x_train, y_train, x_test, y_test, y_train_predicted, y
 
     return train_score, test_score, correct_answers_train, correct_answers_test
 
+# Get things needed for metrics
+def get_protected(X, y, p):
+  # p is column number for protected column
+  result = []
+  for i in X:
+    result.append(i[p])
+  return result
+
 def test_sensitive_attr_constraint_cov(model, x_arr, y_arr_dist_boundary, x_control, thresh, verbose):
 
     
