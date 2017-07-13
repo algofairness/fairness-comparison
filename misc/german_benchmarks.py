@@ -7,9 +7,9 @@ from black_box_auditing import *
 #from data.german.load_german_from_numeric import *
 from data.german.load_german_data import *
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
-import utils as ut
+import algorithms.zafar.fair_classification.utils as ut
 from sklearn.model_selection import train_test_split
-import loss_funcs as lf # loss funcs that can be optimized subject to various constraints
+import algorithms.zafar.fair_classification.loss_funcs as lf # loss funcs that can be optimized subject to various constraints
 from random import shuffle
 
 def test_german_data_old():

@@ -61,10 +61,15 @@ import numpy as np
 import site
 site.addsitedir('.')
 
-from fadm import __version__ as fadm_version
+#from fadm import __version__ as fadm_version
 from sklearn import __version__ as sklearn_version
-from fadm.util import fill_missing_with_mean
-from fadm.lr.pr import *
+#from fadm.util import fill_missing_with_mean
+#from fadm.lr.pr import *
+
+from algorithms.kamishima.fadm import __version__ as fadm_version
+from algorithms.kamishima.fadm.util import fill_missing_with_mean
+from algorithms.kamishima.fadm.lr.pr import *
+
 site.addsitedir('..')
 
 #==============================================================================
@@ -95,6 +100,7 @@ def train(X, y, ns, eta, C, ltype, itype):
     """
     if ltype == 4:
             clr = LRwPRType4(eta=eta, C=1)
+            print(X.shape, y.shape)
             clr.fit(X, y, number_sensative_features, itype)
     else:
         sys.exit("Illegal likelihood fitting type")
@@ -173,7 +179,7 @@ def train_classify(sensitive_attr, dataname, X_train, y_train, X_test, y_test, n
         else:
             print j
             print "Invalid class value in y_control_test"
-    f = open("00RESULT/"+str(dataname)+ "kamishima:eta="+str(fairness_param), 'w')
+    f = open("algorithms/kamishima/00RESULT/"+str(dataname)+ "kamishima:eta="+str(fairness_param), 'w')
     for i in range(0, len(y_test)):
         line_of_data = ( str(y_test_updated[i]) + " " + str(y_classified_results[i]) + " " + str(x_control_test[sensitive_attr][i]))
         f.write(line_of_data)

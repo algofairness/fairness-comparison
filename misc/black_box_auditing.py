@@ -4,7 +4,7 @@ from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
 import numpy as np
-from repairers import *
+from algorithms.feldman.repairers import *
 
 
 """
@@ -12,6 +12,9 @@ Should be able to make a single classify function, for standard NB/LR/SVM.
 However, need to standardize positive/negative classification outcomes as 1/0,
 So using a seperate, repetetive function per dataset right now.
 """
+
+CLASSIFY_PATH = 'algorithms/kamishima/00RESULT/'
+
 
 
 def run_compas_repair():
@@ -23,11 +26,11 @@ def run_compas_repair():
 
     if "repaired-compas-scores-two-years-violent-columns-removed_.8.csv" not in data_files:
         print "Repairing compas data"
-	bash_call = "python BlackBoxAuditing/repair.py data/propublica/all_numeric.csv  data/propublica/repaired-compas-scores-two-years-violent_.8.csv .8 -p race -i is_violent_recid"
+	bash_call = "python algorithms/feldman/repair.py data/propublica/all_numeric.csv  data/propublica/repaired-compas-scores-two-years-violent_.8.csv .8 -p race -i is_violent_recid"
         os.system(bash_call)
-        bash_call = "python BlackBoxAuditing/repair.py data/propublica/all_numeric.csv data/propublica/repaired-compas-scores-two-years-violent_.9.csv .9 -p race -i is_violent_recid"
+        bash_call = "python algorithms/feldman/repair.py data/propublica/all_numeric.csv data/propublica/repaired-compas-scores-two-years-violent_.9.csv .9 -p race -i is_violent_recid"
         os.system(bash_call)
-        bash_call = "python BlackBoxAuditing/repair.py data/propublica/all_numeric.csv data/propublica/repaired-compas-scores-two-years-violent_1.csv 1 -p race -i is_violent_recid"
+        bash_call = "python algorithms/feldman/repair.py data/propublica/all_numeric.csv data/propublica/repaired-compas-scores-two-years-violent_1.csv 1 -p race -i is_violent_recid"
         os.system(bash_call)
         print "Complete"
 
@@ -49,11 +52,11 @@ def run_german_repair():
 
     if "repaired_german_credit_data_.8.csv" not in data_files:
         print "Repairing German data"
-        bash_call = "python BlackBoxAuditing/repair.py data/german/german_numeric_sex_encoded_fixed.csv data/german/repaired_german_credit_data_.8.csv .8 -p gender -i Credit"
+        bash_call = "python algorithms/feldman/repair.py data/german/german_numeric_sex_encoded_fixed.csv data/german/repaired_german_credit_data_.8.csv .8 -p gender -i Credit"
         os.system(bash_call)
-        bash_call = "python BlackBoxAuditing/repair.py data/german/german_numeric_sex_encoded_fixed.csv data/german/repaired_german_credit_data_.9.csv .9 -p gender -i Credit"
+        bash_call = "python algorithms/feldman/repair.py data/german/german_numeric_sex_encoded_fixed.csv data/german/repaired_german_credit_data_.9.csv .9 -p gender -i Credit"
         os.system(bash_call)
-        bash_call = "python BlackBoxAuditing/repair.py data/german/german_numeric_sex_encoded_fixed.csv data/german/repaired_german_credit_data_1.csv 1 -p gender -i Credit"
+        bash_call = "python algorithms/feldman/repair.py data/german/german_numeric_sex_encoded_fixed.csv data/german/repaired_german_credit_data_1.csv 1 -p gender -i Credit"
         os.system(bash_call)
         print "Repair Complete"
 
@@ -65,17 +68,17 @@ def run_adult_repair():
     path = path+'/data/adult'
     data_files = os.listdir(path)
 
-    bash_call = "python BlackBoxAuditing/repair.py data/adult/adult-?.csv data/adult/race_repaired_adult_5.csv .5 -p race -i income-per-year fnlwgt sex"
+    bash_call = "python algorithms/feldman/repair.py data/adult/adult-?.csv data/adult/race_repaired_adult_5.csv .5 -p race -i income-per-year fnlwgt sex"
     os.system(bash_call)
 
     if "race_repaired_adult_.8.csv" not in data_files:
         path =  os.getcwd()
         print "Repairing adult data"
-        bash_call = "python BlackBoxAuditing/repair.py data/adult/adult-?.csv data/adult/race_repaired_adult_.8.csv .8 -p race -i income-per-year fnlwgt sex "
+        bash_call = "python algorithms/feldman/repair.py data/adult/adult-?.csv data/adult/race_repaired_adult_.8.csv .8 -p race -i income-per-year fnlwgt sex "
         os.system(bash_call)
-        bash_call = "python BlackBoxAuditing/repair.py data/adult/adult-?.csv data/adult/race_repaired_adult_.9.csv .9 -p race -i income-per-year fnlwgt sex"
+        bash_call = "python algorithms/feldman/repair.py data/adult/adult-?.csv data/adult/race_repaired_adult_.9.csv .9 -p race -i income-per-year fnlwgt sex"
         os.system(bash_call)
-        bash_call = "python BlackBoxAuditing/repair.py data/adult/adult-?.csv data/adult/race_repaired_adult_1.csv 1.0 -p race -i income-per-year fnlwgt sex"
+        bash_call = "python algorithms/feldman/repair.py data/adult/adult-?.csv data/adult/race_repaired_adult_1.csv 1.0 -p race -i income-per-year fnlwgt sex"
         os.system(bash_call)
 
 
@@ -102,7 +105,7 @@ def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, 
     How data comes from Blackbox/feldmen code:
     Pre-Repaired Feature, Response, Prediction
     """
-    f = open("00RESULT/svm+"+filename, 'w')
+    f = open(CLASSIFY_PATH+"svm+"+filename, 'w')
     new_predictions = []
     new_y_test = []
     for j in range(0, len(predictions)):
@@ -135,7 +138,7 @@ def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, 
     print score
     print "\n"
 
-    f = open("00RESULT/nb+"+filename, 'w')
+    f = open(CLASSIFY_PATH+"nb+"+filename, 'w')
     new_predictions = []
     new_y_test = []
 
@@ -164,7 +167,7 @@ def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, 
     lr.fit(x_train, y_train)
     predictions = lr.predict(x_test)
     score = lr.score(x_test, y_test)
-    f = open("00RESULT/lr+"+filename, 'w')
+    f = open(CLASSIFY_PATH+"lr+"+filename, 'w')
     new_predictions = []
     new_y_test = []
 
@@ -205,7 +208,7 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
     How data comes from Blackbox/feldmen code:
     Pre-Repaired Feature, Response, Prediction
     """
-    f = open("00RESULT/svm+"+filename, 'w')
+    f = open(CLASSIFY_PATH+"svm+"+filename, 'w')
     new_predictions = []
     new_y_test = []
 
@@ -221,6 +224,7 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
         elif int(y_test[j]) == 1:
             new_y_test.append(1)
 
+    print len(new_y_test), len(new_predictions), len(x_control_test[sensitive_attr])
 
     for i in range(0, len(x_test)):
         string = (str(new_y_test[int(i)])+" " + str(new_predictions[i]) + " " +str(x_control_test[sensitive_attr][int(i)]))
@@ -234,7 +238,7 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
     predictions = nb.predict(x_test.astype(np.float))
     score = nb.score(x_test.astype(np.float), y_test.astype(np.float))
 
-    f = open("00RESULT/nb+"+filename, 'w')
+    f = open(CLASSIFY_PATH+"nb+"+filename, 'w')
     new_predictions = []
     new_y_test = []
 
@@ -265,7 +269,7 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
     predictions = lr.predict(x_test.astype(np.float))
     score = lr.score(x_test.astype(np.float), y_test.astype(np.float))
 
-    f = open("00RESULT/lr+"+filename, 'w')
+    f = open(CLASSIFY_PATH+"lr+"+filename, 'w')
     new_predictions = []
     new_y_test = []
 
@@ -283,6 +287,7 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
 
     assert(len(new_y_test) == len(y_test))
     assert(len(new_predictions) == len(predictions))
+
 
     for i in range(0, len(x_test)):
         """
@@ -314,7 +319,7 @@ def classify_compas(filename, sensitive_attr, x_train, y_train, x_control_train,
     How data comes from Blackbox/feldmen code:
     Pre-Repaired Feature, Response, Prediction
     """
-    f = open("00RESULT/svm+"+filename, 'w')
+    f = open(CLASSIFY_PATH+"svm+"+filename, 'w')
 
     new_predictions = []
     new_y_test = []
@@ -360,7 +365,7 @@ def classify_compas(filename, sensitive_attr, x_train, y_train, x_control_train,
         elif y_test[j] == 1.:
             new_y_test.append(1)
 
-    f = open("00RESULT/nb+"+filename, 'w')
+    f = open(CLASSIFY_PATH+"nb+"+filename, 'w')
 
     for i in range(0, len(x_test)):
         """
@@ -375,7 +380,7 @@ def classify_compas(filename, sensitive_attr, x_train, y_train, x_control_train,
     lr.fit(x_train, y_train)
     predictions = lr.predict(x_test)
     score = lr.score(x_test, y_test)
-    f = open("00RESULT/lr+"+filename, 'w')
+    f = open(CLASSIFY_PATH+"lr+"+filename, 'w')
 
     new_predictions = []
     new_y_test = []

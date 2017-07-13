@@ -7,8 +7,8 @@ from black_box_auditing import *
 sys.path.insert(0, "/data/adult/")
 from data.adult.load_adult import *
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
-import utils as ut
-import loss_funcs as lf # loss funcs that can be optimized subject to various constraints
+import algorithms.zafar.fair_classification.utils as ut
+import algorithms.zafar.fair_classification.loss_funcs as lf # loss funcs that can be optimized subject to various constraints
 
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression

@@ -1,8 +1,9 @@
 import os,sys
 import numpy as np
-sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
-import utils as ut
-import loss_funcs as lf # loss funcs that can be optimized subject to various constraints
+#sys.path.append('algorithms/zafar/zafar_fair_classification/') # the code for fair classification is in this directory
+
+from algorithms.zafar.fair_classification import utils as ut
+from algorithms.zafar.fair_classification import loss_funcs as lf # loss funcs that can be optimized subject to various constraints
 
 
 
@@ -25,7 +26,7 @@ def train_test_classifier(filename, x_train, y_train, x_control_train, x_test, y
 
     correlation_dict_test = ut.get_correlations(None, None, all_class_labels_assigned_test, x_control_test, sensitive_attrs)
     cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test, distances_boundary_test, x_control_test, sensitive_attrs)
-    ut.print_mutual_information(all_class_labels_assigned_test, x_control_test, sensitive_attrs)
+    #ut.print_mutual_information(all_class_labels_assigned_test, x_control_test, sensitive_attrs)
     p_rule = ut.print_classifier_fairness_stats([test_score], [correlation_dict_test], [cov_dict_test], sensitive_attrs[0])
 
 
@@ -51,7 +52,7 @@ def train_test_classifier(filename, x_train, y_train, x_control_train, x_test, y
         else:
             print "Incorrect value in class values"
 
-    f = open("00RESULT/"+filename, 'w')
+    f = open("algorithms/kamishima/00RESULT/"+filename, 'w')
     for i in range(0, len(y_test)):
         line_of_data = ( str(converted_y_test[i]) + " " + str(converted_assigned_class_values[i]) + " " + str(x_control_test[sensitive_attrs[0]][i]))
         f.write(line_of_data)

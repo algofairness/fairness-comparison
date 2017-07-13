@@ -249,7 +249,7 @@ def run_two_naive_bayes(gamma, filename, x_train, y_train, x_control_train, x_te
         discrimination = men_ratio - women_ratio
         print "Discrimination: %f" % discrimination
 
-    f = open("00RESULT/"+filename, 'w')
+    f = open("algorithms/kamishima/00RESULT/"+filename, 'w')
     for i in range(0, len(women_predicted_class_status)):
         line_of_data = ( str(women_expected_class_status[i]) + " " + str(women_predicted_class_status[i]) + " 0.0")
         f.write(line_of_data)
