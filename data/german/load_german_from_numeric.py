@@ -80,8 +80,6 @@ def load_german_data(filename):
     X = X.astype(float)
     y = np.array(y)
     y = y.astype(float)
-    print(X)
-    print(y)
 
     return X, y, x_control
 

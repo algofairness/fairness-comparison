@@ -178,6 +178,7 @@ def run_metrics(data):
   lr_actual, lr_predicted, lr_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr] 
 
   # Kamishima
+  print(x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)
   x_train_with_sensitive_feature = []
   for i in range(0, len(x_train)):
     val = x_control_train[sensitive_attr][i]
@@ -206,7 +207,7 @@ def run_metrics(data):
           print j
           print "Invalid class value in y_control_test"
   
-  kam1_actual, kam1_predicted, kam1_protected = fixed_y_test, y_classified_results, x_control_test[sensitive_attr]
+  kam30_actual, kam30_predicted, kam30_protected = fixed_y_test, y_classified_results, x_control_test[sensitive_attr]
 
   y_classified_results = train_classify(sensitive_attr, name, x_train_with_sensitive_feature.astype('float64'), y_train.astype('float64'), x_test_with_sensitive_feature.astype('float64'), y_test.astype('float64'), 1, 1, x_control_test)
   fixed_y_test = []
@@ -219,7 +220,7 @@ def run_metrics(data):
           print j
           print "Invalid class value in y_control_test" 
 
-  kam30_actual, kam30_predicted, kam30_protected = fixed_y_test, y_classified_results, x_control_test[sensitive_attr]
+  kam1_actual, kam1_predicted, kam1_protected = fixed_y_test, y_classified_results, x_control_test[sensitive_attr]
 
   # Calder's Two Naive Bayes
   c2nb_protected_predicted, c2nb_protected_actual, c2nb_favored_predicted, c2nb_favored_actual = run_two_naive_bayes(0.0, filename, x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)

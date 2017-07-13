@@ -233,7 +233,6 @@ def compute_cross_validation_error(x_all, y_all, x_control_all, num_folds, loss_
 
 def print_classifier_fairness_stats(acc_arr, correlation_dict_arr, cov_dict_arr, s_attr_name):
     
-    print "COR DICT ARR: ", correlation_dict_arr
     correlation_dict = get_avg_correlation_dict(correlation_dict_arr)
     non_prot_pos = correlation_dict[s_attr_name][1][1]
     prot_pos = correlation_dict[s_attr_name][0][1]
@@ -345,14 +344,6 @@ def check_accuracy(model, x_train, y_train, x_test, y_test, y_train_predicted, y
     test_score, correct_answers_test = get_accuracy(y_test, y_test_predicted)
 
     return train_score, test_score, correct_answers_train, correct_answers_test
-
-# Get things needed for metrics
-def get_protected(X, y, p):
-  # p is column number for protected column
-  result = []
-  for i in X:
-    result.append(i[p])
-  return result
 
 def test_sensitive_attr_constraint_cov(model, x_arr, y_arr_dist_boundary, x_control, thresh, verbose):
 

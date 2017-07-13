@@ -1,9 +1,9 @@
 import os,sys
 import urllib2
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
-import utils as ut
+import algorithms.zafar.fair_classification.utils as ut
 import numpy as np
-from fadm.util import *
+from algorithms.kamishima.fadm.util import *
 from random import seed, shuffle
 from sklearn import preprocessing
 SEED = 1122334455

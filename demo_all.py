@@ -1,9 +1,10 @@
 import os, sys
-sys.path.append("/metrics")
+from misc import compas_benchmarks, german_benchmarks, adult_benchmarks
+from algorithms import *
 
-#test_compas_data_old()
-compas_benchmarks.test_compas_data_new()
-#test_german_data_old()
-#test_german_data_new()
-#test_adult_data_old()
-#test_adult_data_new()
+#compas_benchmarks.test_compas_data_old()
+#compas_benchmarks.test_compas_data_new()
+#german_benchmarks.test_german_data_old()
+german_benchmarks.test_german_data_new()
+#adult_benchmarks.test_adult_data_old()
+#adult_benchmarks.test_adult_data_new()

@@ -100,7 +100,7 @@ def train(X, y, ns, eta, C, ltype, itype):
     """
     if ltype == 4:
             clr = LRwPRType4(eta=eta, C=1)
-            print(X.shape, y.shape)
+            print(X, y, number_sensative_features)
             clr.fit(X, y, number_sensative_features, itype)
     else:
         sys.exit("Illegal likelihood fitting type")

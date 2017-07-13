@@ -9,7 +9,7 @@ from sklearn import preprocessing
 from random import seed, shuffle
 
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
-import utils as ut
+import algorithms.zafar.fair_classification.utils as ut
 
 SEED = 1234
 seed(SEED)
