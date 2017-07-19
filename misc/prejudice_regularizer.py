@@ -100,7 +100,6 @@ def train(X, y, ns, eta, C, ltype, itype):
     """
     if ltype == 4:
             clr = LRwPRType4(eta=eta, C=1)
-            print(X, y, number_sensative_features)
             clr.fit(X, y, number_sensative_features, itype)
     else:
         sys.exit("Illegal likelihood fitting type")
@@ -123,7 +122,8 @@ def train_classify(sensitive_attr, dataname, X_train, y_train, X_test, y_test, n
         #Check top of file for parameters of regression_model_with_prejudice_remover
         #If you make fairness parameter too big, there will be no women in negative class in Kamishima's
         #Cannot reproduce with fairness parameter at 30, leading me to believe something is wrong (not true but leaving for memory sake)
-        regression_model_with_prejudice_remover = train(X_train, y_train, number_sensative_features, fairness_param, 1, 4, 3)
+        # Changed itype from 3 to 2 to run metrics on repaired data
+        regression_model_with_prejudice_remover = train(X_train, y_train, number_sensative_features, fairness_param, 1, 4, 2)
         if regression_model_with_prejudice_remover.f_loss_ < best_loss:
             clr = regression_model_with_prejudice_remover
             best_loss = clr.f_loss_
@@ -177,7 +177,7 @@ def train_classify(sensitive_attr, dataname, X_train, y_train, X_test, y_test, n
         elif j == -1.0 or j == 0.0:
             y_test_updated.append(0)
         else:
-            print j
+            print(j, type(j))
             print "Invalid class value in y_control_test"
     f = open("algorithms/kamishima/00RESULT/"+str(dataname)+ "kamishima:eta="+str(fairness_param), 'w')
     for i in range(0, len(y_test)):

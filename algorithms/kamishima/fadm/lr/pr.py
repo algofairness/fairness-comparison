@@ -168,7 +168,7 @@ class LRwPRPredictProbaType2Mixin(LRwPR):
             array of predicted class
         """
 
-        # add a constanet term
+        # add a constant term
         s = np.atleast_1d(np.squeeze(np.array(X)[:, -self.n_s_]).astype(int))
         if self.fit_intercept:
             X = np.c_[np.atleast_2d(X)[:, :-self.n_s_], np.ones(X.shape[0])]
@@ -261,7 +261,8 @@ class LRwPRFittingType1Mixin(LRwPR):
         """
 
         # rearrange input arguments
-        s = np.atleast_1d(np.squeeze(np.array(X)[:, -ns]).astype(int))
+        squeezed = np.squeeze(np.array(X)[:, -ns])
+        s = np.atleast_1d(squeezed.astype(int))
         if self.fit_intercept:
             X = np.c_[np.atleast_2d(X)[:, :-ns], np.ones(X.shape[0])]
         else:
@@ -333,7 +334,7 @@ class LRwPRObjetiveType4Mixin(LRwPR):
 
         # rho(s) = Pr[y=0|s] = \sum_{(xi,si)in D st si=s} sigma(xi,si) / #D[s]
         q = np.array([np.sum(p[s == si])
-                      for si in xrange(self.n_sfv_)]) / self.c_s_
+                      for si in xrange(self.n_sfv_)]) / self.c_s_[1]
 
         # pi = Pr[y=0] = \sum_{(xi,si)in D} sigma(xi,si)
         r = np.sum(p) / self.n_samples_
@@ -394,10 +395,10 @@ class LRwPRObjetiveType4Mixin(LRwPR):
         # rho(s) = Pr[y=0|s] = \sum_{(xi,si)in D st si=s} sigma(xi,si) / #D[s]
         # d_rho(s) = \sum_{(xi,si)in D st si=s} d_sigma(xi,si) / #D[s]
         q = np.array([np.sum(p[s == si])
-                      for si in xrange(self.n_sfv_)]) / self.c_s_
+                      for si in xrange(self.n_sfv_)]) / self.c_s_[1]
         dq = np.array([np.sum(dp[s == si, :], axis=0)
                        for si in xrange(self.n_sfv_)]) \
-                       / self.c_s_[:, np.newaxis]
+                       / self.c_s_[:, np.newaxis][1]
 
         # pi = Pr[y=0] = \sum_{(xi,si)in D} sigma(xi,si) / #D
         # d_pi = \sum_{(xi,si)in D} d_sigma(xi,si) / #D

@@ -245,6 +245,7 @@ def test_german_data_new():
     X_repaired_8 = X_repaired_8[perm]
     X_repaired_9 = X_repaired_9[perm]
     X_repaired_1 = X_repaired_1[perm]
+
     y = y[perm]
     
     #Converting to numpy array
@@ -291,36 +292,32 @@ def test_german_data_new():
     classify_german("German_Original", sensitive_attr, x_train, y_train, x_control_train, x_test, y_test, x_control_test)
 
 
-
-
-
     #############################################################################################################################################
     """
     Classify using Kamishima
     """
     ##############################################################################################################################################
-
     x_train_with_sensitive_feature = []
-    for i in range(0, len(x_train)):
-        val =  x_control_train["sex"][i]
-        feature_array = np.append(x_train[i], val)
+    for i in range(0, len(x_train_repaired_1)):
+        val =  x_control_train_repaired_1["sex"][i]
+        feature_array = np.append(x_train_repaired_1[i], val)
         x_train_with_sensitive_feature.append(feature_array)
 
     x_train_with_sensitive_feature = np.array(x_train_with_sensitive_feature)
 
     x_test_with_sensitive_feature = []
-    for i in range(0, len(x_test)):
-        val =  x_control_test["sex"][i]
-        feature_array = np.append(x_test[i], val)
+    for i in range(0, len(x_test_repaired_1)):
+        val =  x_control_test_repaired_1["sex"][i]
+        feature_array = np.append(x_test_repaired_1[i], val)
         x_test_with_sensitive_feature.append(feature_array)
 
     x_test_with_sensitive_feature = np.array(x_test_with_sensitive_feature)
     
     print "\n== Kamishima's Prejudice Reducer Regularizer with fairness param of 30 and 1"
 
-    y_classified_results = train_classify(sensitive_attr, "German", x_train_with_sensitive_feature.astype('float64'), y_train.astype('float64'), x_test_with_sensitive_feature.astype('float64'), y_test.astype('float64'), 1, 30, x_control_test)
+    y_classified_results = train_classify(sensitive_attr, "German", x_train_with_sensitive_feature.astype('float64'), y_train_repaired_1.astype('float64'), x_test_with_sensitive_feature.astype('float64'), y_test_repaired_1.astype('float64'), 1, 30, x_control_test_repaired_1)
 
-    y_classified_results = train_classify(sensitive_attr, "German", x_train_with_sensitive_feature.astype('float64'), y_train.astype('float64'), x_test_with_sensitive_feature.astype('float64'), y_test.astype('float64'), 1, 1, x_control_test)
+    y_classified_results = train_classify(sensitive_attr, "German", x_train_with_sensitive_feature.astype('float64'), y_train_repaired_1.astype('float64'), x_test_with_sensitive_feature.astype('float64'), y_test_repaired_1.astype('float64'), 1, 1, x_control_test_repaired_1)
 
     ##############################################################################################################################################
     """

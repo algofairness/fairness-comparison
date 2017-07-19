@@ -98,6 +98,7 @@ def run_two_naive_bayes(gamma, filename, x_train, y_train, x_control_train, x_te
     print "Total positive"
 
     protected_train, y_protected_train, unprotected_train, y_unprotected_train = splitDataBySensitiveFeature(x_train, x_control_train[sensitive_attrs], y_train, sensitive_attrs)
+
     protected_test, y_protected_test, unprotected_test, y_unprotected_test = splitDataBySensitiveFeature(x_test, x_control_test[sensitive_attrs], y_test, sensitive_attrs)
 
     #Train model

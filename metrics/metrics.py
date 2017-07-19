@@ -8,6 +8,7 @@ class Metrics:
     self.protected = protected
 
   def accuracy(self):
+    print self.actual, self.predicted
     res = accuracy_score(self.actual, self.predicted)
     return res
 
@@ -20,6 +21,8 @@ class Metrics:
         n_protected_pos += 1
       if x == 1 and self.protected[i] == 1:
         n_nonprotected_pos += 1 
+    if (n_protected_pos == 0) or (n_nonprotected_pos == 0):
+      return 'NA'
     p_protected_pos = n_protected_pos / float(len(self.actual))
     p_nonprotected_pos = n_nonprotected_pos / float(len(self.actual))
     res = (p_protected_pos / float(p_nonprotected_pos))
@@ -33,12 +36,16 @@ class Metrics:
 	n_neg_nonprotected += 1
       if x == 1 and self.protected[i] == 1:
 	n_pos_protected += 1
+    if (n_pos_protected == 0) or (n_neg_nonprotected == 0):
+      return 'NA'
     p_neg_nonprotected = n_neg_nonprotected / float(len(self.predicted))
     p_pos_protected = n_pos_protected / float(len(self.predicted)) 
     res = (p_neg_nonprotected / float(p_pos_protected))
     return res
 
   def utility(self):
+    if self.BER() == 'NA':
+      return 'NA'
     res = 1 - self.BER()
     return res
 

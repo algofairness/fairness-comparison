@@ -118,7 +118,6 @@ def train_model(x, y, x_control, loss_function, apply_fairness_constraints, appl
             cross_cov = (x_control_in_arr - np.mean(x_control_in_arr)) * np.dot(weight_vec, x_in.T)
             return float(abs(sum(cross_cov))) / float(x_in.shape[0])
 
-
         w = minimize(fun = cross_cov_abs_optm_func,
             x0 = old_w,
             args = (x, x_control[sensitive_attrs[0]]),
@@ -492,8 +491,6 @@ def get_constraint_list_cov(x_train, y_train, x_control_train, sensitive_attrs, 
 
 
     for attr in sensitive_attrs:
-
-
         attr_arr = x_control_train[attr]
         attr_arr_transformed, index_dict = get_one_hot_encoding(attr_arr)
                 

@@ -224,8 +224,6 @@ def classify_german(filename, sensitive_attr, x_train, y_train, x_control_train,
         elif int(y_test[j]) == 1:
             new_y_test.append(1)
 
-    print len(new_y_test), len(new_predictions), len(x_control_test[sensitive_attr])
-
     for i in range(0, len(x_test)):
         string = (str(new_y_test[int(i)])+" " + str(new_predictions[i]) + " " +str(x_control_test[sensitive_attr][int(i)]))
         f.write(string)
