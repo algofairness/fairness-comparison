@@ -8,7 +8,6 @@ class Metrics:
     self.protected = protected
 
   def accuracy(self):
-    print self.actual, self.predicted
     res = accuracy_score(self.actual, self.predicted)
     return res
 

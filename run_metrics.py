@@ -38,7 +38,7 @@ def prepare_compas():
 
   x_train_1, y_train_1, x_control_train_1, x_test_1, y_test_1, x_control_test_1 = ut.split_into_train_test(X_repaired_1, y_repaired_1, x_control_repaired_1, train_fold_size)
 
-  return x_train, y_train, x_control_train, x_test, y_test, x_control_test, x_train_1, y_train_1, x_control_train_1, x_test_1, y_test_1, x_control_test_1, sensitive_attr 
+  return x_train, np.array(y_train), x_control_train, x_test, np.array(y_test), x_control_test, x_train_1, y_train_1, x_control_train_1, x_test_1, y_test_1, x_control_test_1, sensitive_attr 
 
 def prepare_adult():
   sensitive_attrs = ["sex"]
@@ -50,7 +50,6 @@ def prepare_adult():
   X, y, x_control = load_adult_data("data/adult/adult-all-numerical-converted.csv")
   X_repaired_1, y_repaired_1, x_control_repaired_1 = load_adult_data("data/adult/Repaired_Data_Files/Fixed_Adult_1.csv")
   
-  ut.compute_p_rule(x_control["sex"], y)
   X = ut.add_intercept(X)
   X_repaired_1 = ut.add_intercept(X_repaired_1)
 
@@ -65,9 +64,41 @@ def prepare_adult():
 
   x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, train_fold_size)
 
+
   x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1 = ut.split_into_train_test(X_repaired_1, y_repaired_1, x_control_repaired_1, train_fold_size)
 
-  return x_train, y_train, x_control_train, x_test, y_test, x_control_test, x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1, sensitive_attr
+  # Change types to run metrics
+  y_train_fixed = []
+  for y in y_train:
+    if y == -1.0:
+      y_train_fixed.append(0.0) 
+    elif y == 1.0:
+      y_train_fixed.append(1.0)
+
+  y_test_fixed = []
+  for y in y_test:
+    if y == -1.0:
+      y_test_fixed.append(0.0)    
+    elif y == 1.0:
+      y_test_fixed.append(1.0)
+
+  x_control_train_fixed_val = []
+  for x in x_control_train[sensitive_attr]:
+    if x == 0.0:
+      x_control_train_fixed_val.append(0.0)    
+    elif x == 1.0:
+      x_control_train_fixed_val.append(1.0)
+  x_control_train[sensitive_attr] = np.array(x_control_train_fixed_val)
+
+  x_control_test_fixed_val = []
+  for x in x_control_test[sensitive_attr]:
+    if x == 0.0:
+      x_control_test_fixed_val.append(0.0)
+    elif x == 1.0:
+      x_control_test_fixed_val.append(1.0)
+  x_control_test[sensitive_attr] = np.array(x_control_test_fixed_val)
+
+  return x_train, np.array(y_train_fixed), x_control_train, x_test, np.array(y_test_fixed), x_control_test, x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1, sensitive_attr
 
 def prepare_german():
   sensitive_attrs = ["sex"]
@@ -100,6 +131,14 @@ def prepare_german():
 
   x_control_train_repaired_1["sex"] = np.array(x_control_train_repaired_1["sex"])
   x_control_test_repaired_1["sex"] = np.array(x_control_test_repaired_1["sex"]) 
+
+  # Change types to run metrics
+  x_train = x_train.astype(float)
+  y_train = y_train.astype(float)
+  x_test = x_test.astype(float)
+  y_test = y_test.astype(float)
+  x_control_train[sensitive_attr] = x_control_train[sensitive_attr].astype(float)
+  x_control_test[sensitive_attr] = x_control_test[sensitive_attr].astype(float)
 
   return x_train, y_train, x_control_train, x_test, y_test, x_control_test, x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1, sensitive_attr
 
@@ -140,91 +179,84 @@ def run_metrics(data):
   fixed_y_test = []
 
   for j in range(0, len(predictions)):
-    print predictions[j]
-    if predictions[j] == '0':
+    if predictions[j] == 0.0:
       fixed_predictions.append(0)
-    elif predictions[j] == '1':
+    elif predictions[j] == 1.0:
       fixed_predictions.append(1)
 
   for j in range(0, len(y_test)):
-    print y_test[j]
-    if y_test[j] == '0':
+    if y_test[j] == 0.0:
       fixed_y_test.append(0)
-    elif y_test[j] == '1':
+    elif y_test[j] == 1.0:
       fixed_y_test.append(1)
 
-  svm_actual, svm_predicted, svm_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr].astype(int)
-
-  x_train_float = x_train.astype(np.float)
-  y_train_float = y_train.astype(np.float)
-  x_test_float = x_test.astype(np.float)
-  y_test_float = y_test.astype(np.float)
+  svm_actual, svm_predicted, svm_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
 
   # NB
   print("Running Naive Bayes...")
   nb = GaussianNB()
-  nb.fit(x_train_float, y_train_float)
-  predictions = nb.predict(x_test_float)
+  nb.fit(x_train, y_train)
+  predictions = nb.predict(x_test)
   fixed_predictions = []
   fixed_y_test = []
 
   for j in range(0, len(predictions)):
-    if predictions[j] == 0.:
+    if predictions[j] == 0.0:
       fixed_predictions.append(0)
-    elif predictions[j] == 1.:
+    elif predictions[j] == 1.0:
       fixed_predictions.append(1)
 
   for j in range(0, len(y_test)):
-    if y_test[j] == '0':
+    if y_test[j] == 0.0:
       fixed_y_test.append(0)
-    elif y_test[j] == '1':
+    elif y_test[j] == 1.0:
       fixed_y_test.append(1)  
 
-  nb_actual, nb_predicted, nb_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr].astype(int)
+  nb_actual, nb_predicted, nb_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
 
   # LR
   print("Running Logistic Regression...")
   lr = LogisticRegression()
-  lr.fit(x_train_float, y_train_float)
-  predictions = lr.predict(x_test_float)
+  lr.fit(x_train, y_train)
+  predictions = lr.predict(x_test)
   fixed_predictions = []
   fixed_y_test = []
 
   for j in range(0, len(predictions)):
-    if predictions[j] == 0.:
+    if predictions[j] == 0.0:
       fixed_predictions.append(0)
-    elif predictions[j] == 1.:
+    elif predictions[j] == 1.0:
       fixed_predictions.append(1)
 
   for j in range(0, len(y_test)):
-    if y_test[j] == '0':
+    if y_test[j] == 0.0:
       fixed_y_test.append(0)
-    elif y_test[j] == '1':
+    elif y_test[j] == 1.0:
       fixed_y_test.append(1)
 
-  lr_actual, lr_predicted, lr_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr].astype(int)
+  lr_actual, lr_predicted, lr_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
 
   # Kamishima
   print("Running Kamishima...")
   x_train_with_sensitive_feature = []
-  for i in range(0, len(x_train_float)):
+  for i in range(0, len(x_train)):
     val = x_control_train[sensitive_attr][i]
-    feature_array = np.append(x_train_float[i], val)
+    feature_array = np.append(x_train[i], val)
     x_train_with_sensitive_feature.append(feature_array)
   
   x_train_with_sensitive_feature = np.array(x_train_with_sensitive_feature)
 
   x_test_with_sensitive_feature = []
-  for i in range(0, len(x_test_float)):
+  for i in range(0, len(x_test)):
     val = x_control_test[sensitive_attr][i]
-    feature_array = np.append(x_test_float[i], val)
+    feature_array = np.append(x_test[i], val)
     x_test_with_sensitive_feature.append(feature_array)
 
   x_test_with_sensitive_feature = np.array(x_test_with_sensitive_feature)
 
-  y_classified_results = train_classify(sensitive_attr, name, x_train_with_sensitive_feature.astype('float64'), y_train.astype('float64'), x_test_with_sensitive_feature.astype('float64'), y_test.astype('float64'), 1, 30, x_control_test)
+  y_classified_results = train_classify(sensitive_attr, name, x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
   fixed_y_test = []
-  for j in y_test_float:
+  for j in y_test:
       if j == 1.0:
           fixed_y_test.append(1)
       elif j == -1.0 or j == 0.0:
@@ -234,9 +266,9 @@ def run_metrics(data):
   
   kam30_actual, kam30_predicted, kam30_protected = fixed_y_test, y_classified_results, x_control_test[sensitive_attr].astype(int)
 
-  y_classified_results = train_classify(sensitive_attr, name, x_train_with_sensitive_feature.astype('float64'), y_train.astype('float64'), x_test_with_sensitive_feature.astype('float64'), y_test.astype('float64'), 1, 1, x_control_test)
+  y_classified_results = train_classify(sensitive_attr, name, x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
   fixed_y_test = []
-  for j in y_test_float:
+  for j in y_test:
       if j == 1.0:
           fixed_y_test.append(1)
       elif j == -1.0 or j == 0.0:
@@ -260,10 +292,10 @@ def run_metrics(data):
   # Zafar
   print("Running Zafar...")
   
-  y_train = np.array(y_train)
-  y_train = y_train.astype(float)
-  x_control_train[sensitive_attr] = x_control_train[sensitive_attr].astype(float)
-  x_control_test[sensitive_attr] = x_control_test[sensitive_attr].astype(float)
+  #y_train = np.array(y_train)
+  #y_train = y_train.astype(float)
+  #x_control_train[sensitive_attr] = x_control_train[sensitive_attr].astype(float)
+  #x_control_test[sensitive_attr] = x_control_test[sensitive_attr].astype(float)
 
   # Params
   sensitive_attrs = [str(sensitive_attr)]
@@ -417,43 +449,56 @@ def run_metrics(data):
   zafar_opt_fairness_metrics = Metrics(zafar_opt_fairness_actual, zafar_opt_fairness_predicted, zafar_opt_fairness_protected)
   zafar_nopos_classification_metrics = Metrics(zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected)
    
-  print("================================= SVM =================================")
+  print("\n========================================== SVM ==========================================")
   print_res(svm_metrics)
+  print("\n")
 
-  print("================================= NB =================================")
+  print("========================================== NB ==========================================")
   print_res(nb_metrics)
+  print("\n")
 
-  print("================================= LR =================================")
+  print("========================================== LR ==========================================")
   print_res(lr_metrics)
+  print("\n")
   
-  print("================================= Kamishima =================================")   
+  print("====================================== Kamishima =======================================")   
   print("  ETA = 1: ")
   print_res(kam1_metrics)
+  print("\n")
   print("  ETA = 30: ")
   print_res(kam30_metrics)
+  print("\n")
 
-  print("================================= Calders Protected =================================")
+  print("================================== Calders Protected ==================================")
   print_res(c2nb_protected_metrics)
+  print("\n")
 
-  print("================================= Calders Favored =================================")
+  print("=================================== Calders Favored ===================================")
   print_res(c2nb_favored_metrics)
+  print("\n")
   
-  print("================================= Zafar =================================")
+  print("======================================== Zafar ========================================")
   print("  Unconstrained: ")
   print_res(zafar_unconstrained_metrics)
+  print("\n")
   print("  Optimized for accuracy: ")
   print_res(zafar_opt_accuracy_metrics)
+  print("\n")
   print("  Optimized for fairness: ")
   print_res(zafar_opt_fairness_metrics)
+  print("\n")
   print("  No positive classification error: ")
   print_res(zafar_nopos_classification_metrics)
  
 if __name__ == '__main__':
   print("###################################### German Data ######################################")
-  #run_metrics('german')
+  run_metrics('german')
+  print("\n")
 
   print("###################################### Adult Data #######################################")
   run_metrics('adult')
+  print("\n")
 
   print("###################################### Compas Data ######################################")
-  #run_metrics('compas')
+  run_metrics('compas')
+  print("\n")

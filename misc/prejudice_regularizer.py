@@ -124,6 +124,7 @@ def train_classify(sensitive_attr, dataname, X_train, y_train, X_test, y_test, n
         #Cannot reproduce with fairness parameter at 30, leading me to believe something is wrong (not true but leaving for memory sake)
         # Changed itype from 3 to 2 to run metrics on repaired data
         regression_model_with_prejudice_remover = train(X_train, y_train, number_sensative_features, fairness_param, 1, 4, 2)
+        
         if regression_model_with_prejudice_remover.f_loss_ < best_loss:
             clr = regression_model_with_prejudice_remover
             best_loss = clr.f_loss_
@@ -147,8 +148,8 @@ def train_classify(sensitive_attr, dataname, X_train, y_train, X_test, y_test, n
             positive +=1
 
 
-    print "Percent people in positive class in raw data: %f" % (100.0*float(positive)/float(total_people))
-    print "Percent people in negative class in raw data: %f" % (100.0*float(negative)/float(total_people))
+    #print "Percent people in positive class in raw data: %f" % (100.0*float(positive)/float(total_people))
+    #print "Percent people in negative class in raw data: %f" % (100.0*float(negative)/float(total_people))
 
     people_who_were_accurately_classified = 0
     people_in_positive_class = 0
@@ -187,9 +188,9 @@ def train_classify(sensitive_attr, dataname, X_train, y_train, X_test, y_test, n
     f.close()
 
 
-    print "Percent people classified in positive class: %f" % (100.0*float(people_in_positive_class)/float(total_people))
-    print "Percent people classified in negative class: %f" % (100.0*float(people_in_negative_class)/float(total_people))
-    print "Accuracy: %f" % (100.0* float(people_who_were_accurately_classified)/float(total_people))
+    #print "Percent people classified in positive class: %f" % (100.0*float(people_in_positive_class)/float(total_people))
+    #print "Percent people classified in negative class: %f" % (100.0*float(people_in_negative_class)/float(total_people))
+    #print "Accuracy: %f" % (100.0* float(people_who_were_accurately_classified)/float(total_people))
 
 
     return y_classified_results

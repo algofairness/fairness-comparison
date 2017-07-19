@@ -92,9 +92,9 @@ def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, 
     predictions = clf.predict(x_test)
     score = clf.score(x_test, y_test)
 
-    print "LR Score+"+filename
-    print score
-    print "\n"
+    #print "LR Score+"+filename
+    #print score
+    #print "\n"
 
 
     """
@@ -134,9 +134,9 @@ def classify_adult(filename, sensitive_attr, x_train, y_train, x_control_train, 
     predictions = nb.predict(x_test)
     score = nb.score(x_test, y_test)
 
-    print "NB Score+"+filename
-    print score
-    print "\n"
+    #print "NB Score+"+filename
+    #print score
+    #print "\n"
 
     f = open(CLASSIFY_PATH+"nb+"+filename, 'w')
     new_predictions = []
@@ -305,9 +305,9 @@ def classify_compas(filename, sensitive_attr, x_train, y_train, x_control_train,
     predictions = clf.predict(x_test)
     score = clf.score(x_test, y_test)
 
-    print "LR Score+"+filename
-    print score
-    print "\n"
+    #print "LR Score+"+filename
+    #print score
+    #print "\n"
 
     """
     How Kamashima takes data:
@@ -345,9 +345,9 @@ def classify_compas(filename, sensitive_attr, x_train, y_train, x_control_train,
     predictions = nb.predict(x_test)
     score = nb.score(x_test, y_test)
 
-    print "NB Score+"+filename
-    print score
-    print "\n"
+    #print "NB Score+"+filename
+    #print score
+    #print "\n"
 
     new_predictions = []
     new_y_test = []

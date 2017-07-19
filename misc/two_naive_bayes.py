@@ -94,8 +94,8 @@ def run_two_naive_bayes(gamma, filename, x_train, y_train, x_control_train, x_te
     for i in y_test:
         if i == 1:
             total_positive+=1
-    print total_positive
-    print "Total positive"
+    #print total_positive
+    #print "Total positive"
 
     protected_train, y_protected_train, unprotected_train, y_unprotected_train = splitDataBySensitiveFeature(x_train, x_control_train[sensitive_attrs], y_train, sensitive_attrs)
 
@@ -116,8 +116,8 @@ def run_two_naive_bayes(gamma, filename, x_train, y_train, x_control_train, x_te
         else:
             women_positive+=1
 
-    print women_positive
-    print women_negative
+    #print women_positive
+    #print women_negative
 
     men_negative = 0
     men_positive = 0
@@ -134,18 +134,18 @@ def run_two_naive_bayes(gamma, filename, x_train, y_train, x_control_train, x_te
         #C- S- is Women Negative
         #C- S+ is Men Negative
         #C+ S+ is Men Positive
-        print "men negative %f" % men_negative
-        print "women_positive %f" % women_positive
+    #    print "men negative %f" % men_negative
+    #    print "women_positive %f" % women_positive
 
         if men_positive+women_positive < total_positive:
 
-            print "increasing protected group"
+    #        print "increasing protected group"
 
             goal_women_positive = women_positive + .01*men_negative
             goal_women_negative = women_negative - .01*men_negative
 
-            print "Women positive %f" % women_positive
-            print "Goal women positive %f" % goal_women_positive
+    #        print "Women positive %f" % women_positive
+    #        print "Goal women positive %f" % goal_women_positive
             for i in range(0, len(y_protected_train)):
                 if (goal_women_positive - women_positive) > 0:
                     # Whether the negative class is representred as -1.0 or 0.0 is an ongoing headache throughout this project
@@ -157,8 +157,8 @@ def run_two_naive_bayes(gamma, filename, x_train, y_train, x_control_train, x_te
                 else:
                     break
 
-            print "Women negative %f" % women_negative
-            print "GWN %f" % goal_women_negative
+    #        print "Women negative %f" % women_negative
+    #        print "GWN %f" % goal_women_negative
             for i in range(0, len(y_protected_train)):
                 if (women_negative - goal_women_negative) > 0:
                     if y_protected_train[i] == 0.0 or y_protected_train[i] == -1.0:
@@ -174,24 +174,24 @@ def run_two_naive_bayes(gamma, filename, x_train, y_train, x_control_train, x_te
             for j in y_protected_train:
                 if j == 1.0:
                     women_positive_count+=1
-            print "Women positive count %f" % women_positive_count
+    #        print "Women positive count %f" % women_positive_count
 
         else:
-            print "Decreasing unprotected group"
+    #        print "Decreasing unprotected group"
             """
             """
             goal_men_negative = men_negative + .01*women_positive
             goal_men_positive = men_positive - .01*women_positive
 
-            print "\n"
-            print men_positive
-            print goal_men_positive
-            print "\n"
-            print men_negative
-            print goal_men_negative
-            print "\n"
+    #        print "\n"
+    #        print men_positive
+    #        print goal_men_positive
+    #        print "\n"
+    #        print men_negative
+    #        print goal_men_negative
+    #        print "\n"
 
-            print men_positive - goal_men_positive
+    #        print men_positive - goal_men_positive
 
             for i in range(0, len(y_unprotected_train)):
                 if (men_positive - goal_men_positive) > 0:
@@ -217,7 +217,7 @@ def run_two_naive_bayes(gamma, filename, x_train, y_train, x_control_train, x_te
             for j in y_unprotected_train:
                 if j == 1.0:
                     men_positive_count+=1
-            print "Men positive count %f" % men_positive_count
+            #print "Men positive count %f" % men_positive_count
         #Train model
         women_predicted_class_status, women_expected_class_status = predict(protected_train, y_protected_train, protected_test, y_protected_test)
         men_predicted_class_status, men_expected_class_status     = predict(unprotected_train, y_unprotected_train, unprotected_test, y_unprotected_test)
@@ -239,16 +239,16 @@ def run_two_naive_bayes(gamma, filename, x_train, y_train, x_control_train, x_te
                 men_positive+=1
 
 
-        print "Men positive %f" % men_positive
-        print
+        #print "Men positive %f" % men_positive
+        #print
         women_ratio = float(women_positive)/float(women_total)
         men_ratio = float(men_positive)/float(men_total)
 
-        print women_ratio
-        print men_ratio
+        #print women_ratio
+        #print men_ratio
 
         discrimination = men_ratio - women_ratio
-        print "Discrimination: %f" % discrimination
+        #print "Discrimination: %f" % discrimination
 
     f = open("algorithms/kamishima/00RESULT/"+filename, 'w')
     for i in range(0, len(women_predicted_class_status)):
