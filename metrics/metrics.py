@@ -2,10 +2,18 @@ from sklearn.metrics import accuracy_score
 
 class Metrics:
   # protected = 0, nonprotected = 1
-  def __init__(self, actual, predicted, protected):
+  def __init__(self, actual, predicted, protected, DBC):
     self.actual = actual
     self.predicted = predicted
     self.protected = protected
+    self.DBC = DBC
+    self.total_sensitive = 0
+    self.total_nonsensitive = 0
+    for x in self.protected:
+      if x == 0:
+        self.total_sensitive += 1
+      elif x == 1:
+        self.total_nonsensitive += 1
 
   def accuracy(self):
     res = accuracy_score(self.actual, self.predicted)
@@ -15,16 +23,32 @@ class Metrics:
     # otherwise known as the p-rule (Zafar)
     n_protected_pos = 0 
     n_nonprotected_pos = 0
-    for i, x in enumerate(self.actual):
+    for i, x in enumerate(self.predicted):
       if x == 1 and self.protected[i] == 0:
         n_protected_pos += 1
       if x == 1 and self.protected[i] == 1:
         n_nonprotected_pos += 1 
     if (n_protected_pos == 0) or (n_nonprotected_pos == 0):
       return 'NA'
-    p_protected_pos = n_protected_pos / float(len(self.actual))
-    p_nonprotected_pos = n_nonprotected_pos / float(len(self.actual))
+    if (self.total_sensitive == 0) or (self.total_nonsensitive == 0):
+      return 'NA'
+    p_protected_pos = n_protected_pos / float(self.total_sensitive)
+    p_nonprotected_pos = n_nonprotected_pos / float(self.total_nonsensitive)
     res = (p_protected_pos / float(p_nonprotected_pos))
+    return res
+
+  def BER_sorelle(self):
+    n_neg_nonprotected = 0
+    n_pos_protected = 0
+    for i, x in enumerate(self.predicted):
+      if x == 0 and self.protected[i] == 0:
+        n_neg_nonprotected += 1
+      if x == 1 and self.protected[i] == 1:
+        n_pos_protected += 1
+    p_neg_nonprotected = n_neg_nonprotected / float(len(self.predicted))
+    p_pos_protected = n_pos_protected / float(len(self.predicted))
+    p = p_neg_nonprotected + p_pos_protected
+    res = float(p / 2)
     return res
 
   def BER(self):
@@ -35,14 +59,13 @@ class Metrics:
 	n_neg_nonprotected += 1
       if x == 1 and self.protected[i] == 1:
 	n_pos_protected += 1
-    if (n_pos_protected == 0) or (n_neg_nonprotected == 0):
-      return 'NA'
     p_neg_nonprotected = n_neg_nonprotected / float(len(self.predicted))
     p_pos_protected = n_pos_protected / float(len(self.predicted)) 
-    res = (p_neg_nonprotected / float(p_pos_protected))
+    p = p_neg_nonprotected - p_pos_protected
+    res = float((1 + p) / 2)
     return res
 
-  def utility(self):
+  def BCR(self):
     if self.BER() == 'NA':
       return 'NA'
     res = 1 - self.BER()
@@ -52,13 +75,15 @@ class Metrics:
   # Calders-Verwer score
     n_protected_pos = 0
     n_nonprotected_pos = 0
-    for i, x in enumerate(self.actual):
+    for i, x in enumerate(self.predicted):
       if x == 1 and self.protected[i] == 0:
         n_protected_pos += 1
       if x == 1 and self.protected[i] == 1:
         n_nonprotected_pos += 1
-    p_protected_pos = n_protected_pos / float(len(self.actual))
-    p_nonprotected_pos = n_nonprotected_pos / float(len(self.actual))
+    if (self.total_sensitive == 0) or (self.total_nonsensitive == 0):
+      return 'NA'
+    p_protected_pos = n_protected_pos / float(self.total_sensitive)
+    p_nonprotected_pos = n_nonprotected_pos / float(self.total_nonsensitive)
     res = p_protected_pos - p_nonprotected_pos
     return res
 
@@ -70,7 +95,9 @@ class Metrics:
   def DBC_score(self):
   # Distance boundary covariance
   # Only works for Zafar, so can't use to compare?
-    return
+    if self.DBC == None:
+      self.DBC = 'NA'
+    return self.DBC
 
   def DM_score(self):
   # Disparate mistreatment score
@@ -85,6 +112,8 @@ if __name__=='__main__':
   m = Metrics(a,p,prot)
   print(m.accuracy())
   print(m.DI_score())
+  print(m.BER_sorelle())
   print(m.BER())
-  print(m.utility())
+  print(m.DBC_score())
+  print(m.BCR())
   print(m.CV_score())

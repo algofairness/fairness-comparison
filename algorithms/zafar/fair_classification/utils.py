@@ -229,6 +229,9 @@ def compute_cross_validation_error(x_all, y_all, x_control_all, num_folds, loss_
     return test_acc_arr, train_acc_arr, correlation_dict_test_arr, correlation_dict_train_arr, cov_dict_test_arr, cov_dict_train_arr
 
 
+def DBC(cov_dict_arr, s_attr_name):
+    DBC = (np.mean([v[s_attr_name] for v in cov_dict_arr]))
+    return DBC
 
 def print_classifier_fairness_stats(acc_arr, correlation_dict_arr, cov_dict_arr, s_attr_name):
     
@@ -240,7 +243,8 @@ def print_classifier_fairness_stats(acc_arr, correlation_dict_arr, cov_dict_arr,
     print "Accuracy: %0.2f" % (np.mean(acc_arr))
     print "Protected/non-protected in +ve class: %0.0f%% / %0.0f%%" % (prot_pos, non_prot_pos)
     print "P-rule achieved: %0.0f%%" % (p_rule)
-    print "Covariance between sensitive feature and decision from distance boundary : %0.3f" % (np.mean([v[s_attr_name] for v in cov_dict_arr]))
+    DBC = (np.mean([v[s_attr_name] for v in cov_dict_arr]))
+    print "Covariance between sensitive feature and decision from distance boundary : %0.3f" % DBC
     print
     return p_rule
 

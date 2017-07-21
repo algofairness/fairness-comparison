@@ -27,6 +27,7 @@ def train_test_classifier(filename, x_train, y_train, x_control_train, x_test, y
     correlation_dict_test = ut.get_correlations(None, None, all_class_labels_assigned_test, x_control_test, sensitive_attrs)
     cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test, distances_boundary_test, x_control_test, sensitive_attrs)
     #ut.print_mutual_information(all_class_labels_assigned_test, x_control_test, sensitive_attrs)
+    DBC = ut.DBC([cov_dict_test], sensitive_attrs[0])
     p_rule = ut.print_classifier_fairness_stats([test_score], [correlation_dict_test], [cov_dict_test], sensitive_attrs[0])
 
 
@@ -60,4 +61,4 @@ def train_test_classifier(filename, x_train, y_train, x_control_train, x_test, y
     f.close()
 
 
-    return w
+    return w, DBC

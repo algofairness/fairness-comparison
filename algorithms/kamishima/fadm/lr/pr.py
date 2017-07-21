@@ -357,7 +357,6 @@ class LRwPRObjetiveType4Mixin(LRwPR):
 
         l = -l + self.eta * f + 0.5 * self.C * reg
 #        print >> sys.stderr, l
-        print("HERE: ", l)
         return l
 
     def grad_loss(self, coef_, X, y, s):
