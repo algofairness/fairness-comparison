@@ -1,5 +1,6 @@
 import os, sys
 import numpy as np
+import pandas as pd
 from misc.two_naive_bayes import *
 from misc.zafar_classifier import *
 from misc.prejudice_regularizer import *
@@ -164,10 +165,9 @@ def prepare_german():
 def print_res(metric):
   print("Accuracy:", metric.accuracy())
   print("DI Score:", metric.DI_score())
-  print("Sorelle BER:", metric.BER_sorelle())
   print("BER:", metric.BER())
-  print("DBC Score:", metric.DBC_score())
   print("BCR:", metric.BCR())
+  print("DBC Score:", metric.DBC_score())
   print("CV Score:", metric.CV_score())
   
 
@@ -180,7 +180,7 @@ def run_metrics(data):
     classify = classify_compas
   elif data == 'german':
     x_train, y_train, x_control_train, x_test, y_test, x_control_test, x_train_feldman, y_train_feldman, x_control_train_feldman, x_test_feldman, y_test_feldman, x_control_test_feldman, sensitive_attr = prepare_german()
-    name = "German"
+    name = "german"
     feldman_filename = "german_repaired"
     filename = "german_sex_nb_0"
     classify = classify_german
@@ -241,9 +241,9 @@ def run_metrics(data):
   lr.fit(x_train, y_train)
   predictions = lr.predict(x_test)
 
-  #distances_boundary_test = (np.dot(x_test, lr)).tolist()
-  #cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test, distances_boundary_test, x_control_test, sensitive_attrs[0])
-  #DBC = ut.DBC([cov_dict_test], sensitive_attrs[0])
+  distances_boundary_test = np.dot(x_test, lr.coef_[0])
+  cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test, distances_boundary_test, x_control_test, [sensitive_attr])
+  DBC = ut.DBC([cov_dict_test], str(sensitive_attr))
 
   fixed_predictions = []
   fixed_y_test = []
@@ -260,7 +260,7 @@ def run_metrics(data):
     elif y_test[j] == 1.0:
       fixed_y_test.append(1)
 
-  #lr_DBC = DBC
+  lr_DBC = DBC
   lr_actual, lr_predicted, lr_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
 
   # Kamishima
@@ -346,17 +346,37 @@ def run_metrics(data):
   print("Running Calders' Two Naive Bayes...")
   c2nb_protected_predicted, c2nb_protected_actual, c2nb_favored_predicted, c2nb_favored_actual = run_two_naive_bayes(0.0, filename, x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)
   c2nb_protected_protected = [0] * len(c2nb_protected_predicted) 
-  c2nb_favored_protected = [1] * len(c2nb_favored_predicted)
+  c2nb_favored_protected   = [1] * len(c2nb_favored_predicted)
   
   # Combine into one data set with protected and unprotected
   c2nb_predicted = c2nb_protected_predicted + c2nb_favored_predicted
   c2nb_actual = c2nb_protected_actual + c2nb_favored_actual
   c2nb_protected = c2nb_protected_protected + c2nb_favored_protected
 
-
   # Feldman
   print("Running Feldman...")
-  classify(feldman_filename, sensitive_attr, x_train_feldman, y_train_feldman, x_control_train_feldman, x_test_feldman, y_test_feldman, x_control_test_feldman) 
+  #data = BBA.load_data(data)
+  #auditor = BBA.Auditor()
+  #auditor.model = Weka_SVM
+  #auditor(data) 
+
+  df_results = pd.read_csv('audits/1500920731.28/original_test_data.predictions')
+
+  feldman_protected = x_control_test[sensitive_attr]
+  feldman_actual = []
+  feldman_predicted = []
+
+  for x in df_results['Response']:
+    if x == "good":
+      feldman_actual.append(1)
+    if x == "bad":
+      feldman_actual.append(0)
+
+  for x in df_results['Prediction']:
+    if x == "good":
+      feldman_predicted.append(1)
+    if x == "bad":
+      feldman_predicted.append(0)
 
   # Zafar
   print("Running Zafar...")
@@ -489,7 +509,6 @@ def run_metrics(data):
   predictions = np.sign(distances_boundary_test)
   cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test, distances_boundary_test, x_control_test, [sensitive_attrs[0]])
   DBC = (np.dot(x_control_test[sensitive_attr], distances_boundary_test) / (len(x_train) + len(x_test)))
-  print DBC
 
   fixed_y_test = []
   fixed_predictions = []
@@ -520,15 +539,14 @@ def run_metrics(data):
   #RUN METRICS
   svm_metrics = Metrics(svm_actual, svm_predicted, svm_protected, None)
   nb_metrics = Metrics(nb_actual, nb_predicted, nb_protected, None)
-  lr_metrics = Metrics(lr_actual, lr_predicted, lr_protected, None)
+  lr_metrics = Metrics(lr_actual, lr_predicted, lr_protected, lr_DBC)
   kam1_metrics = Metrics(kam1_actual, kam1_predicted, kam1_protected, None)
   kam30_metrics = Metrics(kam30_actual, kam30_predicted, kam30_protected, None)
   kam100_metrics = Metrics(kam100_actual, kam100_predicted, kam100_protected, None)
   kam500_metrics = Metrics(kam500_actual, kam500_predicted, kam500_protected, None)
   kam1000_metrics = Metrics(kam1000_actual, kam1000_predicted, kam1000_protected, None)
-  #c2nb_protected_metrics = Metrics(c2nb_protected_actual, c2nb_protected_predicted, c2nb_protected_protected)
-  #c2nb_favored_metrics = Metrics(c2nb_favored_actual, c2nb_favored_predicted, c2nb_favored_protected)
   c2nb_metrics = Metrics(c2nb_actual, c2nb_predicted, c2nb_protected, None)
+  feldman_metrics = Metrics(feldman_actual, feldman_predicted, feldman_protected, None)
   zafar_unconstrained_metrics = Metrics(zafar_unconstrained_actual, zafar_unconstrained_predicted, zafar_unconstrained_protected, zafar_unconstrained_DBC)   
   zafar_opt_accuracy_metrics = Metrics(zafar_opt_accuracy_actual, zafar_opt_accuracy_predicted, zafar_opt_accuracy_protected, zafar_opt_accuracy_DBC)
   zafar_opt_fairness_metrics = Metrics(zafar_opt_fairness_actual, zafar_opt_fairness_predicted, zafar_opt_fairness_protected, zafar_opt_fairness_DBC)
@@ -565,6 +583,10 @@ def run_metrics(data):
 
   print("======================================= Calders ========================================")
   print_res(c2nb_metrics)
+  print("\n")
+
+  print("======================================= Feldman ========================================")
+  print_res(feldman_metrics)
   print("\n")
 
   print("======================================== Zafar ========================================")

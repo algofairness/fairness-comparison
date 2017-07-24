@@ -37,7 +37,7 @@ class Metrics:
     res = (p_protected_pos / float(p_nonprotected_pos))
     return res
 
-  def BER_sorelle(self):
+  def BER(self):
     n_neg_nonprotected = 0
     n_pos_protected = 0
     for i, x in enumerate(self.predicted):
@@ -48,10 +48,10 @@ class Metrics:
     p_neg_nonprotected = n_neg_nonprotected / float(len(self.predicted))
     p_pos_protected = n_pos_protected / float(len(self.predicted))
     p = p_neg_nonprotected + p_pos_protected
-    res = float(p / 2)
+    res = p / 2.0
     return res
 
-  def BER(self):
+  def BER_derek(self):
     n_neg_nonprotected = 0
     n_pos_protected = 0
     for i, x in enumerate(self.predicted):
@@ -112,8 +112,7 @@ if __name__=='__main__':
   m = Metrics(a,p,prot)
   print(m.accuracy())
   print(m.DI_score())
-  print(m.BER_sorelle())
   print(m.BER())
-  print(m.DBC_score())
   print(m.BCR())
+  print(m.DBC_score())
   print(m.CV_score())
