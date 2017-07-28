@@ -41,6 +41,6 @@ class AbstractAlgorithm(object):
 
   @abstractmethod
   def run(self):
-    """ runs algorithm and prints off specified metrics """
+    """ runs algorithm and returns inputs for Metrics """
     pass
   
