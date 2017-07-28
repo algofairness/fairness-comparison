@@ -10,7 +10,6 @@ class FeldmanAlgorithm(AbstractAlgorithm):
 
   
   def run(self):
-    print("Running Feldman...")
     #d = BBA.load_data(self.data)
     #auditor = BBA.Auditor()
     #auditor.model = Weka_SVM

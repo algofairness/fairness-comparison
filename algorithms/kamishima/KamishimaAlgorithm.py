@@ -8,7 +8,6 @@ class KamishimaAlgorithm(AbstractAlgorithm):
     super(KamishimaAlgorithm, self).__init__(*args, **kwargs)
 
   def run(self):
-    print("Running Kamishima...")
     if "eta" in self.params.keys():
       eta = self.params["eta"]
     
