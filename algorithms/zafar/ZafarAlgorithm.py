@@ -10,7 +10,6 @@ class ZafarAlgorithm(AbstractAlgorithm):
     super(ZafarAlgorithm, self).__init__(*args, **kwargs)
 
   def run(self):
-    print("Running Zafar...")
     sensitive_attrs = [str(self.sensitive_attr)]
     loss_function = lf._logistic_loss
 

@@ -8,8 +8,11 @@ class KamishimaAlgorithm(AbstractAlgorithm):
     super(KamishimaAlgorithm, self).__init__(*args, **kwargs)
 
   def run(self):
+    # Defaults to 1
     if "eta" in self.params.keys():
       eta = self.params["eta"]
+    else:
+      eta = 1
     
     x_train_with_sensitive_feature = []
 

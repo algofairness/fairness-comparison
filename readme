@@ -25,6 +25,16 @@ adult_benchmarks, compas_benchmarks, and german_benchmarks actually perform the 
 
 Currently the Feldmen repair code is not working, and should probably be entirely re-implemented.
 
+UPDATE 7/28/2017:
+  Algorithms each have own dir, with an algorithm class inside, specific to each algorithm (ex: Kamishima, Zafar, etc.)
+  Data is found in the data dir, with each data set getting its own sub-dir.
+  Audits is where all of the audit results are stored.
+  Metrics contains the Metric class that calculates different metrics.
+  Misc contains benchmark scripts for Adult, Compas, and German data sets. It also contains necessary files for Zafar, Kamishima, Calders, and Feldman algorithms.
+  Preprocessing contains the methods that prepare each data set to be run through the metrics.
+  
+  To run the working metrics on the Adult and German data sets, cd into the outermost dir and run "python print_metrics.py".
+
 
 
 
