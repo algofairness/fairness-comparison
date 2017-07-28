@@ -82,77 +82,77 @@ def run_metrics(data):
 
   # Generate Metric calculators
   svm_metrics = Metrics(svm_actual, svm_predicted, svm_protected)
-  nb_metrics = Metrics(nb_actual, nb_predicted, nb_protected)
-  lr_metrics = Metrics(lr_actual, lr_predicted, lr_protected)
-
-  c2nb_metrics = Metrics(c2nb_actual, c2nb_predicted, c2nb_protected)
-
-  feldman_svm_metrics = Metrics(feldman_svm_actual, feldman_svm_predicted, feldman_svm_protected)
-
-  kam1_metrics = Metrics(kam1_actual, kam1_predicted, kam1_protected)
-  kam30_metrics = Metrics(kam30_actual, kam30_predicted, kam30_protected)
-  kam100_metrics = Metrics(kam100_actual, kam100_predicted, kam100_protected)
-  kam500_metrics = Metrics(kam500_actual, kam500_predicted, kam500_protected)
-  kam1000_metrics = Metrics(kam1000_actual, kam1000_predicted, kam1000_protected)
-
-  zafar_unconstrained_metrics = Metrics(zafar_unconstrained_actual, zafar_unconstrained_predicted, zafar_unconstrained_protected)
-  zafar_opt_accuracy_metrics = Metrics(zafar_opt_accuracy_actual, zafar_opt_accuracy_predicted, zafar_opt_accuracy_protected)
-  zafar_opt_fairness_metrics = Metrics(zafar_opt_fairness_actual, zafar_opt_fairness_predicted, zafar_opt_fairness_protected)
-  zafar_nopos_classification_metrics = Metrics(zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected)
-
   print("========================================= SVM ==========================================\n")
   print_res(svm_metrics)
   print("\n")
 
+  nb_metrics = Metrics(nb_actual, nb_predicted, nb_protected)
   print("========================================== NB ==========================================\n")
   print_res(nb_metrics)
   print("\n")
 
+  lr_metrics = Metrics(lr_actual, lr_predicted, lr_protected)
   print("========================================== LR ==========================================\n")
   print_res(lr_metrics)
   print("\n")
 
+  c2nb_metrics = Metrics(c2nb_actual, c2nb_predicted, c2nb_protected)
   print("======================================= Calders ========================================\n")
   print_res(c2nb_metrics)
   print("\n")
 
-  print("====================================== Kamishima =======================================\n")
-  print("  ETA = 1: ")
-  print_res(kam1_metrics)
-  print("\n")
-  print("  ETA = 30: ")
-  print_res(kam30_metrics)
-  print("\n")
-  print("  ETA = 100: ")
-  print_res(kam100_metrics)
-  print("\n")
-  print("  ETA = 500: ")
-  print_res(kam500_metrics)
-  print("\n")
-  print("  ETA = 1000: ")
-  print_res(kam1000_metrics)
-  print("\n")
-
+  feldman_svm_metrics = Metrics(feldman_svm_actual, feldman_svm_predicted, feldman_svm_protected)
   print("======================================= Feldman ========================================\n")
   print("  Model = SVM: ")
   print_res(feldman_svm_metrics)
   print("\n")
 
+  kam1_metrics = Metrics(kam1_actual, kam1_predicted, kam1_protected)
+  print("====================================== Kamishima =======================================\n")
+  print("  ETA = 1: ")
+  print_res(kam1_metrics)
+  print("\n")
+
+  kam30_metrics = Metrics(kam30_actual, kam30_predicted, kam30_protected)
+  print("  ETA = 30: ")
+  print_res(kam30_metrics)
+  print("\n")
+
+  kam100_metrics = Metrics(kam100_actual, kam100_predicted, kam100_protected)
+  print("  ETA = 100: ")
+  print_res(kam100_metrics)
+  print("\n")
+
+  kam500_metrics = Metrics(kam500_actual, kam500_predicted, kam500_protected)
+  print("  ETA = 500: ")
+  print_res(kam500_metrics)
+  print("\n")
+
+  kam1000_metrics = Metrics(kam1000_actual, kam1000_predicted, kam1000_protected)
+  print("  ETA = 1000: ")
+  print_res(kam1000_metrics)
+  print("\n")
+
+  zafar_unconstrained_metrics = Metrics(zafar_unconstrained_actual, zafar_unconstrained_predicted, zafar_unconstrained_protected)
   print("======================================== Zafar =========================================\n")
   print("  Unconstrained: ")
   print_res(zafar_unconstrained_metrics)
   print("\n")
+
+  zafar_opt_accuracy_metrics = Metrics(zafar_opt_accuracy_actual, zafar_opt_accuracy_predicted, zafar_opt_accuracy_protected)
   print("  Optimized for accuracy: ")
   print_res(zafar_opt_accuracy_metrics)
   print("\n")
+
+  zafar_opt_fairness_metrics = Metrics(zafar_opt_fairness_actual, zafar_opt_fairness_predicted, zafar_opt_fairness_protected)
   print("  Optimized for fairness: ")
   print_res(zafar_opt_fairness_metrics)
   print("\n")
+
+  zafar_nopos_classification_metrics = Metrics(zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected)
   print("  No positive classification error: ")
   print_res(zafar_nopos_classification_metrics)
-  print("\n")
 
-  
 if __name__ == '__main__':
   print("###################################### German Data ######################################\n")
   run_metrics('german')
@@ -160,5 +160,3 @@ if __name__ == '__main__':
 
   print("###################################### Adult Data #######################################\n")
   run_metrics('adult')
-  print("\n")
-
