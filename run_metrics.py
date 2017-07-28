@@ -24,12 +24,10 @@ def prepare_compas():
   run_compas_repair()
 
   X, y, x_control = load_compas_data("all_numeric.csv")
-  X_repaired_1, y_repaired_1, x_control_repaired_1 = load_compas_data("repaired-compas-scores-two-years-violent_1.csv")
 
   perm = range(0,len(y)) # shuffle data before creating each fold
   shuffle(perm)
   X = X[perm]
-  X_repaired_1 = X_repaired_1[perm]
 
   y = y[perm]
 
@@ -38,8 +36,6 @@ def prepare_compas():
 
   # Split into train and test
   x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, train_fold_size)
-
-  x_train_1, y_train_1, x_control_train_1, x_test_1, y_test_1, x_control_test_1 = ut.split_into_train_test(X_repaired_1, y_repaired_1, x_control_repaired_1, train_fold_size)
 
   swapped_x = []
   for i in x_control_train[sensitive_attr]:
@@ -58,7 +54,7 @@ def prepare_compas():
   x_control_test[sensitive_attr] = swapped_x
 
 
-  return x_train, np.array(y_train), x_control_train, x_test, np.array(y_test), x_control_test, x_train_1, y_train_1, x_control_train_1, x_test_1, y_test_1, x_control_test_1, sensitive_attr 
+  return x_train, np.array(y_train), x_control_train, x_test, np.array(y_test), x_control_test, sensitive_attr
 
 def prepare_adult():
   sensitive_attrs = ["sex"]
@@ -68,24 +64,19 @@ def prepare_adult():
   run_adult_repair()
 
   X, y, x_control = load_adult_data("data/adult/adult-all-numerical-converted.csv")
-  X_repaired_1, y_repaired_1, x_control_repaired_1 = load_adult_data("data/adult/Repaired_Data_Files/Fixed_Adult_1.csv")
   
   X = ut.add_intercept(X)
-  X_repaired_1 = ut.add_intercept(X_repaired_1)
 
   perm = range(0,len(y))
   shuffle(perm)
   X = X[perm]
-  X_repaired_1 = X_repaired_1[perm]
+
   y = y[perm]
 
   for k in x_control.keys():
     x_control[k] = x_control[k][perm]
 
   x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, train_fold_size)
-
-
-  x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1 = ut.split_into_train_test(X_repaired_1, y_repaired_1, x_control_repaired_1, train_fold_size)
 
   # Change types to run metrics
   y_train_fixed = []
@@ -118,7 +109,7 @@ def prepare_adult():
       x_control_test_fixed_val.append(1.0)
   x_control_test[sensitive_attr] = np.array(x_control_test_fixed_val)
 
-  return x_train, np.array(y_train_fixed), x_control_train, x_test, np.array(y_test_fixed), x_control_test, x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1, sensitive_attr
+  return x_train, np.array(y_train_fixed), x_control_train, x_test, np.array(y_test_fixed), x_control_test, sensitive_attr
 
 def prepare_german():
   sensitive_attrs = ["sex"]
@@ -128,12 +119,10 @@ def prepare_german():
   run_german_repair()
 
   X, y, x_control = load_german_data("german_numeric_sex_encoded_fixed.csv")
-  X_repaired_1, y_repaired_1, x_control_repaired_1 = load_german_data("repaired_german_credit_data_1.csv")
 
   perm = range(0, len(y))
   shuffle(perm)
   X = X[perm]
-  X_repaired_1 = X_repaired_1[perm]
 
   y = y[perm]
 
@@ -147,11 +136,6 @@ def prepare_german():
   x_control_train["sex"] = np.array(x_control_train["sex"])
   x_control_test["sex"] = np.array(x_control_test["sex"])
 
-  x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1 = ut.split_into_train_test(X_repaired_1, y_repaired_1, x_control_repaired_1, train_fold_size)
-
-  x_control_train_repaired_1["sex"] = np.array(x_control_train_repaired_1["sex"])
-  x_control_test_repaired_1["sex"] = np.array(x_control_test_repaired_1["sex"]) 
-
   # Change types to run metrics
   x_train = x_train.astype(float)
   y_train = y_train.astype(float)
@@ -160,32 +144,32 @@ def prepare_german():
   x_control_train[sensitive_attr] = x_control_train[sensitive_attr].astype(float)
   x_control_test[sensitive_attr] = x_control_test[sensitive_attr].astype(float)
 
-  return x_train, y_train, x_control_train, x_test, y_test, x_control_test, x_train_repaired_1, y_train_repaired_1, x_control_train_repaired_1, x_test_repaired_1, y_test_repaired_1, x_control_test_repaired_1, sensitive_attr
+  return x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr
 
 def print_res(metric):
   print("Accuracy:", metric.accuracy())
   print("DI Score:", metric.DI_score())
   print("BER:", metric.BER())
   print("BCR:", metric.BCR())
-  print("DBC Score:", metric.DBC_score())
   print("CV Score:", metric.CV_score())
+  print("NPI Score:", metric.NPI_score_nat())
   
 
 def run_metrics(data):
   if data == 'compas':
-    x_train, y_train, x_control_train, x_test, y_test, x_control_test, x_train_feldman, y_train_feldman, x_control_train_feldman, x_test_feldman, y_test_feldman, x_control_test_feldman, sensitive_attr = prepare_compas()
+    x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr = prepare_compas()
     name = "propublica"
     feldman_filename = "compas_repaired"
     filename = "propublica_race_nb_0"
     classify = classify_compas
   elif data == 'german':
-    x_train, y_train, x_control_train, x_test, y_test, x_control_test, x_train_feldman, y_train_feldman, x_control_train_feldman, x_test_feldman, y_test_feldman, x_control_test_feldman, sensitive_attr = prepare_german()
+    x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr = prepare_german()
     name = "german"
     feldman_filename = "german_repaired"
     filename = "german_sex_nb_0"
     classify = classify_german
   elif data == 'adult':
-    x_train, y_train, x_control_train, x_test, y_test, x_control_test, x_train_feldman, y_train_feldman, x_control_train_feldman, x_test_feldman, y_test_feldman, x_control_test_feldman, sensitive_attr = prepare_adult()
+    x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr = prepare_adult()
     name = "sex_adult"
     feldman_filename = "adult_repaired"
     filename = "feldmen_cleaned_sex_adult_nb_0"
@@ -241,10 +225,6 @@ def run_metrics(data):
   lr.fit(x_train, y_train)
   predictions = lr.predict(x_test)
 
-  distances_boundary_test = np.dot(x_test, lr.coef_[0])
-  cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test, distances_boundary_test, x_control_test, [sensitive_attr])
-  DBC = ut.DBC([cov_dict_test], str(sensitive_attr))
-
   fixed_predictions = []
   fixed_y_test = []
 
@@ -260,7 +240,6 @@ def run_metrics(data):
     elif y_test[j] == 1.0:
       fixed_y_test.append(1)
 
-  lr_DBC = DBC
   lr_actual, lr_predicted, lr_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
 
   # Kamishima
@@ -282,6 +261,18 @@ def run_metrics(data):
 
   x_test_with_sensitive_feature = np.array(x_test_with_sensitive_feature)
 
+  y_classified_results = train_classify(sensitive_attr, name, x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
+  fixed_y_test = []
+  for j in y_test:
+      if j == 1.0:
+          fixed_y_test.append(1)
+      elif j == -1.0 or j == 0.0:
+          fixed_y_test.append(0)
+      else:
+          print "Invalid class value in y_control_test"
+
+  kam1_actual, kam1_predicted, kam1_protected = fixed_y_test, y_classified_results, x_control_test[sensitive_attr]
+
   y_classified_results = train_classify(sensitive_attr, name, x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
   fixed_y_test = []
   for j in y_test:
@@ -293,18 +284,6 @@ def run_metrics(data):
           print "Invalid class value in y_control_test"
   
   kam30_actual, kam30_predicted, kam30_protected = fixed_y_test, y_classified_results, x_control_test[sensitive_attr]
-
-  y_classified_results = train_classify(sensitive_attr, name, x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
-  fixed_y_test = []
-  for j in y_test:
-      if j == 1.0:
-          fixed_y_test.append(1)
-      elif j == -1.0 or j == 0.0:
-          fixed_y_test.append(0)
-      else:
-          print "Invalid class value in y_control_test" 
-
-  kam1_actual, kam1_predicted, kam1_protected = fixed_y_test, y_classified_results, x_control_test[sensitive_attr]
 
   y_classified_results = train_classify(sensitive_attr, name, x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 100, x_control_test)
   fixed_y_test = []
@@ -360,23 +339,47 @@ def run_metrics(data):
   #auditor.model = Weka_SVM
   #auditor(data) 
 
-  df_results = pd.read_csv('audits/1500920731.28/original_test_data.predictions')
+  if data == "german":
+    df_results = pd.read_csv('audits/1500920731.28/original_test_data.predictions')
+    df_orig = pd.read_csv('audits/1500920731.28/original_test_data.csv')
+    val_pos, val_neg = "good", "bad"
+    feldman_protected = []
+    for x in df_orig['personal_status']:
+      if 'female' in x:
+        feldman_protected.append(0)
+      else:
+        feldman_protected.append(1)
 
-  feldman_protected = x_control_test[sensitive_attr]
+  if data == "adult":
+    df_results = pd.read_csv('audits/1500997092.53/original_test_data.predictions')
+    df_orig = pd.read_csv('audits/1500997092.53/original_test_data.csv')
+    val_pos, val_neg = ">50K", "<=50K"
+    feldman_protected = []
+    for x in df_orig['sex']:
+      if x == 'Male':
+        feldman_protected.append(1)
+      else:
+        feldman_protected.append(0) 
+   
+  if data == "compas":
+    df_results = None
+  
   feldman_actual = []
   feldman_predicted = []
 
   for x in df_results['Response']:
-    if x == "good":
+    if x == val_pos:
       feldman_actual.append(1)
-    if x == "bad":
+    if x == val_neg:
       feldman_actual.append(0)
 
   for x in df_results['Prediction']:
-    if x == "good":
+    if x == val_pos:
       feldman_predicted.append(1)
-    if x == "bad":
+    if x == val_neg:
       feldman_predicted.append(0)
+
+  #print len(feldman_protected), len(feldman_predicted), len(feldman_actual)
 
   # Zafar
   print("Running Zafar...")
@@ -393,8 +396,6 @@ def run_metrics(data):
   w = ut.train_model(x_train, y_train, x_control_train, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
   distances_boundary_test = (np.dot(x_test, w)).tolist()
   predictions = np.sign(distances_boundary_test)
-  cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test, distances_boundary_test, x_control_test, [sensitive_attrs[0]])
-  DBC = ut.DBC([cov_dict_test], sensitive_attrs[0])
 
   fixed_y_test = []
   fixed_predictions = []
@@ -419,7 +420,6 @@ def run_metrics(data):
     else:
       print "Incorrect value in class values"
 
-  zafar_unconstrained_DBC = DBC
   zafar_unconstrained_actual, zafar_unconstrained_predicted, zafar_unconstrained_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
 
   # Params
@@ -431,8 +431,6 @@ def run_metrics(data):
   w = ut.train_model(x_train, y_train, x_control_train, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
   distances_boundary_test = (np.dot(x_test, w)).tolist()
   predictions = np.sign(distances_boundary_test)
-  cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test, distances_boundary_test, x_control_test, [sensitive_attrs[0]])
-  DBC = ut.DBC([cov_dict_test], sensitive_attrs[0])
 
   fixed_y_test = []
   fixed_predictions = []
@@ -457,7 +455,6 @@ def run_metrics(data):
     else:
       print "Incorrect value in class values"
 
-  zafar_opt_accuracy_DBC = DBC
   zafar_opt_accuracy_actual, zafar_opt_accuracy_predicted, zafar_opt_accuracy_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
 
   # Params
@@ -469,8 +466,6 @@ def run_metrics(data):
   w = ut.train_model(x_train, y_train, x_control_train, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
   distances_boundary_test = (np.dot(x_test, w)).tolist()
   predictions = np.sign(distances_boundary_test)
-  cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test, distances_boundary_test, x_control_test, [sensitive_attrs[0]])
-  DBC = ut.DBC([cov_dict_test], sensitive_attrs[0])
 
   fixed_y_test = []
   fixed_predictions = []
@@ -495,7 +490,6 @@ def run_metrics(data):
     else:
       print "Incorrect value in class values"
 
-  zafar_opt_fairness_DBC = DBC
   zafar_opt_fairness_actual, zafar_opt_fairness_predicted, zafar_opt_fairness_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
 
   # Params
@@ -507,8 +501,6 @@ def run_metrics(data):
   w = ut.train_model(x_train, y_train, x_control_train, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
   distances_boundary_test = (np.dot(x_test, w)).tolist()
   predictions = np.sign(distances_boundary_test)
-  cov_dict_test = ut.print_covariance_sensitive_attrs(None, x_test, distances_boundary_test, x_control_test, [sensitive_attrs[0]])
-  DBC = (np.dot(x_control_test[sensitive_attr], distances_boundary_test) / (len(x_train) + len(x_test)))
 
   fixed_y_test = []
   fixed_predictions = []
@@ -533,24 +525,23 @@ def run_metrics(data):
     else:
       print "Incorrect value in class values"
 
-  zafar_nopos_classification_DBC = DBC
   zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
      
   #RUN METRICS
-  svm_metrics = Metrics(svm_actual, svm_predicted, svm_protected, None)
-  nb_metrics = Metrics(nb_actual, nb_predicted, nb_protected, None)
-  lr_metrics = Metrics(lr_actual, lr_predicted, lr_protected, lr_DBC)
-  kam1_metrics = Metrics(kam1_actual, kam1_predicted, kam1_protected, None)
-  kam30_metrics = Metrics(kam30_actual, kam30_predicted, kam30_protected, None)
-  kam100_metrics = Metrics(kam100_actual, kam100_predicted, kam100_protected, None)
-  kam500_metrics = Metrics(kam500_actual, kam500_predicted, kam500_protected, None)
-  kam1000_metrics = Metrics(kam1000_actual, kam1000_predicted, kam1000_protected, None)
-  c2nb_metrics = Metrics(c2nb_actual, c2nb_predicted, c2nb_protected, None)
-  feldman_metrics = Metrics(feldman_actual, feldman_predicted, feldman_protected, None)
-  zafar_unconstrained_metrics = Metrics(zafar_unconstrained_actual, zafar_unconstrained_predicted, zafar_unconstrained_protected, zafar_unconstrained_DBC)   
-  zafar_opt_accuracy_metrics = Metrics(zafar_opt_accuracy_actual, zafar_opt_accuracy_predicted, zafar_opt_accuracy_protected, zafar_opt_accuracy_DBC)
-  zafar_opt_fairness_metrics = Metrics(zafar_opt_fairness_actual, zafar_opt_fairness_predicted, zafar_opt_fairness_protected, zafar_opt_fairness_DBC)
-  zafar_nopos_classification_metrics = Metrics(zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected, zafar_nopos_classification_DBC)
+  svm_metrics = Metrics(svm_actual, svm_predicted, svm_protected)
+  nb_metrics = Metrics(nb_actual, nb_predicted, nb_protected)
+  lr_metrics = Metrics(lr_actual, lr_predicted, lr_protected)
+  kam1_metrics = Metrics(kam1_actual, kam1_predicted, kam1_protected)
+  kam30_metrics = Metrics(kam30_actual, kam30_predicted, kam30_protected)
+  kam100_metrics = Metrics(kam100_actual, kam100_predicted, kam100_protected)
+  kam500_metrics = Metrics(kam500_actual, kam500_predicted, kam500_protected)
+  kam1000_metrics = Metrics(kam1000_actual, kam1000_predicted, kam1000_protected)
+  c2nb_metrics = Metrics(c2nb_actual, c2nb_predicted, c2nb_protected)
+  feldman_metrics = Metrics(feldman_actual, feldman_predicted, feldman_protected)
+  zafar_unconstrained_metrics = Metrics(zafar_unconstrained_actual, zafar_unconstrained_predicted, zafar_unconstrained_protected)   
+  zafar_opt_accuracy_metrics = Metrics(zafar_opt_accuracy_actual, zafar_opt_accuracy_predicted, zafar_opt_accuracy_protected)
+  zafar_opt_fairness_metrics = Metrics(zafar_opt_fairness_actual, zafar_opt_fairness_predicted, zafar_opt_fairness_protected)
+  zafar_nopos_classification_metrics = Metrics(zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected)
    
   print("\n========================================== SVM ==========================================")
   print_res(svm_metrics)
@@ -608,9 +599,9 @@ if __name__ == '__main__':
   print("\n")
 
   print("###################################### Adult Data #######################################")
-  #run_metrics('adult')
+  run_metrics('adult')
   print("\n")
 
   print("###################################### Compas Data ######################################")
-  #run_metrics('compas')
+#  run_metrics('compas')
   print("\n")
