@@ -33,7 +33,7 @@ UPDATE 7/28/2017:
   Misc contains benchmark scripts for Adult, Compas, and German data sets. It also contains necessary files for Zafar, Kamishima, Calders, and Feldman algorithms.
   Preprocessing contains the methods that prepare each data set to be run through the metrics.
   
-  To run the working metrics on the Adult and German data sets, cd into the outermost dir and run "python print_metrics.py".
+  To run the working metrics on the Adult and German data sets, cd into the outermost dir and run "python run_metrics.py".
 
 
 

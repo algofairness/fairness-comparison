@@ -1,150 +1,11 @@
-import os, sys
 import numpy as np
 import pandas as pd
-from misc.two_naive_bayes import *
-from misc.zafar_classifier import *
-from misc.prejudice_regularizer import *
-from misc.black_box_auditing import *
-from sklearn import svm
-from data.propublica.load_numerical_compas import *
-from data.german.load_german_data import *
-from data.adult.load_adult import *
-import algorithms.zafar.fair_classification.utils as ut
-import algorithms.zafar.fair_classification.loss_funcs as lf
-import BlackBoxAuditing as BBA
-from BlackBoxAuditing.model_factories import Weka_SVM, Weka_DecisionTree
-from metrics.metrics import *
-from sklearn.svm import SVC
-
-def prepare_compas():
-  sensitive_attrs = ["race"]
-  sensitive_attr = sensitive_attrs[0]
-  train_fold_size = 0.7
-
-  run_compas_repair()
-
-  X, y, x_control = load_compas_data("all_numeric.csv")
-
-  perm = range(0,len(y)) # shuffle data before creating each fold
-  shuffle(perm)
-  X = X[perm]
-
-  y = y[perm]
-
-  for k in x_control.keys():
-    x_control[k] = x_control[k][perm]
-
-  # Split into train and test
-  x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, train_fold_size)
-
-  swapped_x = []
-  for i in x_control_train[sensitive_attr]:
-    if i == 0:
-      swapped_x.append(1)
-    if i == 1:
-      swapped_x.append(0)
-  x_control_train[sensitive_attr] = swapped_x
-  
-  swapped_x = []
-  for i in x_control_test[sensitive_attr]:
-    if i == 0:
-      swapped_x.append(1)
-    if i == 1:
-      swapped_x.append(0)
-  x_control_test[sensitive_attr] = swapped_x
-
-
-  return x_train, np.array(y_train), x_control_train, x_test, np.array(y_test), x_control_test, sensitive_attr
-
-def prepare_adult():
-  sensitive_attrs = ["sex"]
-  sensitive_attr = sensitive_attrs[0]
-  train_fold_size = 0.7
-
-  run_adult_repair()
-
-  X, y, x_control = load_adult_data("data/adult/adult-all-numerical-converted.csv")
-  
-  X = ut.add_intercept(X)
-
-  perm = range(0,len(y))
-  shuffle(perm)
-  X = X[perm]
-
-  y = y[perm]
-
-  for k in x_control.keys():
-    x_control[k] = x_control[k][perm]
-
-  x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, train_fold_size)
-
-  # Change types to run metrics
-  y_train_fixed = []
-  for y in y_train:
-    if y == -1.0:
-      y_train_fixed.append(0.0) 
-    elif y == 1.0:
-      y_train_fixed.append(1.0)
-
-  y_test_fixed = []
-  for y in y_test:
-    if y == -1.0:
-      y_test_fixed.append(0.0)    
-    elif y == 1.0:
-      y_test_fixed.append(1.0)
-
-  x_control_train_fixed_val = []
-  for x in x_control_train[sensitive_attr]:
-    if x == 0.0:
-      x_control_train_fixed_val.append(0.0)    
-    elif x == 1.0:
-      x_control_train_fixed_val.append(1.0)
-  x_control_train[sensitive_attr] = np.array(x_control_train_fixed_val)
-
-  x_control_test_fixed_val = []
-  for x in x_control_test[sensitive_attr]:
-    if x == 0.0:
-      x_control_test_fixed_val.append(0.0)
-    elif x == 1.0:
-      x_control_test_fixed_val.append(1.0)
-  x_control_test[sensitive_attr] = np.array(x_control_test_fixed_val)
-
-  return x_train, np.array(y_train_fixed), x_control_train, x_test, np.array(y_test_fixed), x_control_test, sensitive_attr
-
-def prepare_german():
-  sensitive_attrs = ["sex"]
-  sensitive_attr = sensitive_attrs[0]
-  train_fold_size = 0.3
-
-  run_german_repair()
-
-  X, y, x_control = load_german_data("german_numeric_sex_encoded_fixed.csv")
-
-  perm = range(0, len(y))
-  shuffle(perm)
-  X = X[perm]
-
-  y = y[perm]
-
-  x_control["sex"] = np.array(x_control["sex"])
-
-  for k in x_control.keys():
-    x_control[k] = x_control[k][perm]
-
-  x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, train_fold_size)
-
-  x_control_train["sex"] = np.array(x_control_train["sex"])
-  x_control_test["sex"] = np.array(x_control_test["sex"])
-
-  # Change types to run metrics
-  x_train = x_train.astype(float)
-  y_train = y_train.astype(float)
-  x_test = x_test.astype(float)
-  y_test = y_test.astype(float)
-  x_control_train[sensitive_attr] = x_control_train[sensitive_attr].astype(float)
-  x_control_test[sensitive_attr] = x_control_test[sensitive_attr].astype(float)
-
-  return x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr
+from algorithms.AbstractAlgorithm import *
+from algorithms.feldman.FeldmanAlgorithm import *
+from algorithms.kamishima.KamishimaAlgorithm import *
+from algorithms.zafar.ZafarAlgorithm import *
+from algorithms.gen.GenAlgorithm import *
+from algorithms.calders.CaldersAlgorithm import *
 
 def print_res(metric):
   print("Accuracy:", metric.accuracy())
@@ -152,410 +13,110 @@ def print_res(metric):
   print("BER:", metric.BER())
   print("BCR:", metric.BCR())
   print("CV Score:", metric.CV_score())
-  print("NPI Score:", metric.NPI_score_nat())
-  
 
 def run_metrics(data):
-  if data == 'compas':
-    x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr = prepare_compas()
-    name = "propublica"
-    feldman_filename = "compas_repaired"
-    filename = "propublica_race_nb_0"
-    classify = classify_compas
-  elif data == 'german':
-    x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr = prepare_german()
-    name = "german"
-    feldman_filename = "german_repaired"
-    filename = "german_sex_nb_0"
-    classify = classify_german
-  elif data == 'adult':
-    x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr = prepare_adult()
-    name = "sex_adult"
-    feldman_filename = "adult_repaired"
-    filename = "feldmen_cleaned_sex_adult_nb_0"
-    classify = classify_adult
-    
-  # SVM 
-  print("Running SVM...")
-  clf = SVC()
-  clf.fit(x_train, y_train)
-  predictions = clf.predict(x_test)
-  fixed_predictions = []
-  fixed_y_test = []
+  # Gen
+  print("Running Baseline SVM, NB, and LR...")
+  params = {}
+  algorithm = GenAlgorithm(data, params)
+  svm_actual, svm_predicted, svm_protected, nb_actual, nb_predicted, nb_protected, lr_actual, lr_predicted, lr_protected = algorithm.run()
 
-  for j in range(0, len(predictions)):
-    if predictions[j] == 0.0:
-      fixed_predictions.append(0)
-    elif predictions[j] == 1.0:
-      fixed_predictions.append(1)
+  # Calders
+  print("Running Calders...")
+  params = {}
+  algorithm = CaldersAlgorithm(data, params)
+  c2nb_actual, c2nb_predicted, c2nb_protected = algorithm.run()
 
-  for j in range(0, len(y_test)):
-    if y_test[j] == 0.0:
-      fixed_y_test.append(0)
-    elif y_test[j] == 1.0:
-      fixed_y_test.append(1)
-
-  svm_actual, svm_predicted, svm_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
-
-  # NB
-  print("Running Naive Bayes...")
-  nb = GaussianNB()
-  nb.fit(x_train, y_train)
-  predictions = nb.predict(x_test)
-  fixed_predictions = []
-  fixed_y_test = []
-
-  for j in range(0, len(predictions)):
-    if predictions[j] == 0.0:
-      fixed_predictions.append(0)
-    elif predictions[j] == 1.0:
-      fixed_predictions.append(1)
-
-  for j in range(0, len(y_test)):
-    if y_test[j] == 0.0:
-      fixed_y_test.append(0)
-    elif y_test[j] == 1.0:
-      fixed_y_test.append(1)  
-
-  nb_actual, nb_predicted, nb_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
-
-  # LR
-  print("Running Logistic Regression...")
-  lr = LogisticRegression()
-  lr.fit(x_train, y_train)
-  predictions = lr.predict(x_test)
-
-  fixed_predictions = []
-  fixed_y_test = []
-
-  for j in range(0, len(predictions)):
-    if predictions[j] == 0.0:
-      fixed_predictions.append(0)
-    elif predictions[j] == 1.0:
-      fixed_predictions.append(1)
-
-  for j in range(0, len(y_test)):
-    if y_test[j] == 0.0:
-      fixed_y_test.append(0)
-    elif y_test[j] == 1.0:
-      fixed_y_test.append(1)
-
-  lr_actual, lr_predicted, lr_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
+  # Feldman
+  print("Running Feldman SVM...")
+  params = {}
+  algorithm = FeldmanAlgorithm(data, params)
+  feldman_svm_actual, feldman_svm_predicted, feldman_svm_protected = algorithm.run()
 
   # Kamishima
   print("Running Kamishima...")
-  x_train_with_sensitive_feature = []
-  
-  for i in range(0, len(x_train)):
-    val = x_control_train[sensitive_attr][i]
-    feature_array = np.append(x_train[i], val)
-    x_train_with_sensitive_feature.append(feature_array)
-  
-  x_train_with_sensitive_feature = np.array(x_train_with_sensitive_feature)
+  params = {}
+  params["eta"] = 1
+  algorithm = KamishimaAlgorithm(data, params)
+  kam1_actual, kam1_predicted, kam1_protected = algorithm.run()
 
-  x_test_with_sensitive_feature = []
-  for i in range(0, len(x_test)):
-    val = x_control_test[sensitive_attr][i]
-    feature_array = np.append(x_test[i], val)
-    x_test_with_sensitive_feature.append(feature_array)
+  params["eta"] = 30
+  algorithm = KamishimaAlgorithm(data, params)
+  kam30_actual, kam30_predicted, kam30_protected = algorithm.run()
 
-  x_test_with_sensitive_feature = np.array(x_test_with_sensitive_feature)
+  params["eta"] = 100
+  algorithm = KamishimaAlgorithm(data, params)
+  kam100_actual, kam100_predicted, kam100_protected = algorithm.run()
 
-  y_classified_results = train_classify(sensitive_attr, name, x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
-  fixed_y_test = []
-  for j in y_test:
-      if j == 1.0:
-          fixed_y_test.append(1)
-      elif j == -1.0 or j == 0.0:
-          fixed_y_test.append(0)
-      else:
-          print "Invalid class value in y_control_test"
+  params["eta"] = 500
+  algorithm = KamishimaAlgorithm(data, params)
+  kam500_actual, kam500_predicted, kam500_protected = algorithm.run()
 
-  kam1_actual, kam1_predicted, kam1_protected = fixed_y_test, y_classified_results, x_control_test[sensitive_attr]
-
-  y_classified_results = train_classify(sensitive_attr, name, x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 30, x_control_test)
-  fixed_y_test = []
-  for j in y_test:
-      if j == 1.0:
-          fixed_y_test.append(1)
-      elif j == -1.0 or j == 0.0:
-          fixed_y_test.append(0)
-      else:
-          print "Invalid class value in y_control_test"
-  
-  kam30_actual, kam30_predicted, kam30_protected = fixed_y_test, y_classified_results, x_control_test[sensitive_attr]
-
-  y_classified_results = train_classify(sensitive_attr, name, x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 100, x_control_test)
-  fixed_y_test = []
-  for j in y_test:
-      if j == 1.0:
-          fixed_y_test.append(1)
-      elif j == -1.0 or j == 0.0:
-          fixed_y_test.append(0)
-      else:
-          print "Invalid class value in y_control_test"
-
-  kam100_actual, kam100_predicted, kam100_protected = fixed_y_test, y_classified_results, x_control_test[sensitive_attr]
-
-  y_classified_results = train_classify(sensitive_attr, name, x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 500, x_control_test)
-  fixed_y_test = []
-  for j in y_test:
-      if j == 1.0:
-          fixed_y_test.append(1)
-      elif j == -1.0 or j == 0.0:
-          fixed_y_test.append(0)
-      else:
-          print "Invalid class value in y_control_test"
-
-  kam500_actual, kam500_predicted, kam500_protected = fixed_y_test, y_classified_results, x_control_test[sensitive_attr]
-
-  y_classified_results = train_classify(sensitive_attr, name, x_train_with_sensitive_feature, y_train, x_test_with_sensitive_feature, y_test, 1, 1, x_control_test)
-  fixed_y_test = []
-  for j in y_test:
-      if j == 1.0:
-          fixed_y_test.append(1)
-      elif j == -1.0 or j == 0.0:
-          fixed_y_test.append(0)
-      else:
-          print "Invalid class value in y_control_test"
-
-  kam1000_actual, kam1000_predicted, kam1000_protected = fixed_y_test, y_classified_results, x_control_test[sensitive_attr]
-
-  # Calder's Two Naive Bayes
-  print("Running Calders' Two Naive Bayes...")
-  c2nb_protected_predicted, c2nb_protected_actual, c2nb_favored_predicted, c2nb_favored_actual = run_two_naive_bayes(0.0, filename, x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr)
-  c2nb_protected_protected = [0] * len(c2nb_protected_predicted) 
-  c2nb_favored_protected   = [1] * len(c2nb_favored_predicted)
-  
-  # Combine into one data set with protected and unprotected
-  c2nb_predicted = c2nb_protected_predicted + c2nb_favored_predicted
-  c2nb_actual = c2nb_protected_actual + c2nb_favored_actual
-  c2nb_protected = c2nb_protected_protected + c2nb_favored_protected
-
-  # Feldman
-  print("Running Feldman...")
-  #data = BBA.load_data(data)
-  #auditor = BBA.Auditor()
-  #auditor.model = Weka_SVM
-  #auditor(data) 
-
-  if data == "german":
-    df_results = pd.read_csv('audits/1500920731.28/original_test_data.predictions')
-    df_orig = pd.read_csv('audits/1500920731.28/original_test_data.csv')
-    val_pos, val_neg = "good", "bad"
-    feldman_protected = []
-    for x in df_orig['personal_status']:
-      if 'female' in x:
-        feldman_protected.append(0)
-      else:
-        feldman_protected.append(1)
-
-  if data == "adult":
-    df_results = pd.read_csv('audits/1500997092.53/original_test_data.predictions')
-    df_orig = pd.read_csv('audits/1500997092.53/original_test_data.csv')
-    val_pos, val_neg = ">50K", "<=50K"
-    feldman_protected = []
-    for x in df_orig['sex']:
-      if x == 'Male':
-        feldman_protected.append(1)
-      else:
-        feldman_protected.append(0) 
-   
-  if data == "compas":
-    df_results = None
-  
-  feldman_actual = []
-  feldman_predicted = []
-
-  for x in df_results['Response']:
-    if x == val_pos:
-      feldman_actual.append(1)
-    if x == val_neg:
-      feldman_actual.append(0)
-
-  for x in df_results['Prediction']:
-    if x == val_pos:
-      feldman_predicted.append(1)
-    if x == val_neg:
-      feldman_predicted.append(0)
-
-  #print len(feldman_protected), len(feldman_predicted), len(feldman_actual)
+  params["eta"] = 1000
+  algorithm = KamishimaAlgorithm(data, params)
+  kam1000_actual, kam1000_predicted, kam1000_protected = algorithm.run()
 
   # Zafar
   print("Running Zafar...")
-  
-  # Params
-  sensitive_attrs = [str(sensitive_attr)]
-  apply_fairness_constraints = 0
-  apply_accuracy_constraint = 0
-  sep_constraint = 0
-  loss_function = lf._logistic_loss
-  sensitive_attrs_to_cov_thresh = {}
-  gamma = None
+  params = {}
+  algorithm = ZafarAlgorithm(data, params)
+  zafar_unconstrained_actual, zafar_unconstrained_predicted, zafar_unconstrained_protected = algorithm.run()
 
-  w = ut.train_model(x_train, y_train, x_control_train, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
-  distances_boundary_test = (np.dot(x_test, w)).tolist()
-  predictions = np.sign(distances_boundary_test)
+  params["apply_fairness_constraints"] = 1
+  params["sensitive_attrs_to_cov_thresh"] = {algorithm.sensitive_attr:0}
+  algorithm = ZafarAlgorithm(data, params)
+  zafar_opt_accuracy_actual, zafar_opt_accuracy_predicted, zafar_opt_accuracy_protected = algorithm.run()
 
-  fixed_y_test = []
-  fixed_predictions = []
+  params["apply_accuracy_constraint"] = 1
+  params["apply_fairness_constraints"] = 0
+  params["sensitive_attrs_to_cov_thresh"] = {}
+  params["gamma"] = 0.5
+  algorithm = ZafarAlgorithm(data, params)
+  zafar_opt_fairness_actual, zafar_opt_fairness_predicted, zafar_opt_fairness_protected = algorithm.run()
 
-  for x in y_test:
-    if x == -1:
-      fixed_y_test.append(0)
-    elif x == 1:
-      fixed_y_test.append(1)
-    elif x == 0:
-      fixed_y_test.append(0)
-    else:
-      print "Incorrect value in class values"
+  params["sep_constraint"] = 1
+  params["gamma"] = 1000.0
+  algorithm = ZafarAlgorithm(data, params)
+  zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected = algorithm.run()
+  print("\n")
 
-  for x in predictions:
-    if x == -1:
-      fixed_predictions.append(0)
-    elif x == 1:
-      fixed_predictions.append(1)
-    elif x == 0:
-      fixed_predictions.append(0)
-    else:
-      print "Incorrect value in class values"
-
-  zafar_unconstrained_actual, zafar_unconstrained_predicted, zafar_unconstrained_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
-
-  # Params
-  apply_fairness_constraints = 1
-  apply_accuracy_constraint = 0
-  sep_constraint = 0
-  sensitive_attrs_to_cov_thresh = {sensitive_attr:0}
-
-  w = ut.train_model(x_train, y_train, x_control_train, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
-  distances_boundary_test = (np.dot(x_test, w)).tolist()
-  predictions = np.sign(distances_boundary_test)
-
-  fixed_y_test = []
-  fixed_predictions = []
-
-  for x in y_test:
-    if x == -1:
-      fixed_y_test.append(0)
-    elif x == 1:
-      fixed_y_test.append(1)
-    elif x == 0:
-      fixed_y_test.append(0)
-    else:
-      print "Incorrect value in class values"
-
-  for x in predictions:
-    if x == -1:
-      fixed_predictions.append(0)
-    elif x == 1:
-      fixed_predictions.append(1)
-    elif x == 0:
-      fixed_predictions.append(0)
-    else:
-      print "Incorrect value in class values"
-
-  zafar_opt_accuracy_actual, zafar_opt_accuracy_predicted, zafar_opt_accuracy_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
-
-  # Params
-  apply_fairness_constraints = 0
-  apply_accuracy_constraint = 1
-  sep_constraint = 0
-  gamma = 0.5
-
-  w = ut.train_model(x_train, y_train, x_control_train, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
-  distances_boundary_test = (np.dot(x_test, w)).tolist()
-  predictions = np.sign(distances_boundary_test)
-
-  fixed_y_test = []
-  fixed_predictions = []
-
-  for x in y_test:
-    if x == -1:
-      fixed_y_test.append(0)
-    elif x == 1:
-      fixed_y_test.append(1)
-    elif x == 0:
-      fixed_y_test.append(0)
-    else:
-      print "Incorrect value in class values"
-
-  for x in predictions:
-    if x == -1:
-      fixed_predictions.append(0)
-    elif x == 1:
-      fixed_predictions.append(1)
-    elif x == 0:
-      fixed_predictions.append(0)
-    else:
-      print "Incorrect value in class values"
-
-  zafar_opt_fairness_actual, zafar_opt_fairness_predicted, zafar_opt_fairness_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
-
-  # Params
-  apply_fairness_constraints = 0
-  apply_accuracy_constraint = 1
-  sep_constraint = 1
-  gamma = 1000.0
-
-  w = ut.train_model(x_train, y_train, x_control_train, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
-  distances_boundary_test = (np.dot(x_test, w)).tolist()
-  predictions = np.sign(distances_boundary_test)
-
-  fixed_y_test = []
-  fixed_predictions = []
-
-  for x in y_test:
-    if x == -1:
-      fixed_y_test.append(0)
-    elif x == 1:
-      fixed_y_test.append(1)
-    elif x == 0:
-      fixed_y_test.append(0)
-    else:
-      print "Incorrect value in class values"
-
-  for x in predictions:
-    if x == -1:
-      fixed_predictions.append(0)
-    elif x == 1:
-      fixed_predictions.append(1)
-    elif x == 0:
-      fixed_predictions.append(0)
-    else:
-      print "Incorrect value in class values"
-
-  zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected = fixed_y_test, fixed_predictions, x_control_test[sensitive_attr]
-     
-  #RUN METRICS
+  # Generate Metric calculators
   svm_metrics = Metrics(svm_actual, svm_predicted, svm_protected)
   nb_metrics = Metrics(nb_actual, nb_predicted, nb_protected)
   lr_metrics = Metrics(lr_actual, lr_predicted, lr_protected)
+
+  c2nb_metrics = Metrics(c2nb_actual, c2nb_predicted, c2nb_protected)
+
+  feldman_svm_metrics = Metrics(feldman_svm_actual, feldman_svm_predicted, feldman_svm_protected)
+
   kam1_metrics = Metrics(kam1_actual, kam1_predicted, kam1_protected)
   kam30_metrics = Metrics(kam30_actual, kam30_predicted, kam30_protected)
   kam100_metrics = Metrics(kam100_actual, kam100_predicted, kam100_protected)
   kam500_metrics = Metrics(kam500_actual, kam500_predicted, kam500_protected)
   kam1000_metrics = Metrics(kam1000_actual, kam1000_predicted, kam1000_protected)
-  c2nb_metrics = Metrics(c2nb_actual, c2nb_predicted, c2nb_protected)
-  feldman_metrics = Metrics(feldman_actual, feldman_predicted, feldman_protected)
-  zafar_unconstrained_metrics = Metrics(zafar_unconstrained_actual, zafar_unconstrained_predicted, zafar_unconstrained_protected)   
+
+  zafar_unconstrained_metrics = Metrics(zafar_unconstrained_actual, zafar_unconstrained_predicted, zafar_unconstrained_protected)
   zafar_opt_accuracy_metrics = Metrics(zafar_opt_accuracy_actual, zafar_opt_accuracy_predicted, zafar_opt_accuracy_protected)
   zafar_opt_fairness_metrics = Metrics(zafar_opt_fairness_actual, zafar_opt_fairness_predicted, zafar_opt_fairness_protected)
   zafar_nopos_classification_metrics = Metrics(zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected)
-   
-  print("\n========================================== SVM ==========================================")
+
+  print("========================================= SVM ==========================================\n")
   print_res(svm_metrics)
   print("\n")
 
-  print("========================================== NB ==========================================")
+  print("========================================== NB ==========================================\n")
   print_res(nb_metrics)
   print("\n")
 
-  print("========================================== LR ==========================================")
+  print("========================================== LR ==========================================\n")
   print_res(lr_metrics)
   print("\n")
-  
-  print("====================================== Kamishima =======================================")   
+
+  print("======================================= Calders ========================================\n")
+  print_res(c2nb_metrics)
+  print("\n")
+
+  print("====================================== Kamishima =======================================\n")
   print("  ETA = 1: ")
   print_res(kam1_metrics)
   print("\n")
@@ -572,15 +133,12 @@ def run_metrics(data):
   print_res(kam1000_metrics)
   print("\n")
 
-  print("======================================= Calders ========================================")
-  print_res(c2nb_metrics)
+  print("======================================= Feldman ========================================\n")
+  print("  Model = SVM: ")
+  print_res(feldman_svm_metrics)
   print("\n")
 
-  print("======================================= Feldman ========================================")
-  print_res(feldman_metrics)
-  print("\n")
-
-  print("======================================== Zafar ========================================")
+  print("======================================== Zafar =========================================\n")
   print("  Unconstrained: ")
   print_res(zafar_unconstrained_metrics)
   print("\n")
@@ -592,16 +150,15 @@ def run_metrics(data):
   print("\n")
   print("  No positive classification error: ")
   print_res(zafar_nopos_classification_metrics)
- 
+  print("\n")
+
+  
 if __name__ == '__main__':
-  print("###################################### German Data ######################################")
+  print("###################################### German Data ######################################\n")
   run_metrics('german')
   print("\n")
 
-  print("###################################### Adult Data #######################################")
+  print("###################################### Adult Data #######################################\n")
   run_metrics('adult')
   print("\n")
 
-  print("###################################### Compas Data ######################################")
-#  run_metrics('compas')
-  print("\n")
