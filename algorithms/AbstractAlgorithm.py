@@ -11,7 +11,9 @@ from data.german.load_german_data import *
 from data.adult.load_adult import *
 from metrics.metrics import *
 
-class AbstractAlgorithm(object, metaclass=ABCMeta):
+class AbstractAlgorithm(object):
+  __metaclass__ = ABCMeta
+
   def __init__(self, data, params, prepare, classify):
     """ data: str for which data set to use
 	params: dict with param name as key and val as val (ex: {"eta": 30})

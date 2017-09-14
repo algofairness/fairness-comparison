@@ -14,69 +14,71 @@ def print_res(metric):
   print("BCR:", metric.BCR())
   print("CV Score:", metric.CV_score())
 
-def run_metrics(data):
+def run_metrics(data, prepare, classifier):
   # Gen
   print("Running Baseline SVM, NB, and LR...")
   params = {}
-  algorithm = GenAlgorithm(data, params)
+  algorithm = GenAlgorithm(data, params, prepare, classifier)
   svm_actual, svm_predicted, svm_protected, nb_actual, nb_predicted, nb_protected, lr_actual, lr_predicted, lr_protected = algorithm.run()
 
   # Calders
   print("Running Calders...")
   params = {}
-  algorithm = CaldersAlgorithm(data, params)
+  algorithm = CaldersAlgorithm(data, params, prepare, classifier)
   c2nb_actual, c2nb_predicted, c2nb_protected = algorithm.run()
 
+  '''
   # Feldman
   print("Running Feldman SVM...")
   params = {}
-  algorithm = FeldmanAlgorithm(data, params)
+  algorithm = FeldmanAlgorithm(data, params, prepare, classifier)
   feldman_svm_actual, feldman_svm_predicted, feldman_svm_protected = algorithm.run()
+  '''
 
   # Kamishima
   print("Running Kamishima...")
   params = {}
   params["eta"] = 1
-  algorithm = KamishimaAlgorithm(data, params)
+  algorithm = KamishimaAlgorithm(data, params, prepare, classifier)
   kam1_actual, kam1_predicted, kam1_protected = algorithm.run()
 
   params["eta"] = 30
-  algorithm = KamishimaAlgorithm(data, params)
+  algorithm = KamishimaAlgorithm(data, params, prepare, classifier)
   kam30_actual, kam30_predicted, kam30_protected = algorithm.run()
 
   params["eta"] = 100
-  algorithm = KamishimaAlgorithm(data, params)
+  algorithm = KamishimaAlgorithm(data, params, prepare, classifier)
   kam100_actual, kam100_predicted, kam100_protected = algorithm.run()
 
   params["eta"] = 500
-  algorithm = KamishimaAlgorithm(data, params)
+  algorithm = KamishimaAlgorithm(data, params, prepare, classifier)
   kam500_actual, kam500_predicted, kam500_protected = algorithm.run()
 
   params["eta"] = 1000
-  algorithm = KamishimaAlgorithm(data, params)
+  algorithm = KamishimaAlgorithm(data, params, prepare, classifier)
   kam1000_actual, kam1000_predicted, kam1000_protected = algorithm.run()
 
   # Zafar
   print("Running Zafar...")
   params = {}
-  algorithm = ZafarAlgorithm(data, params)
+  algorithm = ZafarAlgorithm(data, params, prepare, classifier)
   zafar_unconstrained_actual, zafar_unconstrained_predicted, zafar_unconstrained_protected = algorithm.run()
 
   params["apply_fairness_constraints"] = 1
   params["sensitive_attrs_to_cov_thresh"] = {algorithm.sensitive_attr:0}
-  algorithm = ZafarAlgorithm(data, params)
+  algorithm = ZafarAlgorithm(data, params, prepare, classifier)
   zafar_opt_accuracy_actual, zafar_opt_accuracy_predicted, zafar_opt_accuracy_protected = algorithm.run()
 
   params["apply_accuracy_constraint"] = 1
   params["apply_fairness_constraints"] = 0
   params["sensitive_attrs_to_cov_thresh"] = {}
   params["gamma"] = 0.5
-  algorithm = ZafarAlgorithm(data, params)
+  algorithm = ZafarAlgorithm(data, params, prepare, classifier)
   zafar_opt_fairness_actual, zafar_opt_fairness_predicted, zafar_opt_fairness_protected = algorithm.run()
 
   params["sep_constraint"] = 1
   params["gamma"] = 1000.0
-  algorithm = ZafarAlgorithm(data, params)
+  algorithm = ZafarAlgorithm(data, params, prepare, classifier)
   zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected = algorithm.run()
   print("\n")
 
@@ -155,8 +157,8 @@ def run_metrics(data):
 
 if __name__ == '__main__':
   print("###################################### German Data ######################################\n")
-  run_metrics('german')
+  run_metrics('german', prepare_german, classify_german)
   print("\n")
 
-  print("###################################### Adult Data #######################################\n")
-  run_metrics('adult')
+#  print("###################################### Adult Data #######################################\n")
+#  run_metrics('adult')
