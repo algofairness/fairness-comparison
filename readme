@@ -1,10 +1,8 @@
 This repository is meant to facilitate the benchmarking of fairness aware machine learning algorithms.
 
-To run the benchmarks, download the repository, and run the demo_all.py file.
+To run the benchmarks, download the repository, and run the run_metrics.py file.
 
-This will produce a set of results files in OORESULT.
-
-Then run calculate_scores.py, which will calculate a series of fairness metrics on these results, and can be found in the OOCALCULATIONS file.
+This will print out metrics for each dataset.
 
 
 Drawing heavily on original code from:
@@ -17,15 +15,6 @@ https://github.com/tkamishima/kamfadm
 
 As for a layout of the repository:
 
-Data can be found in the data folder. New datasets should be added their own sub-folder.
-
-fadm is the folder containing Kamashima's original code.
-
-adult_benchmarks, compas_benchmarks, and german_benchmarks actually perform the various the benchmarks. These are all called in demo_all.py
-
-Currently the Feldmen repair code is not working, and should probably be entirely re-implemented.
-
-UPDATE 7/28/2017:
   Algorithms each have own dir, with an algorithm class inside, specific to each algorithm (ex: Kamishima, Zafar, etc.)
   Data is found in the data dir, with each data set getting its own sub-dir.
   Audits is where all of the audit results are stored.
