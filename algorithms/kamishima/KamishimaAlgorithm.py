@@ -6,6 +6,14 @@ from misc.prejudice_regularizer import *
 class KamishimaAlgorithm(AbstractAlgorithm):
   def __init__(self, *args, **kwargs):
     super(KamishimaAlgorithm, self).__init__(*args, **kwargs)
+    if self.data == 'german':
+      self.name = "german"
+
+    if self.data == 'compas':
+      self.name = "propublica"
+
+    if self.data == 'adult':
+      self.name = "sex_adult"
 
   def run(self):
     # Defaults to 1

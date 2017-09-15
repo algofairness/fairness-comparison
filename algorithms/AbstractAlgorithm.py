@@ -18,12 +18,13 @@ class AbstractAlgorithm(object):
     """ data: str for which data set to use
 	params: dict with param name as key and val as val (ex: {"eta": 30})
     """
+    
     self.data = data
     self.params = params
     self.prepare = prepare
     self.classify = classify
-    
-    """
+
+    ''' 
     if data == "adult":
       self.prepare = prepare_adult
       self.name = "sex_adult"
@@ -39,7 +40,7 @@ class AbstractAlgorithm(object):
       self.name = "german"
       self.filename = "german_sex_nb_0"
       self.classify = classify_german
-    """
+    ''' 
 
     self.x_train, self.y_train, self.x_control_train, self.x_test, self.y_test, self.x_control_test, self.sensitive_attr = self.prepare()
 

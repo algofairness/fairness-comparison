@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 from algorithms.AbstractAlgorithm import *
+from algorithms.gen.GenAlgorithm import *
 from algorithms.feldman.FeldmanAlgorithm import *
 from algorithms.kamishima.KamishimaAlgorithm import *
 from algorithms.zafar.ZafarAlgorithm import *
-from algorithms.gen.GenAlgorithm import *
 from algorithms.calders.CaldersAlgorithm import *
 
 def print_res(metric):
@@ -27,13 +27,13 @@ def run_metrics(data, prepare, classifier):
   algorithm = CaldersAlgorithm(data, params, prepare, classifier)
   c2nb_actual, c2nb_predicted, c2nb_protected = algorithm.run()
 
-  '''
+  
   # Feldman
   print("Running Feldman SVM...")
   params = {}
   algorithm = FeldmanAlgorithm(data, params, prepare, classifier)
   feldman_svm_actual, feldman_svm_predicted, feldman_svm_protected = algorithm.run()
-  '''
+  
 
   # Kamishima
   print("Running Kamishima...")
