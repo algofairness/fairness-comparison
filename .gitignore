@@ -1,6 +1,6 @@
 *.pyc
 *.swp
-audits/
+audits/*
 algorithms/kamishima/00RESULT/
 algorithms/kamishima/00MODEL/
 algorithms/feldman/MATLAB_code
