@@ -1,7 +1,7 @@
 import sys
 sys.path.append('/home/h205c/Derek/fairness-comparison')
 from algorithms.AbstractAlgorithm import *
-from misc.two_naive_bayes import *
+from algorithms.calders.two_naive_bayes import *
 
 class CaldersAlgorithm(AbstractAlgorithm):
   def __init__(self, *args, **kwargs):

@@ -3,12 +3,15 @@ import os, sys
 from preprocessing.prepare_german import prepare_german
 from preprocessing.prepare_adult import prepare_adult
 from preprocessing.prepare_compas import prepare_compas
+from preprocessing.prepare_retailer import prepare_retailer
+from preprocessing.prepare_ricci import prepare_ricci
 import numpy as np
 import pandas as pd
-from misc.black_box_auditing import *
+from preprocessing.black_box_auditing import *
 from data.propublica.load_numerical_compas import *
 from data.german.load_german_data import *
 from data.adult.load_adult import *
+from data.ricci.load_data import *
 from metrics.metrics import *
 
 class AbstractAlgorithm(object):
@@ -36,6 +39,17 @@ class AbstractAlgorithm(object):
       self.name = "german"
       self.filename = "german_sex_nb_0"
       self.classify = classify_german
+    if data == "retailer":
+      self.prepare = prepare_retailer
+      self.name = "retailer"
+      self.filename = "retailer_cleaned_race_nb_0"
+      self.classify = classify_retailer
+    if data == "ricci":
+      self.prepare = prepare_ricci
+      self.name = "ricci"
+      self.filename = "ricci_cleaned_race_nb_0"
+      self.classify = classify_ricci
+
     
     self.x_train, self.y_train, self.x_control_train, self.x_test, self.y_test, self.x_control_test, self.sensitive_attr = self.prepare()
 

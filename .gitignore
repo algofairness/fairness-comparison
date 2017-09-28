@@ -1,3 +1,14 @@
 *.pyc
+*.swp
 audits/
 algorithms/kamishima/00RESULT/
+algorithms/kamishima/00MODEL/
+algorithms/feldman/MATLAB_code
+algorithms/feldman/find_contexts
+data/retailer/cleaned-retailer.csv
+data/retailer/small-retailer.csv
+data/retailer/retailer.csv
+data/retailer/small-cleaned-retailer.csv
+data/retailer/repaired-retailers_.9.csv
+data/retailer/repaired-retailers_.8.csv
+data/retailer/repaired-retailers_1.csv

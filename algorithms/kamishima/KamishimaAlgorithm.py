@@ -1,7 +1,7 @@
 import sys
 sys.path.append('/home/h205c/Derek/fairness-comparison')
 from algorithms.AbstractAlgorithm import *
-from misc.prejudice_regularizer import *
+from algorithms.kamishima.prejudice_regularizer import *
 
 class KamishimaAlgorithm(AbstractAlgorithm):
   def __init__(self, *args, **kwargs):

@@ -1,7 +1,7 @@
 import sys
 sys.path.append('/home/h205c/Derek/fairness-comparison')
 from algorithms.AbstractAlgorithm import *
-from misc.zafar_classifier import *
+from algorithms.zafar.zafar_classifier import *
 import algorithms.zafar.fair_classification.utils as ut
 import algorithms.zafar.fair_classification.loss_funcs as lf
 
@@ -42,6 +42,8 @@ class ZafarAlgorithm(AbstractAlgorithm):
       sensitive_attrs_to_cov_thresh = self.params["sensitive_attrs_to_cov_thresh"]
     else:
       sensitive_attrs_to_cov_thresh = {}
+
+    #print "SPLIT: ", self.x_train, self.y_train, self.x_control_train[sensitive_attrs[0]]
 
     w = ut.train_model(self.x_train, self.y_train, self.x_control_train, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
     distances_boundary_test = (np.dot(self.x_test, w)).tolist()

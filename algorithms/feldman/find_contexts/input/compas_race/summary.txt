@@ -1,0 +1,16 @@
+Experiment Location: /Users/sfriedle/Documents/research/audits_code/BlackBoxAuditing/experiments/propublica_recidivism/__init__.pyc
+Audit Start Time: 2017-03-29 13:15:44.516210
+Audit End Time: 2017-03-29 13:22:28.687602
+Retrained Per Repair: False
+Model Factory ID: 1490807745.5
+Model Type: J48_Decision_Tree
+Non-standard Model Options: {}
+Train Size: 4114
+Test Size: 2058
+Non-standard Ignored Features: ['two_year_recid', 'decile_score']
+Features: ['sex', 'age', 'age_cat', 'race', 'juv_fel_count', 'juv_misd_count', 'juv_other_count', 'priors_count', 'c_charge_degree', 'c_charge_desc', 'decile_score', 'score_text', 'two_year_recid']
+
+Ranked Features by accuracy: [('juv_fel_count', 0.45140913508260444), ('juv_misd_count', 0.45140913508260444), ('age', 0.3717201166180758), ('juv_other_count', 0.27502429543245865), ('race', 0.23906705539358597), ('priors_count', 0.06025267249757049), ('c_charge_desc', 0.06025267249757049), ('sex', 0.014091350826044735), ('age_cat', 0.012147716229348848), ('c_charge_degree', 0.007774538386783214)]
+	Approx. Trend Groups: [['sex', 'age_cat', 'priors_count', 'c_charge_degree', 'c_charge_desc'], ['age'], ['race'], ['juv_other_count'], ['juv_fel_count'], ['juv_misd_count']]
+Ranked Features by BCR: [('juv_other_count', 0.17119649998607223), ('age', 0.16446523920955658), ('juv_fel_count', 0.16446523920955658), ('juv_misd_count', 0.16446523920955658), ('priors_count', 0.16446523920955658), ('c_charge_desc', 0.16446523920955658), ('race', 0.10460467324211786), ('sex', 0.07834773919720428), ('age_cat', 0.03582318657782824), ('c_charge_degree', 0.02963794666842534)]
+	Approx. Trend Groups: [['sex', 'age_cat', 'c_charge_degree'], ['race'], ['age', 'juv_other_count'], ['priors_count', 'c_charge_desc'], ['juv_fel_count'], ['juv_misd_count']]

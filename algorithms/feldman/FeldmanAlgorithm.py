@@ -41,6 +41,20 @@ class FeldmanAlgorithm(AbstractAlgorithm):
         else:
           feldman_protected.append(1)
 
+    if self.data == "retailer":
+      df_res = pd.DataFrame()
+      df_res['Response'] = [0]
+      df_res['Prediction'] = [0]
+      val_pos, val_neg = 1,0
+      feldman_protected = []
+ 
+    if self.data == "ricci":
+      df_res = pd.DataFrame()
+      df_res['Response'] = [0]
+      df_res['Prediction'] = [0]
+      val_pos, val_neg = 1,0
+      feldman_protected = []
+
     feldman_actual = []
     feldman_predicted = []
 
