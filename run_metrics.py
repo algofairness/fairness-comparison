@@ -33,7 +33,7 @@ def run_metrics(data, listoflists):
 
    
   # Feldman
-#  print("Running Feldman SVM...")
+  print("Running Feldman SVM...")
   params = {}
   algorithm = FeldmanAlgorithm(data, params)
   feldman_svm_actual, feldman_svm_predicted, feldman_svm_protected = algorithm.run()

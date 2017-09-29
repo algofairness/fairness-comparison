@@ -10,11 +10,20 @@ class FeldmanAlgorithm(AbstractAlgorithm):
 
   
   def run(self):
-    #d = BBA.load_data(self.data)
-    #auditor = BBA.Auditor()
-    #auditor.model = Weka_SVM
-    #auditor(self.data)
+    if self.data == "ricci":
+	datafile = 'data/ricci/cleaned-ricci.csv'
+	correct_types = [str,str,str,str,str,str,str]
+	train_percentage = 1.0/2.0
+	response_header = "Class"
+	features_to_ignore = ["Race"]
 
+    #data = BBA.load_from_file(datafile, testdata=None, correct_types=correct_types, train_percentage=train_percentage, response_header=response_header, features_to_ignore=features_to_ignore, missing_data_symbol="")
+    data = BBA.load_data("ricci")
+    auditor = BBA.Auditor()
+    auditor.model = Weka_SVM
+    auditor(data, output_dir="audits/ricci")
+
+    '''
     if self.data == "adult":
       df_res = pd.read_csv('audits/1500997092.53/original_test_data.predictions')
       df_orig = pd.read_csv('audits/1500997092.53/original_test_data.csv')
@@ -54,6 +63,7 @@ class FeldmanAlgorithm(AbstractAlgorithm):
       df_res['Prediction'] = [0]
       val_pos, val_neg = 1,0
       feldman_protected = []
+    '''
 
     feldman_actual = []
     feldman_predicted = []
