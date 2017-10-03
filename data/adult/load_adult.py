@@ -1,5 +1,5 @@
 import os,sys
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 sys.path.insert(0, 'zafar_fair_classification/') # the code for fair classification is in this directory
 import algorithms.zafar.fair_classification.utils as ut
 import numpy as np
@@ -93,7 +93,7 @@ def load_adult_data(filename, load_data_size=None):
 
 
     def convert_attrs_to_ints(d): # discretize the string attributes
-        for attr_name, attr_vals in d.items():
+        for attr_name, attr_vals in list(d.items()):
             #age,education_num,capital_gain,capital_loss,hours_per_week,sex,income_per_year
             if attr_name in int_attrs:
 
@@ -143,22 +143,22 @@ def load_adult_data(filename, load_data_size=None):
     # convert to numpy arrays for easy handline
     X = np.array(X, dtype=float).T
     y = np.array(y, dtype = float)
-    for k, v in x_control.items(): x_control[k] = np.array(v, dtype=float)
+    for k, v in list(x_control.items()): x_control[k] = np.array(v, dtype=float)
 
     # shuffle the data
-    perm = range(0,len(y)) # shuffle the data before creating each fold
+    perm = list(range(0,len(y))) # shuffle the data before creating each fold
     shuffle(perm)
     X = X[perm]
     y = y[perm]
-    for k in x_control.keys():
+    for k in list(x_control.keys()):
         x_control[k] = x_control[k][perm]
 
     # see if we need to subsample the data
     if load_data_size is not None:
-        print "Loading only %d examples from the data" % load_data_size
+        print("Loading only %d examples from the data" % load_data_size)
         X = X[:load_data_size]
         y = y[:load_data_size]
-        for k in x_control.keys():
+        for k in list(x_control.keys()):
             x_control[k] = x_control[k][:load_data_size]
 
     return X, y, x_control

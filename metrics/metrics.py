@@ -70,9 +70,9 @@ class Metrics:
     n_pos_protected = 0
     for i, x in enumerate(self.predicted):
       if x == 0 and self.protected[i] == 0:
-	n_neg_nonprotected += 1
+        n_neg_nonprotected += 1
       if x == 1 and self.protected[i] == 1:
-	n_pos_protected += 1
+        n_pos_protected += 1
     p_neg_nonprotected = n_neg_nonprotected / float(len(self.predicted))
     p_pos_protected = n_pos_protected / float(len(self.predicted)) 
     p = p_neg_nonprotected - p_pos_protected
@@ -143,10 +143,10 @@ if __name__=='__main__':
   prot = [1,0,1,0]
 
   m = Metrics(a,p,prot)
-  print(m.accuracy())
-  print(m.DI_score())
-  print(m.BER())
-  print(m.BCR())
+  print((m.accuracy()))
+  print((m.DI_score()))
+  print((m.BER()))
+  print((m.BCR()))
 # print(m.DBC_score())
-  print(m.CV_score())
-  print(m.NPI_score_nat())
+  print((m.CV_score()))
+# print((m.NPI_score_nat()))
