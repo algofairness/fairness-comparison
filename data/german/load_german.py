@@ -13,7 +13,7 @@ def load_german_data(filename):
     x_control = []
     for line in open(str(filename)):
         line = line.strip()
-        if line == "": continue # skip empty lines
+        if line == "": continue # skip+ empty lines
 
         #This should be more programatic
         if line[0] == "s": continue # skip line of feature categories, in csv
