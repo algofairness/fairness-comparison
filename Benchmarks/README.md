@@ -1,6 +1,6 @@
-#README
+# README
 
-##This file is for running all benchmarks on one or all of the datasets in the fairness-comparison github repository. 
+## This file is for running all benchmarks on one or all of the datasets in the fairness-comparison github repository. 
 
 The file has five inputs: Data, Missing, Features, Output, Protected.
 
