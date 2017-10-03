@@ -1,13 +1,10 @@
-import sys
-sys.path.append('/home/h205c/jnim/fairness/fairness-comparison')
 from data.german.load_german_data import *
 from misc.black_box_auditing import *
 import numpy as np
 import algorithms.zafar.fair_classification.utils as ut
 from random import shuffle
 
-
-def prepare_german():
+def prepare_data():
   sensitive_attrs = ["sex"]
   sensitive_attr = sensitive_attrs[0]
   train_fold_size = 0.3
@@ -39,5 +36,3 @@ def prepare_german():
   y_test = y_test.astype(float)
   x_control_train[sensitive_attr] = x_control_train[sensitive_attr].astype(float)
   x_control_test[sensitive_attr] = x_control_test[sensitive_attr].astype(float)
-
-  return x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr

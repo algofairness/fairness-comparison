@@ -25,14 +25,14 @@ def run_compas_repair():
     data_files = os.listdir(path)
 
     if "repaired-compas-scores-two-years-violent-columns-removed_.8.csv" not in data_files:
-        print "Repairing compas data"
-	bash_call = "python algorithms/feldman/repair.py data/propublica/all_numeric.csv  data/propublica/repaired-compas-scores-two-years-violent_.8.csv .8 -p race -i is_violent_recid"
+        print("Repairing compas data")
+        bash_call = "python algorithms/feldman/repair.py data/propublica/all_numeric.csv  data/propublica/repaired-compas-scores-two-years-violent_.8.csv .8 -p race -i is_violent_recid"
         os.system(bash_call)
         bash_call = "python algorithms/feldman/repair.py data/propublica/all_numeric.csv data/propublica/repaired-compas-scores-two-years-violent_.9.csv .9 -p race -i is_violent_recid"
         os.system(bash_call)
         bash_call = "python algorithms/feldman/repair.py data/propublica/all_numeric.csv data/propublica/repaired-compas-scores-two-years-violent_1.csv 1 -p race -i is_violent_recid"
         os.system(bash_call)
-        print "Complete"
+        print("Complete")
 
 
         # bash_call = "python BlackBoxAuditing/repair.py data/propublica/compas-scores-two-years-violent.csv  data/propublica/repaired-compas-scores-two-years-violent_.8.csv .8 -p race -i is_violent_recid id days_b_screening_arrest"
@@ -51,14 +51,14 @@ def run_german_repair():
     data_files = os.listdir(path)
 
     if "repaired_german_credit_data_.8.csv" not in data_files:
-        print "Repairing German data"
+        print("Repairing German data")
         bash_call = "python algorithms/feldman/repair.py data/german/german_numeric_sex_encoded_fixed.csv data/german/repaired_german_credit_data_.8.csv .8 -p gender -i Credit"
         os.system(bash_call)
         bash_call = "python algorithms/feldman/repair.py data/german/german_numeric_sex_encoded_fixed.csv data/german/repaired_german_credit_data_.9.csv .9 -p gender -i Credit"
         os.system(bash_call)
         bash_call = "python algorithms/feldman/repair.py data/german/german_numeric_sex_encoded_fixed.csv data/german/repaired_german_credit_data_1.csv 1 -p gender -i Credit"
         os.system(bash_call)
-        print "Repair Complete"
+        print("Repair Complete")
 
 
 def run_adult_repair():
@@ -73,7 +73,7 @@ def run_adult_repair():
 
     if "race_repaired_adult_.8.csv" not in data_files:
         path =  os.getcwd()
-        print "Repairing adult data"
+        print("Repairing adult data")
         bash_call = "python algorithms/feldman/repair.py data/adult/adult-?.csv data/adult/race_repaired_adult_.8.csv .8 -p race -i income-per-year fnlwgt sex "
         os.system(bash_call)
         bash_call = "python algorithms/feldman/repair.py data/adult/adult-?.csv data/adult/race_repaired_adult_.9.csv .9 -p race -i income-per-year fnlwgt sex"
