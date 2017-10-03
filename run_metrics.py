@@ -1,21 +1,23 @@
 import numpy as np
 import pandas as pd
-from algorithms.AbstractAlgorithm import *
-from algorithms.feldman.FeldmanAlgorithm import *
-from algorithms.kamishima.KamishimaAlgorithm import *
-from algorithms.zafar.ZafarAlgorithm import *
-from algorithms.gen.GenAlgorithm import *
-from algorithms.calders.CaldersAlgorithm import *
+import sys
+sys.path.insert(0,'algorithms')
+from AbstractAlgorithm import *
+from feldman.FeldmanAlgorithm import *
+from kamishima.KamishimaAlgorithm import *
+from zafar.ZafarAlgorithm import *
+from gen.GenAlgorithm import *
+from calders.CaldersAlgorithm import *
 
 def ret_res(metric):
   return metric.accuracy(), metric.DI_score(), metric.BER(), metric.BCR(), metric.CV_score()
 
 def print_res(metric):
-  print("Accuracy:", metric.accuracy())
-  print("DI Score:", metric.DI_score())
-  print("BER:", metric.BER())
-  print("BCR:", metric.BCR())
-  print("CV Score:", metric.CV_score())
+  print(("Accuracy:", metric.accuracy()))
+  print(("DI Score:", metric.DI_score()))
+  print(("BER:", metric.BER()))
+  print(("BCR:", metric.BCR()))
+  print(("CV Score:", metric.CV_score()))
 
 def run_metrics(data, listoflists):
   print("Running algorithms...")
@@ -33,10 +35,14 @@ def run_metrics(data, listoflists):
 
    
   # Feldman
-  print("Running Feldman SVM...")
-  params = {}
+#  print("Running Feldman SVM...")
+  params = {"model": Weka_SVM}
   algorithm = FeldmanAlgorithm(data, params)
   feldman_svm_actual, feldman_svm_predicted, feldman_svm_protected = algorithm.run()
+
+  params = {"model": Weka_DecisionTree}
+  algorithm = FeldmanAlgorithm(data, params)
+  feldman_wdt_actual, feldman_wdt_predicted, feldman_wdt_protected = algorithm.run()
    
 
   # Kamishima
@@ -125,13 +131,17 @@ def run_metrics(data, listoflists):
 
    
   feldman_svm_metrics = Metrics(feldman_svm_actual, feldman_svm_predicted, feldman_svm_protected)
+  feldman_wdt_metrics = Metrics(feldman_wdt_actual, feldman_wdt_predicted, feldman_wdt_protected)
 #  print("======================================= Feldman ========================================\n")
 #  print("  Model = SVM: ")
 #  print_res(feldman_svm_metrics)
-  #results = ret_res(feldman_svm_metrics)
-  results = [0,0,0,0,0]
+  results = ret_res(feldman_svm_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][4].append(results[i])
+
+  results = ret_res(feldman_wdt_metrics)
+  for i in range(0,len(listoflists)):
+    listoflists[i][5].append(results[i])
 
 #  print("\n")
    
@@ -142,7 +152,7 @@ def run_metrics(data, listoflists):
   #print_res(kam1_metrics)
   results = ret_res(kam1_metrics)
   for i in range(0,len(listoflists)):
-    listoflists[i][5].append(results[i])
+    listoflists[i][6].append(results[i])
 
 #  print("\n")
 
@@ -151,7 +161,7 @@ def run_metrics(data, listoflists):
   #print_res(kam30_metrics)
   results = ret_res(kam30_metrics)
   for i in range(0,len(listoflists)):
-    listoflists[i][6].append(results[i])
+    listoflists[i][7].append(results[i])
 
 #  print("\n")
 
@@ -160,7 +170,7 @@ def run_metrics(data, listoflists):
   #print_res(kam100_metrics)
   results = ret_res(kam100_metrics)
   for i in range(0,len(listoflists)):
-    listoflists[i][7].append(results[i])
+    listoflists[i][8].append(results[i])
 
 #  print("\n")
 
@@ -169,7 +179,7 @@ def run_metrics(data, listoflists):
   #print_res(kam500_metrics)
   results = ret_res(kam500_metrics)
   for i in range(0,len(listoflists)):
-    listoflists[i][8].append(results[i])
+    listoflists[i][9].append(results[i])
 
 #  print("\n")
 
@@ -178,7 +188,7 @@ def run_metrics(data, listoflists):
   #print_res(kam1000_metrics)
   results = ret_res(kam1000_metrics)
   for i in range(0,len(listoflists)):
-    listoflists[i][9].append(results[i])
+    listoflists[i][10].append(results[i])
 
 #  print("\n")
 
@@ -188,7 +198,7 @@ def run_metrics(data, listoflists):
   #print_res(zafar_unconstrained_metrics)
   results = ret_res(zafar_unconstrained_metrics)
   for i in range(0,len(listoflists)):
-    listoflists[i][10].append(results[i])
+    listoflists[i][11].append(results[i])
 
 #  print("\n")
 
@@ -197,7 +207,7 @@ def run_metrics(data, listoflists):
   #print_res(zafar_opt_accuracy_metrics)
   results = ret_res(zafar_opt_accuracy_metrics)
   for i in range(0,len(listoflists)):
-    listoflists[i][11].append(results[i])
+    listoflists[i][12].append(results[i])
 
 #  print("\n")
 
@@ -206,7 +216,7 @@ def run_metrics(data, listoflists):
   #print_res(zafar_opt_fairness_metrics)
   results = ret_res(zafar_opt_fairness_metrics)
   for i in range(0,len(listoflists)):
-    listoflists[i][12].append(results[i])
+    listoflists[i][13].append(results[i])
 
 #  print("\n")
 
@@ -215,7 +225,7 @@ def run_metrics(data, listoflists):
   #print_res(zafar_nopos_classification_metrics)
   results = ret_res(zafar_nopos_classification_metrics)
   for i in range(0,len(listoflists)):
-    listoflists[i][13].append(results[i])
+    listoflists[i][14].append(results[i])
 
 def get_sd(vals_per_split, mean):
   less_mean = []
@@ -226,11 +236,11 @@ def get_sd(vals_per_split, mean):
   
 
 def run_repeatedly(data, runs=10):
-  acc, final_acc = [[] for i in range(14)], []
-  di, final_di = [[] for i in range(14)], []
-  ber, final_ber = [[] for i in range(14)], []
-  bcr, final_bcr = [[] for i in range(14)], []
-  cv, final_cv = [[] for i in range(14)], []
+  acc, final_acc = [[] for i in range(15)], []
+  di, final_di = [[] for i in range(15)], []
+  ber, final_ber = [[] for i in range(15)], []
+  bcr, final_bcr = [[] for i in range(15)], []
+  cv, final_cv = [[] for i in range(15)], []
   metrics = [acc,di,ber,bcr,cv]
   final_metrics = [final_acc,final_di,final_ber,final_bcr,final_cv]
   sd = [0,0,0,0,0]
@@ -246,42 +256,13 @@ def run_repeatedly(data, runs=10):
         final_metrics[i].append('NA') 
       else:
         mean = sum(x[0:len(x)])/len(x) 
-	sd[i] = get_sd(x,mean)
+        sd[i] = get_sd(x, mean)
         final_metrics[i].append(mean)
 
-  '''
-  final_acc = []
-  for x in acc:
-    final_acc.append(sum(x[0:len(x)])/runs)
-
-  final_di = []
-  for x in di:
-    final_di.append(sum(x[0:len(x)])/runs)
-
-  final_ber = []
-  for x in ber:
-    final_ber.append(sum(x[0:len(x)])/runs)
-
-  final_bcr = []
-  for x in bcr:
-    final_bcr.append(sum(x[0:len(x)])/runs)
-
-  final_cv = []
-  for x in cv:
-    final_cv.append(sum(x[0:len(x)])/runs)
-
-  print "ACC: ", final_acc
-  print "DI: ", final_di
-  print "BER: ", final_ber
-  print "BCR: ", final_bcr
-  print "CV: ", final_cv
-  '''
-  
   # Create DataFrame of results and export to csv located in results directory
   export_to = 'results/' + data + '.csv' 
   headers = ['Algorithms','Acc','DI','BER','BCR','CV']
-  algorithms = ['SVM','NB','LR','Calders','Feldman','Kamishima eta=1','Kamishima eta=30','Kamishima eta=100','Kamishima eta=500','Kamishima eta=1000','Zafar Unconstrained','Zafar w Accuracy Constraint','Zafar w Fairness Constraint','Zafar No Pos Misclassification']
-  #algorithms = ['SVM','NB','LR','Calders','Kamishima eta=1','Kamishima eta=30','Kamishima eta=100','Kamishima eta=500','Kamishima eta=1000','Zafar Unconstrained','Zafar w Accuracy Constraint','Zafar w Fairness Constraint','Zafar No Pos Misclassification']
+  algorithms = ['SVM','NB','LR','Calders','Feldman SVM', 'Feldman WDT','Kamishima eta=1','Kamishima eta=30','Kamishima eta=100','Kamishima eta=500','Kamishima eta=1000','Zafar Unconstrained','Zafar w Accuracy Constraint','Zafar w Fairness Constraint','Zafar No Pos Misclassification']
 
   d = {'Algorithms':algorithms,'Acc':final_acc,'DI':final_di,'BER':final_ber,'BCR':final_bcr,'CV':final_cv}
   df = pd.DataFrame(data=d)
@@ -290,22 +271,21 @@ def run_repeatedly(data, runs=10):
   df.to_csv(export_to) 
 
 if __name__ == '__main__':
-  ''' 
+   
   print('Analyzing German data...')
-  run_repeatedly('german',1)
+  run_repeatedly('german')
   print('Complete.')
   print("\n")
-
-   
+ 
   print('Analyzing Adult data...')
   run_repeatedly('adult')
   print('Complete.')
   print("\n")
 
   print('Analyzing Retailer data...')
-  run_repeatedly("retailer",1)
+  run_repeatedly("retailer")
   print('Complete.')
-  ''' 
+  print("\n")
 
   print('Analyzing Ricci data...')
   run_repeatedly("ricci")

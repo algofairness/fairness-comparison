@@ -40,7 +40,7 @@ def train_test_classifier(filename, x_train, y_train, x_control_train, x_test, y
         elif value == 0:
             converted_y_test.append(0)
         else:
-            print "Incorrect value in class values"
+            print("Incorrect value in class values")
 
     converted_assigned_class_values = []
     for value in all_class_labels_assigned_test:
@@ -51,7 +51,7 @@ def train_test_classifier(filename, x_train, y_train, x_control_train, x_test, y
         elif value == 0:
             converted_y_test.append(0)
         else:
-            print "Incorrect value in class values"
+            print("Incorrect value in class values")
 
     f = open("algorithms/kamishima/00RESULT/"+filename, 'w')
     for i in range(0, len(y_test)):

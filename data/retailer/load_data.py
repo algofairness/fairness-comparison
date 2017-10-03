@@ -7,8 +7,8 @@ import csv
 import random
 
 train_percentage = 2.0/3.0
-#train_filename = "data/retailer/cleaned-retailer.csv"
-train_filename = "data/retailer/small-cleaned-retailer.csv"
+train_filename = "data/retailer/cleaned-retailer.csv"
+#train_filename = "data/retailer/small-cleaned-retailer.csv"
 test_filename = "data/retailer/retailer.test.csv"
 max_entries = None
 reqs = [int]*25
@@ -49,7 +49,7 @@ def load_retailer_data():
   #clean_retailer_data()
   
   data = pd.read_csv(train_filename,error_bad_lines=False) 
-  data.drop('Unnamed: 0',axis=1,inplace=True)
+  data.drop('0',axis=1,inplace=True)
   headers = list(data)
   y = data['hired'].astype(str).tolist()
   x_control = {}
@@ -70,7 +70,7 @@ def clean():
 
 def test():
   headers,train,test = load_data()
-  print "load data unpacks correctly? -- ", (len(headers) != 0 and len(train) != 0 and len(test) != 0)  
+  print("load data unpacks correctly? -- ", (len(headers) != 0 and len(train) != 0 and len(test) != 0))  
 
   gathered_types = []
   for i, header in enumerate(headers):
@@ -83,8 +83,8 @@ def test():
     else:
       gathered_types.append(header,False)
 
-  print "load_data types are correct? -- ", gathered_types == correct_types
-  print "all headers get types? -- ", len(headers) == len(gathered_types)
+  print("load_data types are correct? -- ", gathered_types == correct_types)
+  print("all headers get types? -- ", len(headers) == len(gathered_types))
 
 if __name__=="__main__":
 #  clean()

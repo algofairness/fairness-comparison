@@ -1,5 +1,5 @@
 from data.adult.load_adult import *
-from misc.black_box_auditing import *
+from preprocessing.black_box_auditing import *
 import numpy as np
 import algorithms.zafar.fair_classification.utils as ut
 from random import shuffle
@@ -13,7 +13,7 @@ def prepare_adult():
 
   X, y, x_control = load_adult_data("data/adult/adult-all-numerical-converted.csv")
   X = ut.add_intercept(X)
-  perm = range(0, len(y))
+  perm = list(range(0, len(y)))
   shuffle(perm)
   X = X[perm]
   y = y[perm]
@@ -23,7 +23,6 @@ def prepare_adult():
 
   x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, train_fold_size)
 
-  # Change type to run metrics
   y_train_fixed = []
   for y in y_train:
     if y == -1.0:
@@ -53,5 +52,9 @@ def prepare_adult():
     elif x == 1.0:
       x_control_test_fixed_val.append(1.0)
   x_control_test[sensitive_attr] = np.array(x_control_test_fixed_val)
+
+  # Change types to run metrics
+  x_control_train[sensitive_attr] = [int(i) for i in x_control_train[sensitive_attr]]
+  x_control_test[sensitive_attr] = [int(i) for i in x_control_test[sensitive_attr]]
 
   return x_train, np.array(y_train_fixed), x_control_train, x_test, np.array(y_test_fixed), x_control_test, sensitive_attr

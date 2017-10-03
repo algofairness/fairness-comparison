@@ -1,5 +1,5 @@
 from data.german.load_german_data import *
-from misc.black_box_auditing import *
+from preprocessing.black_box_auditing import *
 import numpy as np
 import algorithms.zafar.fair_classification.utils as ut
 from random import shuffle
@@ -13,7 +13,7 @@ def prepare_german():
 
   X, y, x_control = load_german_data("german_numeric_sex_encoded_fixed.csv")
 
-  perm = range(0, len(y))
+  perm = list(range(0, len(y)))
   shuffle(perm)
   X = X[perm]
 
@@ -34,7 +34,7 @@ def prepare_german():
   y_train = y_train.astype(float)
   x_test = x_test.astype(float)
   y_test = y_test.astype(float)
-  x_control_train[sensitive_attr] = x_control_train[sensitive_attr].astype(float)
-  x_control_test[sensitive_attr] = x_control_test[sensitive_attr].astype(float)
+  x_control_train[sensitive_attr] = x_control_train[sensitive_attr].astype(int)
+  x_control_test[sensitive_attr] = x_control_test[sensitive_attr].astype(int)
 
   return x_train, y_train, x_control_train, x_test, y_test, x_control_test, sensitive_attr

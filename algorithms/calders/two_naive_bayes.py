@@ -1,7 +1,7 @@
 from sklearn import metrics
 from sklearn.naive_bayes import GaussianNB
 import numpy as np
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 def splitDataBySensitiveFeature(X, x_control, y, sensitive_attr):
 
@@ -69,7 +69,7 @@ def predict(X, y, X_test, y_test):
             updated_predicted.append(0)
 
         else:
-            print "Inproper value in predicted class values"
+            print("Inproper value in predicted class values")
 
     updated_expected = []
     for i in expected:
@@ -80,7 +80,7 @@ def predict(X, y, X_test, y_test):
         elif i == 0.0:
             updated_expected.append(0)
         else:
-            print "Inproper value in expected class values"
+            print("Inproper value in expected class values")
 
     return updated_predicted, updated_expected
 

@@ -20,7 +20,7 @@ def load_ricci_data():
   x_control = []
 
   data = pd.read_csv(train_filename, error_bad_lines=False)
-  data.drop('Unnamed: 0',axis=1,inplace=True)
+  data.drop('0',axis=1,inplace=True)
   headers = list(data)
   y = data['Class'].astype(str).tolist()
   x_control = {}
@@ -34,7 +34,7 @@ def load_ricci_data():
 
 def test():
   X, y, x_control = load_ricci_data()
-  print X, y, x_control 
+  print(X, y, x_control) 
 
   correct_types = [str, float, int, str, float, str]
   gathered_types = []
@@ -46,7 +46,7 @@ def test():
     elif all( isinstance(row[i],str) for row in train + test ):
       gathered_types.append(str)
 
-  print "load_data types are correct? -- ", gathered_types == correct_types
+  print("load_data types are correct? -- ", gathered_types == correct_types)
 
 
 if __name__=="__main__":

@@ -77,7 +77,7 @@ class GenAlgorithm(AbstractAlgorithm):
 def test(data):
   params = {}
   algorithm = GenAlgorithm(data, params)
-  print algorithm.run()
+  print(algorithm.run())
 
 if __name__ == "__main__":
   test('german')

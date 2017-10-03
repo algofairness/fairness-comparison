@@ -51,7 +51,7 @@ import sys
 import argparse
 import os
 import platform
-import commands
+import subprocess
 import logging
 import datetime
 import pickle
@@ -117,7 +117,7 @@ def train_classify(sensitive_attr, dataname, X_train, y_train, X_test, y_test, n
     best_trial = 0
     #Can run multiple trials to get better results
 
-    for trial in xrange(1):
+    for trial in range(1):
 
         #Check top of file for parameters of regression_model_with_prejudice_remover
         #If you make fairness parameter too big, there will be no women in negative class in Kamishima's
@@ -155,7 +155,7 @@ def train_classify(sensitive_attr, dataname, X_train, y_train, X_test, y_test, n
     people_in_positive_class = 0
     people_in_negative_class = 0
     y_classified_results = []
-    for i in xrange(p.shape[0]):
+    for i in range(p.shape[0]):
         c = np.argmax(p[i, :])
         if c == 0:
             y_classified_results.append(0)
@@ -178,8 +178,8 @@ def train_classify(sensitive_attr, dataname, X_train, y_train, X_test, y_test, n
         elif j == -1.0 or j == 0.0:
             y_test_updated.append(0)
         else:
-            print(j, type(j))
-            print "Invalid class value in y_control_test"
+            print((j, type(j)))
+            print("Invalid class value in y_control_test")
     f = open("algorithms/kamishima/00RESULT/"+str(dataname)+ "kamishima:eta="+str(fairness_param), 'w')
     for i in range(0, len(y_test)):
         line_of_data = ( str(y_test_updated[i]) + " " + str(y_classified_results[i]) + " " + str(x_control_test[sensitive_attr][i]))

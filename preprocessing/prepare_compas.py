@@ -1,5 +1,5 @@
 from data.propublica.load_numerical_compas import *
-from misc.black_box_auditing import *
+from preprocessing.black_box_auditing import *
 import numpy as np
 import algorithms.zafar.fair_classification.utils as ut
 from random import shuffle
@@ -13,7 +13,7 @@ def prepare_compas():
 
   X, y, x_control = load_compas_data("all_numeric.csv")
 
-  perm = range(0, len(y)) # shuffle data before creating each fold
+  perm = list(range(0, len(y))) # shuffle data before creating each fold
   shuffle(perm)
   X = X[perm]
   y = y[perm]
