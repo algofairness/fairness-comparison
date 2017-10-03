@@ -6,7 +6,7 @@ The file has five inputs: Data, Missing, Features, Output, Protected.
 
 **Data**: 
 The Data keyword refers to the dataset we wish to run benchmarks on. All of the datasets avaiable have a folder in the 
-__fairness-comparison/raw directory__, and their names are simply the names of their corresponding csv in the raw folder 
+_fairness-comparison/raw directory_, and their names are simply the names of their corresponding csv in the raw folder 
 without the ".csv". For example, to run benchmarks on the German Credit Dataset, one would enter "German" for the Data
 keyword. 
 
@@ -19,7 +19,7 @@ This Keyword is for telling us how we should treat our features. The only option
 numerical. This is done by entering "Numerical" for the Features Keyword.
 
 **Output**: 
-This Keyword is for naming the output file containing the analysis. Output files will be in the __fairness-comparison/results__
+This Keyword is for naming the output file containing the analysis. Output files will be in the _fairness-comparison/results_
 directory. 
 
 
