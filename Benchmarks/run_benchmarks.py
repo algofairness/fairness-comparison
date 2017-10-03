@@ -1,7 +1,9 @@
 import sys
 sys.path.append('/home/h205c/jnim/fairness-comparison')
 from algorithms.gen.GenAlgorithm import *
+
 from run_metrics import *
+
 import argparse
 
 #Create parser to process inputs
@@ -26,7 +28,10 @@ parser.add_argument('--protected', action='store', default = 'race', dest='prote
 
 inputs = parser.parse_args()
 
-#Run desired algorithm with desired analysis
+#clean data
+
+
+
 if inputs.algorithm == 'all':
 	run_metrics('german', prepare_german, classify_german)
 
@@ -34,4 +39,3 @@ if inputs.algorithm == 'all':
 #General idea: Run gen_algo with inputs since Derek has done most of my work for me
 
 print results.dataset
-
