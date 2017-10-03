@@ -7,7 +7,7 @@ def load_german_data(filename):
   y = []
   x_control = []
   headers = []
-  f = open("data/german/"+filename).readlines()
+  f = open(filename).readlines()
   headers = f.pop(0)[:-1].split(',')
   sensitive_index = headers.index("gender") 
   for line in f:
@@ -27,7 +27,7 @@ def load_german_data(filename):
   X = np.array(X)
   y = np.array(y)
   x_control = {"sex": x_control}
-  return X, y, x_control
+  print( X, y, x_control)
     
 
 def test():
