@@ -11,7 +11,7 @@ def load_german_data(filename):
     X = []
     y = []
     x_control = []
-    for line in open("data/german/"+filename):
+    for line in open(str(filename)):
         line = line.strip()
         if line == "": continue # skip empty lines
 

@@ -1,5 +1,6 @@
 import sys
 sys.path.append('/home/h205c/jnim/fairness-comparison')
+from preprocessing.prepare_german import *
 from algorithms.gen.GenAlgorithm import *
 
 from run_metrics import *
@@ -29,6 +30,8 @@ parser.add_argument('--protected', action='store', default = 'race', dest='prote
 inputs = parser.parse_args()
 
 #clean data
+
+
 
 
 
