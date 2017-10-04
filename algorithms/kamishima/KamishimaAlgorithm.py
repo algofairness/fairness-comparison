@@ -30,7 +30,7 @@ class KamishimaAlgorithm(AbstractAlgorithm):
       x_test_with_sensitive_feature.append(feature_array)
 
     x_test_with_sensitive_feature = np.array(x_test_with_sensitive_feature)
-
+    
     y_classified_results = train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, eta, self.x_control_test)
     fixed_y_test = []
     for j in self.y_test:

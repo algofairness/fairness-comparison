@@ -12,7 +12,7 @@ def clean_ricci_data():
   f.Race.replace(['W','B','H'], [1,0,0], inplace=True)
   f.Position.replace(['Captain','Lieutenant'], [1,0], inplace=True)
 
-  f.to_csv(train_filename)
+  f.to_csv(train_filename, index=False)
 
 def load_ricci_data():
   X = []
@@ -20,7 +20,7 @@ def load_ricci_data():
   x_control = []
 
   data = pd.read_csv(train_filename, error_bad_lines=False)
-  data.drop('0',axis=1,inplace=True)
+  #data.drop('0',axis=1,inplace=True)
   headers = list(data)
   y = data['Class'].astype(str).tolist()
   x_control = {}

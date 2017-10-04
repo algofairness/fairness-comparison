@@ -349,6 +349,7 @@ class LRwPRObjetiveType4Mixin(LRwPR):
         # \sum_{x,s in D} \
         #    sigma(x,x)       [log(rho(s))     - log(pi)    ] + \
         #    (1 - sigma(x,s)) [log(1 - rho(s)) - log(1 - pi)]
+        
         f = np.sum(p * (np.log(q[s]) - np.log(r))
              + (1.0 - p) * (np.log(1.0 - q[s]) - np.log(1.0 - r)))
 

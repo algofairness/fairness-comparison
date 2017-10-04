@@ -15,7 +15,7 @@ reqs = [int]*25
 correct_types = [int,int,int,str,str,float,int,float,str] + reqs
 
 def clean_retailer_data():
-  f = pd.read_csv('data/retailer/retailer.csv',error_bad_lines=False)
+  f = pd.read_csv('data/retailer/retailer.csv', encoding='latin1', error_bad_lines=False)
   keep_cols = ['usite','apscustpersonid','azip','urace_orig','udateofbirth','ugender','szip','csvr2','hired']
   for col in list(f):
     if 'req_' in col:
@@ -32,13 +32,13 @@ def clean_retailer_data():
     year = x[5:9]
     # Code from:
     # https://stackoverflow.com/questions/2217488/age-from-birthdate-in-python
-    age = date.today().year - int(year) - ((date.today().month, date.today().day) < (month, day))
+    age = date.today().year - int(year) - ((date.today().month, date.today().day) < (month, int(day)))
     agelist.append(age)    
   se = pd.Series(agelist)
   data['age'] = se.values 
   data.drop(['udateofbirth'],axis=1,inplace=True)
 
-  data.to_csv(train_filename)
+  data.to_csv(train_filename, index=False)
 
 def load_retailer_data():
   X = []
@@ -87,5 +87,5 @@ def test():
   print("all headers get types? -- ", len(headers) == len(gathered_types))
 
 if __name__=="__main__":
-#  clean()
-  test()
+  clean()
+#  test()

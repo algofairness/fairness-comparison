@@ -14,7 +14,7 @@ class FeldmanAlgorithm(AbstractAlgorithm):
     if self.data == "ricci":
       datafile = 'data/ricci/cleaned-ricci.csv'
       export_to = 'audits/ricci'
-      correct_types = [str,str,str,str,str,str,str]
+      correct_types = [str,str,str,str,str,str]
       train_percentage = 1.0/2.0
       response_header = "Class"
       features_to_ignore = ["Position"]
@@ -39,7 +39,7 @@ class FeldmanAlgorithm(AbstractAlgorithm):
       datafile = 'data/retailer/cleaned-retailer.csv'
       #datafile = 'data/retailer/small-cleaned-retailer.csv'
       export_to = 'audits/retailer'
-      correct_types = [str,str,str,str,str,str,str]
+      correct_types = [str,str,str,str,str,str]
       train_percentage = 2.0/3.0
       response_header = "hired" 
       features_to_ignore = []

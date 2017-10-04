@@ -64,9 +64,12 @@ def run_metrics(data, listoflists):
   algorithm = KamishimaAlgorithm(data, params)
   kam500_actual, kam500_predicted, kam500_protected = algorithm.run()
 
-  params["eta"] = 1000
-  algorithm = KamishimaAlgorithm(data, params)
-  kam1000_actual, kam1000_predicted, kam1000_protected = algorithm.run()
+  if(data == "ricci"):
+    kam1000_actual,kam1000_predicted, kam1000_protected = [],[],[]
+  else:
+    params["eta"] = 1000
+    algorithm = KamishimaAlgorithm(data, params)
+    kam1000_actual, kam1000_predicted, kam1000_protected = algorithm.run()
 
   # Zafar
 #  print("Running Zafar...")
@@ -118,7 +121,7 @@ def run_metrics(data, listoflists):
   for i in range(0,len(listoflists)):
     listoflists[i][2].append(results[i])
 
-#  print("\n")
+#/retailer/small-retailer.csv  print("\n")
 
   c2nb_metrics = Metrics(c2nb_actual, c2nb_predicted, c2nb_protected)
 #  print("======================================= Calders ========================================\n")
@@ -271,12 +274,12 @@ def run_repeatedly(data, runs=10):
   df.to_csv(export_to) 
 
 if __name__ == '__main__':
-   
+  '''
   print('Analyzing German data...')
   run_repeatedly('german')
   print('Complete.')
   print("\n")
- 
+  ''' 
   print('Analyzing Adult data...')
   run_repeatedly('adult')
   print('Complete.')
@@ -286,7 +289,8 @@ if __name__ == '__main__':
   run_repeatedly("retailer")
   print('Complete.')
   print("\n")
-
+  '''
   print('Analyzing Ricci data...')
   run_repeatedly("ricci")
   print('Complete.')
+  '''

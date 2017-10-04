@@ -39,11 +39,11 @@ def run_retailer_repair():
 
   if "repaired-retailers_.8.csv" not in data_files:
     print("Repairing retailer data")
-    bash_call = "python algorithms/feldman/repair.py data/retailer/small-retailer.csv data/retailer/repaired-retailers_.8.csv .8 -p urace_orig -i hired"
+    bash_call = "python algorithms/feldman/repair.py data/retailer/retailer.csv data/retailer/repaired-retailers_.8.csv .8 -p urace_orig -i hired"
     os.system(bash_call)
-    bash_call = "python algorithms/feldman/repair.py data/retailer/small-retailer.csv data/retailer/repaired-retailers_.9.csv .9 -p urace_orig -i hired"
+    bash_call = "python algorithms/feldman/repair.py data/retailer/retailer.csv data/retailer/repaired-retailers_.9.csv .9 -p urace_orig -i hired"
     os.system(bash_call)
-    bash_call = "python algorithms/feldman/repair.py data/retailer/small-retailer.csv data/retailer/repaired-retailers_1.csv 1 -p urace_orig -i hired"
+    bash_call = "python algorithms/feldman/repair.py data/retailer/retailer.csv data/retailer/repaired-retailers_1.csv 1 -p urace_orig -i hired"
     os.system(bash_call)
     print("Complete")
 

@@ -103,7 +103,7 @@ def train(X, y, ns, eta, C, ltype, itype):
             clr.fit(X, y, number_sensative_features, itype)
     else:
         sys.exit("Illegal likelihood fitting type")
-
+ 
     return clr
 
 
@@ -124,7 +124,7 @@ def train_classify(sensitive_attr, dataname, X_train, y_train, X_test, y_test, n
         #Cannot reproduce with fairness parameter at 30, leading me to believe something is wrong (not true but leaving for memory sake)
         # Changed itype from 3 to 2 to run metrics on repaired data
         regression_model_with_prejudice_remover = train(X_train, y_train, number_sensative_features, fairness_param, 1, 4, 2)
-        
+
         if regression_model_with_prejudice_remover.f_loss_ < best_loss:
             clr = regression_model_with_prejudice_remover
             best_loss = clr.f_loss_
@@ -132,7 +132,7 @@ def train_classify(sensitive_attr, dataname, X_train, y_train, X_test, y_test, n
 
     final_loss = best_loss
     best_trial = best_trial
-
+    
     #Calculate predictions
     #p is a two-dimensional array, where every element is contains two probabilities
     #corresponding to the binary classification presumably

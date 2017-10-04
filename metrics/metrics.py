@@ -52,6 +52,8 @@ class Metrics:
 
   # Still unable to replicate Evan's results
   def BER(self):
+    if(len(self.predicted) == 0):
+      return "NA"
     n_neg_nonprotected = 0
     n_pos_protected = 0
     for i, x in enumerate(self.predicted):
