@@ -41,11 +41,13 @@ class AbstractAlgorithm(object):
       self.name = "german"
       self.filename = "german_sex_nb_0"
       self.classify = classify_german
+
     if data == "retailer":
       self.prepare = prepare_retailer
       self.name = "retailer"
       self.filename = "retailer_cleaned_race_nb_0"
       self.classify = classify_retailer
+
     if data == "ricci":
       self.prepare = prepare_ricci
       self.name = "ricci"

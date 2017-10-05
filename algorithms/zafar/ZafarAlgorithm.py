@@ -4,12 +4,14 @@ from algorithms.AbstractAlgorithm import *
 from algorithms.zafar.zafar_classifier import *
 import algorithms.zafar.fair_classification.utils as ut
 import algorithms.zafar.fair_classification.loss_funcs as lf
+from datetime import datetime
 
 class ZafarAlgorithm(AbstractAlgorithm):
   def __init__(self, *args, **kwargs):
     super(ZafarAlgorithm, self).__init__(*args, **kwargs)
 
   def run(self):
+    startTime = datetime.now()
     sensitive_attrs = [str(self.sensitive_attr)]
     loss_function = lf._logistic_loss
 
@@ -73,7 +75,9 @@ class ZafarAlgorithm(AbstractAlgorithm):
         print("Incorrect value in class values")
 
     zafar_actual, zafar_predicted, zafar_protected = fixed_y_test, fixed_predictions, self.x_control_test[self.sensitive_attr]
-    return zafar_actual, zafar_predicted, zafar_protected
+    zafar_time = datetime.now() - startTime
+
+    return zafar_actual, zafar_predicted, zafar_protected, zafar_time
 
 def test(data):
   params = {}

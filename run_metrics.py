@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import sys
+from datetime import timedelta
 sys.path.insert(0,'algorithms')
 from AbstractAlgorithm import *
 from feldman.FeldmanAlgorithm import *
@@ -19,30 +20,31 @@ def print_res(metric):
   print(("BCR:", metric.BCR()))
   print(("CV Score:", metric.CV_score()))
 
-def run_metrics(data, listoflists):
+def run_metrics(data, listoflists, times):
   print("Running algorithms...")
   # Gen
 #  print("Running Baseline SVM, NB, and LR...")
   params = {}
   algorithm = GenAlgorithm(data, params)
-  svm_actual, svm_predicted, svm_protected, nb_actual, nb_predicted, nb_protected, lr_actual, lr_predicted, lr_protected = algorithm.run()
+  svm_actual, svm_predicted, svm_protected, svm_time, nb_actual, nb_predicted, nb_protected, nb_time, lr_actual, lr_predicted, lr_protected, lr_time = algorithm.run()
+  
 
   # Calders
 #  print("Running Calders...")
   params = {}
   algorithm = CaldersAlgorithm(data, params)
-  c2nb_actual, c2nb_predicted, c2nb_protected = algorithm.run()
+  c2nb_actual, c2nb_predicted, c2nb_protected, c2nb_time = algorithm.run()
 
    
   # Feldman
 #  print("Running Feldman SVM...")
   params = {"model": Weka_SVM}
   algorithm = FeldmanAlgorithm(data, params)
-  feldman_svm_actual, feldman_svm_predicted, feldman_svm_protected = algorithm.run()
+  feldman_svm_actual, feldman_svm_predicted, feldman_svm_protected, feldman_svm_time = algorithm.run()
 
   params = {"model": Weka_DecisionTree}
   algorithm = FeldmanAlgorithm(data, params)
-  feldman_wdt_actual, feldman_wdt_predicted, feldman_wdt_protected = algorithm.run()
+  feldman_wdt_actual, feldman_wdt_predicted, feldman_wdt_protected, feldman_wdt_time = algorithm.run()
    
 
   # Kamishima
@@ -50,49 +52,49 @@ def run_metrics(data, listoflists):
   params = {}
   params["eta"] = 1
   algorithm = KamishimaAlgorithm(data, params)
-  kam1_actual, kam1_predicted, kam1_protected = algorithm.run()
+  kam1_actual, kam1_predicted, kam1_protected, kam1_time = algorithm.run()
 
   params["eta"] = 30
   algorithm = KamishimaAlgorithm(data, params)
-  kam30_actual, kam30_predicted, kam30_protected = algorithm.run()
+  kam30_actual, kam30_predicted, kam30_protected, kam30_time = algorithm.run()
 
   params["eta"] = 100
   algorithm = KamishimaAlgorithm(data, params)
-  kam100_actual, kam100_predicted, kam100_protected = algorithm.run()
+  kam100_actual, kam100_predicted, kam100_protected, kam100_time = algorithm.run()
 
   params["eta"] = 500
   algorithm = KamishimaAlgorithm(data, params)
-  kam500_actual, kam500_predicted, kam500_protected = algorithm.run()
+  kam500_actual, kam500_predicted, kam500_protected, kam500_time = algorithm.run()
 
   if(data == "ricci"):
-    kam1000_actual,kam1000_predicted, kam1000_protected = [],[],[]
+    kam1000_actual,kam1000_predicted, kam1000_protected, kam1000_time = [],[],[], 'NA'
   else:
     params["eta"] = 1000
     algorithm = KamishimaAlgorithm(data, params)
-    kam1000_actual, kam1000_predicted, kam1000_protected = algorithm.run()
+    kam1000_actual, kam1000_predicted, kam1000_protected, kam1000_time = algorithm.run()
 
   # Zafar
 #  print("Running Zafar...")
   params = {}
   algorithm = ZafarAlgorithm(data, params)
-  zafar_unconstrained_actual, zafar_unconstrained_predicted, zafar_unconstrained_protected = algorithm.run()
+  zafar_unconstrained_actual, zafar_unconstrained_predicted, zafar_unconstrained_protected, zafar_unconstrained_time = algorithm.run()
 
   params["apply_fairness_constraints"] = 1
   params["sensitive_attrs_to_cov_thresh"] = {algorithm.sensitive_attr:0}
   algorithm = ZafarAlgorithm(data, params)
-  zafar_opt_accuracy_actual, zafar_opt_accuracy_predicted, zafar_opt_accuracy_protected = algorithm.run()
+  zafar_opt_accuracy_actual, zafar_opt_accuracy_predicted, zafar_opt_accuracy_protected, zafar_opt_accuracy_time = algorithm.run()
 
   params["apply_accuracy_constraint"] = 1
   params["apply_fairness_constraints"] = 0
   params["sensitive_attrs_to_cov_thresh"] = {}
   params["gamma"] = 0.5
   algorithm = ZafarAlgorithm(data, params)
-  zafar_opt_fairness_actual, zafar_opt_fairness_predicted, zafar_opt_fairness_protected = algorithm.run()
+  zafar_opt_fairness_actual, zafar_opt_fairness_predicted, zafar_opt_fairness_protected, zafar_opt_fairness_time = algorithm.run()
 
   params["sep_constraint"] = 1
   params["gamma"] = 1000.0
   algorithm = ZafarAlgorithm(data, params)
-  zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected = algorithm.run()
+  zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected, zafar_nopos_classification_time = algorithm.run()
 #  print("\n")
 
   # Generate Metric calculators
@@ -102,6 +104,7 @@ def run_metrics(data, listoflists):
   results = ret_res(svm_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][0].append(results[i])
+  times[0].append(svm_time)
       
 #  print("\n")
 
@@ -111,6 +114,7 @@ def run_metrics(data, listoflists):
   results = ret_res(nb_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][1].append(results[i])
+  times[1].append(nb_time)
 
 #  print("\n")
 
@@ -120,8 +124,9 @@ def run_metrics(data, listoflists):
   results = ret_res(lr_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][2].append(results[i])
+  times[2].append(lr_time)
 
-#/retailer/small-retailer.csv  print("\n")
+# print("\n")
 
   c2nb_metrics = Metrics(c2nb_actual, c2nb_predicted, c2nb_protected)
 #  print("======================================= Calders ========================================\n")
@@ -129,6 +134,7 @@ def run_metrics(data, listoflists):
   results = ret_res(c2nb_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][3].append(results[i])
+  times[3].append(c2nb_time)
 
 #  print("\n")
 
@@ -141,10 +147,12 @@ def run_metrics(data, listoflists):
   results = ret_res(feldman_svm_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][4].append(results[i])
+  times[4].append(feldman_svm_time)
 
   results = ret_res(feldman_wdt_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][5].append(results[i])
+  times[5].append(feldman_wdt_time)
 
 #  print("\n")
    
@@ -156,6 +164,7 @@ def run_metrics(data, listoflists):
   results = ret_res(kam1_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][6].append(results[i])
+  times[6].append(kam1_time)
 
 #  print("\n")
 
@@ -165,6 +174,7 @@ def run_metrics(data, listoflists):
   results = ret_res(kam30_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][7].append(results[i])
+  times[7].append(kam30_time)
 
 #  print("\n")
 
@@ -174,6 +184,7 @@ def run_metrics(data, listoflists):
   results = ret_res(kam100_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][8].append(results[i])
+  times[8].append(kam100_time)
 
 #  print("\n")
 
@@ -183,6 +194,7 @@ def run_metrics(data, listoflists):
   results = ret_res(kam500_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][9].append(results[i])
+  times[9].append(kam500_time)
 
 #  print("\n")
 
@@ -192,6 +204,7 @@ def run_metrics(data, listoflists):
   results = ret_res(kam1000_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][10].append(results[i])
+  times[10].append(kam1000_time)
 
 #  print("\n")
 
@@ -202,6 +215,7 @@ def run_metrics(data, listoflists):
   results = ret_res(zafar_unconstrained_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][11].append(results[i])
+  times[11].append(zafar_unconstrained_time)
 
 #  print("\n")
 
@@ -211,6 +225,7 @@ def run_metrics(data, listoflists):
   results = ret_res(zafar_opt_accuracy_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][12].append(results[i])
+  times[12].append(zafar_opt_accuracy_time)
 
 #  print("\n")
 
@@ -220,6 +235,7 @@ def run_metrics(data, listoflists):
   results = ret_res(zafar_opt_fairness_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][13].append(results[i])
+  times[13].append(zafar_opt_fairness_time)
 
 #  print("\n")
 
@@ -229,6 +245,8 @@ def run_metrics(data, listoflists):
   results = ret_res(zafar_nopos_classification_metrics)
   for i in range(0,len(listoflists)):
     listoflists[i][14].append(results[i])
+  times[14].append(zafar_nopos_classification_time)
+
 
 def get_sd(vals_per_split, mean):
   less_mean = []
@@ -239,39 +257,80 @@ def get_sd(vals_per_split, mean):
   
 
 def run_repeatedly(data, runs=10):
-  acc, final_acc = [[] for i in range(15)], []
-  di, final_di = [[] for i in range(15)], []
-  ber, final_ber = [[] for i in range(15)], []
-  bcr, final_bcr = [[] for i in range(15)], []
+  acc, final_acc = [[] for i in range(15)], [] 
+  di, final_di = [[] for i in range(15)], [] 
+  ber, final_ber = [[] for i in range(15)], [] 
+  bcr, final_bcr = [[] for i in range(15)], [] 
   cv, final_cv = [[] for i in range(15)], []
+  tim, final_time = [[] for i in range(15)], []
   metrics = [acc,di,ber,bcr,cv]
   final_metrics = [final_acc,final_di,final_ber,final_bcr,final_cv]
-  sd = [0,0,0,0,0]
+  sd = [[[0] for i in range(15)],[[0] for i in range(15)],[[0] for i in range(15)],[[0] for i in range(15)],[[0] for i in range(15)]]
+
+  '''
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:::::::::::::::::::::::::::::::::::::::::::::-'    `-::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::-'          `::::::::::::::::
+:::::::::::::::::::::::::::::::::::::::-  '   /(_M_)\  `:::::::::::::::
+:::::::::::::::::::::::::::::::::::-'        |       |  :::::::::::::::
+::::::::::::::::::::::::::::::::-         .   \/~V~\/  ,:::::::::::::::
+::::::::::::::::::::::::::::-'             .          ,::::::::::::::::
+:::::::::::::::::::::::::-'                 `-.    .-::::::::::::::::::
+:::::::::::::::::::::-'                  _,,-::::::::::::::::::::::::::
+::::::::::::::::::-'                _,--:::::::::::::::::::::::::::::::
+::::::::::::::-'               _.--::::::::::::::::::::::#####:::::::::
+:::::::::::-'             _.--:::::::::::::::::::::::::::#####:::::####
+::::::::'    ##     ###.-::::::###:::::::::::::::::::::::#####:::::####
+::::-'       ###_.::######:::::###::::::::::::::#####:##########:::####
+:'         .:###::########:::::###::::::::::::::#####:##########:::####
+     ...--:::###::########:::::###:::::######:::#####:##########:::####
+ _.--:::##:::###:#########:::::###:::::######:::#####:#################
+'#########:::###:#########::#########::######:::#####:#################
+:#########:::#############::#########::######:::#######################
+##########:::########################::################################
+##########:::##########################################################
+##########:::##########################################################
+#######################################################################
+#######################################################################
+################################################################# dp ##
+#######################################################################
+  '''
 
   for i in range(0,runs):
-    run_metrics(data, metrics)
+    run_metrics(data, metrics, tim)
+
+  for i in range(0,len(tim)):
+    if 'NA' in tim[i]:
+      tim[i] = [k for k in tim[i] if k != 'NA']
+    if len(tim[i]) == 0:
+      final_time.append('NA')
+    else:
+      mean_time = sum(tim[i], timedelta()) / len(tim[i])
+      final_time.append(str(mean_time))
 
   for i in range(0,len(metrics)):
-    for x in metrics[i]:
-      if 'NA' in x:
-        x = [k for k in x if k != 'NA']
-      if len(x) == 0:
+    # x is list of lists where each list is an algorithm's runs
+    for x in range(len(metrics[i])):
+      if 'NA' in metrics[i][x]:
+        metrics[i][x] = [k for k in metrics[i][x] if k != 'NA']
+      if len(metrics[i][x]) == 0:
         final_metrics[i].append('NA') 
+        sd[i][x] = 'NA'
       else:
-        mean = sum(x[0:len(x)])/len(x) 
-        sd[i] = get_sd(x, mean)
+        mean = sum(metrics[i][x][0:len(metrics[i][x])])/len(metrics[i][x]) 
+        sd[i][x] = get_sd(metrics[i][x], mean)
         final_metrics[i].append(mean)
 
   # Create DataFrame of results and export to csv located in results directory
   export_to = 'results/' + data + '.csv' 
-  headers = ['Algorithms','Acc','DI','BER','BCR','CV']
+  headers = ['Algorithms','Acc', 'Acc_SD', 'DI', 'DI_SD','BER', 'BER_SD', 'BCR', 'BCR_SD', 'CV', 'CV_SD', 'Run Time']
   algorithms = ['SVM','NB','LR','Calders','Feldman SVM', 'Feldman WDT','Kamishima eta=1','Kamishima eta=30','Kamishima eta=100','Kamishima eta=500','Kamishima eta=1000','Zafar Unconstrained','Zafar w Accuracy Constraint','Zafar w Fairness Constraint','Zafar No Pos Misclassification']
 
-  d = {'Algorithms':algorithms,'Acc':final_acc,'DI':final_di,'BER':final_ber,'BCR':final_bcr,'CV':final_cv}
+  d = {'Algorithms':algorithms,'Acc':final_acc, 'Acc_SD':sd[0] , 'DI':final_di, 'DI_SD':sd[1] , 'BER':final_ber, 'BER_SD':sd[2] , 'BCR':final_bcr, 'BCR_SD':sd[3] , 'CV':final_cv, 'CV_SD':sd[4], 'Run Time':final_time}
   df = pd.DataFrame(data=d)
   df = df[headers]
-  df.loc[-1] = ['SD'] + sd
-  df.to_csv(export_to) 
+  df.to_csv(export_to, index=False) 
 
 if __name__ == '__main__':
   '''
@@ -279,7 +338,8 @@ if __name__ == '__main__':
   run_repeatedly('german')
   print('Complete.')
   print("\n")
-  ''' 
+  '''
+
   print('Analyzing Adult data...')
   run_repeatedly('adult')
   print('Complete.')
@@ -289,7 +349,8 @@ if __name__ == '__main__':
   run_repeatedly("retailer")
   print('Complete.')
   print("\n")
-  '''
+
+  ''' 
   print('Analyzing Ricci data...')
   run_repeatedly("ricci")
   print('Complete.')

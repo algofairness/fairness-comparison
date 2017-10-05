@@ -3,6 +3,7 @@ sys.path.append('/home/h205c/Derek/fairness-comparison')
 from algorithms.AbstractAlgorithm import *
 from sklearn import svm
 from sklearn.svm import SVC
+from datetime import datetime 
 
 class GenAlgorithm(AbstractAlgorithm):
   def __init__(self, *args, **kwargs):
@@ -10,6 +11,7 @@ class GenAlgorithm(AbstractAlgorithm):
 
   def run(self):
     #SVM
+    startTime = datetime.now()
     clf = SVC()
     clf.fit(self.x_train, self.y_train)
     predictions = clf.predict(self.x_test)
@@ -29,8 +31,10 @@ class GenAlgorithm(AbstractAlgorithm):
         fixed_y_test.append(1)
 
     svm_actual, svm_predicted, svm_protected = fixed_y_test, fixed_predictions, self.x_control_test[self.sensitive_attr]
+    svm_time = datetime.now() - startTime
 
     #NB
+    startTime = datetime.now()
     nb = GaussianNB()
     nb.fit(self.x_train, self.y_train)
     predictions = nb.predict(self.x_test)
@@ -50,8 +54,10 @@ class GenAlgorithm(AbstractAlgorithm):
         fixed_y_test.append(1)
 
     nb_actual, nb_predicted, nb_protected = fixed_y_test, fixed_predictions, self.x_control_test[self.sensitive_attr]
+    nb_time = datetime.now() - startTime
 
     #LR
+    startTime = datetime.now()
     lr = LogisticRegression()
     lr.fit(self.x_train, self.y_train)
     predictions = lr.predict(self.x_test)
@@ -71,8 +77,9 @@ class GenAlgorithm(AbstractAlgorithm):
         fixed_y_test.append(1)
 
     lr_actual, lr_predicted, lr_protected = fixed_y_test, fixed_predictions, self.x_control_test[self.sensitive_attr]
+    lr_time = datetime.now() - startTime
 
-    return svm_actual, svm_predicted, svm_protected, nb_actual, nb_predicted, nb_protected, lr_actual, lr_predicted, lr_protected
+    return svm_actual, svm_predicted, svm_protected, svm_time, nb_actual, nb_predicted, nb_protected, nb_time, lr_actual, lr_predicted, lr_protected, lr_time
 
 def test(data):
   params = {}

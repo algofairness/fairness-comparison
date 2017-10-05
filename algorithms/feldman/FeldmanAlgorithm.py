@@ -4,6 +4,7 @@ sys.path.append('/home/h205c/Derek/fairness-comparison')
 from algorithms.AbstractAlgorithm import * #AbstractAlgorithm
 import BlackBoxAuditing as BBA
 from BlackBoxAuditing.model_factories import Weka_SVM, Weka_DecisionTree
+from datetime import datetime
 
 class FeldmanAlgorithm(AbstractAlgorithm):
   def __init__(self, *args, **kwargs):
@@ -11,6 +12,7 @@ class FeldmanAlgorithm(AbstractAlgorithm):
 
   
   def run(self):
+    startTime = datetime.now()
     if self.data == "ricci":
       datafile = 'data/ricci/cleaned-ricci.csv'
       export_to = 'audits/ricci'
@@ -39,7 +41,7 @@ class FeldmanAlgorithm(AbstractAlgorithm):
       datafile = 'data/retailer/cleaned-retailer.csv'
       #datafile = 'data/retailer/small-cleaned-retailer.csv'
       export_to = 'audits/retailer'
-      correct_types = [str,str,str,str,str,str]
+      correct_types = [str for i in range(27)]
       train_percentage = 2.0/3.0
       response_header = "hired" 
       features_to_ignore = []
@@ -84,8 +86,9 @@ class FeldmanAlgorithm(AbstractAlgorithm):
     feldman_actual = df['Response']
     feldman_predicted = df['Prediction']
     feldman_protected = df['Pre-Repaired Feature']
+    feldman_time = datetime.now() - startTime
     
-    return feldman_actual, feldman_predicted, feldman_protected
+    return feldman_actual, feldman_predicted, feldman_protected, feldman_time
 
 def test(data):
   params = {}

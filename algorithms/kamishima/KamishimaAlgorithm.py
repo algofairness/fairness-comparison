@@ -2,12 +2,14 @@ import sys
 sys.path.append('/home/h205c/Derek/fairness-comparison')
 from algorithms.AbstractAlgorithm import *
 from algorithms.kamishima.prejudice_regularizer import *
+from datetime import datetime
 
 class KamishimaAlgorithm(AbstractAlgorithm):
   def __init__(self, *args, **kwargs):
     super(KamishimaAlgorithm, self).__init__(*args, **kwargs)
 
   def run(self):
+    startTime = datetime.now()
     # Defaults to 1
     if "eta" in list(self.params.keys()):
       eta = self.params["eta"]
@@ -42,8 +44,9 @@ class KamishimaAlgorithm(AbstractAlgorithm):
             print("Invalid class value in y_control_test")
 
     kam_actual, kam_predicted, kam_protected = fixed_y_test, y_classified_results, self.x_control_test[self.sensitive_attr]
+    kam_time = datetime.now() - startTime
 
-    return kam_actual, kam_predicted, kam_protected
+    return kam_actual, kam_predicted, kam_protected, kam_time
 
 def test(data):
   params = {}
