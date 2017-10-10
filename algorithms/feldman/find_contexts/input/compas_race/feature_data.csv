@@ -1,0 +1,3 @@
+sex,age,age_cat,race,juv_fel_count,juv_misd_count,juv_other_count,priors_count,c_charge_degree,c_charge_desc,decile_score,score_text
+d,c,d,d,c,c,c,c,d,d,c,d
+,,,,,,,,,,ignore,class

@@ -16,9 +16,9 @@ N_CLASSES : int
     the number of classes
 """
 
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals
+
+
+
 
 #==============================================================================
 # Module metadata variables
@@ -178,7 +178,7 @@ class LRwPRPredictProbaType2Mixin(LRwPR):
 
         proba = np.empty((X.shape[0], N_CLASSES))
         proba[:, 1] = [sigmoid(X[i, :], coef[s[i], :])
-                       for i in xrange(X.shape[0])]
+                       for i in range(X.shape[0])]
         proba[:, 0] = 1.0 - proba[:, 1]
 
         return proba
@@ -235,7 +235,7 @@ class LRwPRFittingType1Mixin(LRwPR):
                                   dtype=np.float)
             coef = self.coef_.reshape(self.n_sfv_, self.n_features_)
 
-            for i in xrange(self.n_sfv_):
+            for i in range(self.n_sfv_):
                 clr = LogisticRegression(C=self.C, penalty='l2',
                                          fit_intercept=False)
                 clr.fit(X[s == i, :], y[s == i])
@@ -278,7 +278,7 @@ class LRwPRFittingType1Mixin(LRwPR):
         self.n_s_ = ns
         self.n_sfv_ = np.max(s) + 1
         self.c_s_ = np.array([np.sum(s == si).astype(np.float)
-                              for si in xrange(self.n_sfv_)])
+                              for si in range(self.n_sfv_)])
         self.n_features_ = X.shape[1]
         self.n_samples_ = X.shape[0]
 
@@ -330,11 +330,11 @@ class LRwPRObjetiveType4Mixin(LRwPR):
 
         # sigma = Pr[y=0|x,s] = sigmoid(w(s)^T x)
         p = np.array([sigmoid(X[i, :], coef[s[i], :])
-                      for i in xrange(self.n_samples_)])
+                      for i in range(self.n_samples_)])
 
         # rho(s) = Pr[y=0|s] = \sum_{(xi,si)in D st si=s} sigma(xi,si) / #D[s]
         q = np.array([np.sum(p[s == si])
-                      for si in xrange(self.n_sfv_)]) / self.c_s_[1]
+                      for si in range(self.n_sfv_)]) / self.c_s_[1]
 
         # pi = Pr[y=0] = \sum_{(xi,si)in D} sigma(xi,si)
         r = np.sum(p) / self.n_samples_
@@ -389,15 +389,15 @@ class LRwPRObjetiveType4Mixin(LRwPR):
         # sigma = Pr[y=0|x,s] = sigmoid(w(s)^T x)
         # d_sigma(x,s) = d sigma / d w(s) = sigma (1 - sigma) x
         p = np.array([sigmoid(X[i, :], coef[s[i], :])
-                      for i in xrange(self.n_samples_)])
+                      for i in range(self.n_samples_)])
         dp = (p * (1.0 - p))[:, np.newaxis] * X
 
         # rho(s) = Pr[y=0|s] = \sum_{(xi,si)in D st si=s} sigma(xi,si) / #D[s]
         # d_rho(s) = \sum_{(xi,si)in D st si=s} d_sigma(xi,si) / #D[s]
         q = np.array([np.sum(p[s == si])
-                      for si in xrange(self.n_sfv_)]) / self.c_s_[1]
+                      for si in range(self.n_sfv_)]) / self.c_s_[1]
         dq = np.array([np.sum(dp[s == si, :], axis=0)
-                       for si in xrange(self.n_sfv_)]) \
+                       for si in range(self.n_sfv_)]) \
                        / self.c_s_[:, np.newaxis][1]
 
         # pi = Pr[y=0] = \sum_{(xi,si)in D} sigma(xi,si) / #D
@@ -407,7 +407,7 @@ class LRwPRObjetiveType4Mixin(LRwPR):
 
         # likelihood
         # l(si) = \sum_{x,y in D st s=si} (y - sigma(x, si)) x
-        for si in xrange(self.n_sfv_):
+        for si in range(self.n_sfv_):
             l[si, :] = np.sum((y - p)[s == si][:, np.newaxis] * X[s == si, :],
                               axis=0)
 
@@ -431,7 +431,7 @@ class LRwPRObjetiveType4Mixin(LRwPR):
             + f2[:, np.newaxis] * dq[s, :] \
             - np.outer(f3, dr)
         f = np.array([np.sum(f4[s == si, :], axis=0)
-                      for si in xrange(self.n_sfv_)])
+                      for si in range(self.n_sfv_)])
 
         # l2 regularizer
         reg = coef

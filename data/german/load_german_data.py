@@ -9,7 +9,7 @@ def load_german_data(filename):
   headers = []
   f = open(filename).readlines()
   headers = f.pop(0)[:-1].split(',')
-  sensitive_index = headers.index("gender") 
+  sensitive_index = headers.index("sex") 
   for line in f:
     line = line[:-1].split(',')
 

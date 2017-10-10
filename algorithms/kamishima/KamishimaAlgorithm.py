@@ -1,7 +1,7 @@
 import sys
 sys.path.append('/home/h205c/Derek/fairness-comparison')
 from algorithms.AbstractAlgorithm import *
-from misc.prejudice_regularizer import *
+from algorithms.kamishima.prejudice_regularizer import *
 
 class KamishimaAlgorithm(AbstractAlgorithm):
   def __init__(self, *args, **kwargs):
@@ -17,7 +17,7 @@ class KamishimaAlgorithm(AbstractAlgorithm):
 
   def run(self):
     # Defaults to 1
-    if "eta" in self.params.keys():
+    if "eta" in list(self.params.keys()):
       eta = self.params["eta"]
     else:
       eta = 1
@@ -47,7 +47,7 @@ class KamishimaAlgorithm(AbstractAlgorithm):
         elif j == -1.0 or j == 0.0:
             fixed_y_test.append(0)
         else:
-            print "Invalid class value in y_control_test"
+            print("Invalid class value in y_control_test")
 
     kam_actual, kam_predicted, kam_protected = fixed_y_test, y_classified_results, self.x_control_test[self.sensitive_attr]
 
@@ -57,11 +57,11 @@ def test(data):
   params = {}
   params["eta"] = 1
   algorithm = KamishimaAlgorithm(data, params) 
-  print algorithm.run()
+  print(algorithm.run())
 
   params["eta"] = 30
   algorithm = KamishimaAlgorithm(data, params)
-  print algorithm.run()
+  print(algorithm.run())
 
 if __name__ == "__main__":
   test("german")
