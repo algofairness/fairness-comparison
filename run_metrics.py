@@ -338,12 +338,12 @@ if __name__ == '__main__':
   run_repeatedly('german')
   print('Complete.')
   print("\n")
-  '''
 
   print('Analyzing Adult data...')
   run_repeatedly('adult')
   print('Complete.')
   print("\n")
+  '''
 
   print('Analyzing Retailer data...')
   run_repeatedly("retailer")

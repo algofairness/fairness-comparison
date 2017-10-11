@@ -49,7 +49,6 @@ def load_retailer_data():
   #clean_retailer_data()
   
   data = pd.read_csv(train_filename,error_bad_lines=False) 
-  data.drop('0',axis=1,inplace=True)
   headers = list(data)
   y = data['hired'].astype(str).tolist()
   x_control = {}

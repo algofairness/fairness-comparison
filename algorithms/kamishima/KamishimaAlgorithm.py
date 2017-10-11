@@ -3,12 +3,22 @@ sys.path.append('/home/h205c/Derek/fairness-comparison')
 from algorithms.AbstractAlgorithm import *
 from algorithms.kamishima.prejudice_regularizer import *
 from datetime import datetime
+import pandas as pd
 
 class KamishimaAlgorithm(AbstractAlgorithm):
   def __init__(self, *args, **kwargs):
     super(KamishimaAlgorithm, self).__init__(*args, **kwargs)
 
   def run(self):
+    '''
+    x = pd.DataFrame(self.x_train)
+    datadict = self.x_control_train 
+    datadict['class'] = self.y_train
+    df = pd.DataFrame.from_dict(datadict)
+    print(df)
+    hires = df.groupby(['class','Race']).size()
+    print(hires)
+    '''
     startTime = datetime.now()
     # Defaults to 1
     if "eta" in list(self.params.keys()):
