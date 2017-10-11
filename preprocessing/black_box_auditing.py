@@ -4,7 +4,7 @@ from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
 import numpy as np
-from algorithms.feldman.repairers import *
+#from algorithms.feldman.repairers import *
 
 
 """

@@ -1,3 +1,5 @@
+import os
+os.chdir('/../')
 from data.german.load_german_data import *
 from misc.black_box_auditing import *
 import numpy as np
