@@ -122,4 +122,4 @@ def test(data):
 
 if __name__ == "__main__":
   test('german')
-  test('adult')
+  #test('adult')
