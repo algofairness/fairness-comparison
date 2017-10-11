@@ -23,21 +23,16 @@ def print_res(metric):
 def run_metrics(data, listoflists, times):
   print("Running algorithms...")
   # Gen
-#  print("Running Baseline SVM, NB, and LR...")
   params = {}
   algorithm = GenAlgorithm(data, params)
   svm_actual, svm_predicted, svm_protected, svm_time, nb_actual, nb_predicted, nb_protected, nb_time, lr_actual, lr_predicted, lr_protected, lr_time = algorithm.run()
-  
 
   # Calders
-#  print("Running Calders...")
   params = {}
   algorithm = CaldersAlgorithm(data, params)
   c2nb_actual, c2nb_predicted, c2nb_protected, c2nb_time = algorithm.run()
 
-   
   # Feldman
-#  print("Running Feldman SVM...")
   params = {"model": Weka_SVM}
   algorithm = FeldmanAlgorithm(data, params)
   feldman_svm_actual, feldman_svm_predicted, feldman_svm_protected, feldman_svm_time = algorithm.run()
@@ -48,9 +43,9 @@ def run_metrics(data, listoflists, times):
    
 
   # Kamishima
-#  print("Running Kamishima...")
   params = {}
   params["eta"] = 1
+<<<<<<< HEAD
   algorithm = KamishimaAlgorithm(data, params)
   kam1_actual, kam1_predicted, kam1_protected, kam1_time = algorithm.run()
 
@@ -74,7 +69,6 @@ def run_metrics(data, listoflists, times):
     kam1000_actual, kam1000_predicted, kam1000_protected, kam1000_time = algorithm.run()
 
   # Zafar
-#  print("Running Zafar...")
   params = {}
   algorithm = ZafarAlgorithm(data, params)
   zafar_unconstrained_actual, zafar_unconstrained_predicted, zafar_unconstrained_protected, zafar_unconstrained_time = algorithm.run()
@@ -333,7 +327,6 @@ def run_repeatedly(data, runs=10):
   df.to_csv(export_to, index=False) 
 
 if __name__ == '__main__':
-  '''
   print('Analyzing German data...')
   run_repeatedly('german')
   print('Complete.')
@@ -343,15 +336,12 @@ if __name__ == '__main__':
   run_repeatedly('adult')
   print('Complete.')
   print("\n")
-  '''
 
   print('Analyzing Retailer data...')
   run_repeatedly("retailer")
   print('Complete.')
   print("\n")
 
-  ''' 
   print('Analyzing Ricci data...')
   run_repeatedly("ricci")
   print('Complete.')
-  '''

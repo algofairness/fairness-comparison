@@ -17,13 +17,16 @@ from metrics.metrics import *
 class AbstractAlgorithm(object):
   __metaclass__ = ABCMeta
 
-  def __init__(self, data, params):
+  def __init__(self, data, params, prepare, classify):
     """ data: str for which data set to use
 	params: dict with param name as key and val as val (ex: {"eta": 30})
     """
+    
     self.data = data
     self.params = params
-    
+    self.prepare = prepare
+    self.classify = classify
+
     if data == "adult":
       self.prepare = prepare_adult
       self.name = "sex_adult"
@@ -54,7 +57,6 @@ class AbstractAlgorithm(object):
       self.filename = "ricci_cleaned_race_nb_0"
       self.classify = classify_ricci
 
-    
     self.x_train, self.y_train, self.x_control_train, self.x_test, self.y_test, self.x_control_test, self.sensitive_attr = self.prepare()
 
   @abstractmethod

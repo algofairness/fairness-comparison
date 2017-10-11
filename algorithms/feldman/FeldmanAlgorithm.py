@@ -1,6 +1,5 @@
 import os
 import sys
-sys.path.append('/home/h205c/Derek/fairness-comparison')
 from algorithms.AbstractAlgorithm import * #AbstractAlgorithm
 import BlackBoxAuditing as BBA
 from BlackBoxAuditing.model_factories import Weka_SVM, Weka_DecisionTree

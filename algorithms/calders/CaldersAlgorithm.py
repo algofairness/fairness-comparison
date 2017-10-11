@@ -7,6 +7,14 @@ from datetime import datetime
 class CaldersAlgorithm(AbstractAlgorithm):
   def __init__(self, *args, **kwargs):
     super(CaldersAlgorithm, self).__init__(*args, **kwargs)
+    if self.data == 'german':
+      self.filename = "german_sex_nb_0"
+
+    if self.data == 'compas':
+      self.filename = "propublica_race_nb_0"
+
+    if self.data == 'adult':
+      self.filename = "feldmen_cleaned_sex_adult_nb_0"
 
   def run(self):
     startTime = datetime.now()
