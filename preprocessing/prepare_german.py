@@ -1,8 +1,11 @@
+import sys
+sys.path.append('/home/h205c/jnim/fairness/fairness-comparison')
 from data.german.load_german_data import *
 from preprocessing.black_box_auditing import *
 import numpy as np
 import algorithms.zafar.fair_classification.utils as ut
 from random import shuffle
+
 
 def prepare_german():
   sensitive_attrs = ["sex"]

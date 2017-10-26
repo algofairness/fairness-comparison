@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/home/h205c/Derek/fairness-comparison')
+sys.path.append('/home/h205c/jnim/fairness-comparison')
 from algorithms.AbstractAlgorithm import *
 from sklearn import svm
 from sklearn.svm import SVC
