@@ -37,8 +37,8 @@ class FeldmanAlgorithm(AbstractAlgorithm):
       features_to_ignore = []
 
     if self.data == "retailer":
-      datafile = 'data/retailer/cleaned-retailer.csv'
-      #datafile = 'data/retailer/small-cleaned-retailer.csv'
+      #datafile = 'data/retailer/cleaned-retailer.csv'
+      datafile = 'data/retailer/small-cleaned-retailer.csv'
       export_to = 'audits/retailer'
       correct_types = [str for i in range(27)]
       train_percentage = 2.0/3.0

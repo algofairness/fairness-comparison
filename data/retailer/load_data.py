@@ -7,8 +7,8 @@ import csv
 import random
 
 train_percentage = 2.0/3.0
-train_filename = "data/retailer/cleaned-retailer.csv"
-#train_filename = "data/retailer/small-cleaned-retailer.csv"
+#train_filename = "data/retailer/cleaned-retailer.csv"
+train_filename = "data/retailer/small-cleaned-retailer.csv"
 test_filename = "data/retailer/retailer.test.csv"
 max_entries = None
 reqs = [int]*25

@@ -13,6 +13,7 @@ class GenAlgorithm(AbstractAlgorithm):
 
   def run(self):
     for modeltype in self.models.keys():
+      startTime = datetime.now()
       model = modeltype
       model.fit(self.x_train, self.y_train)
       predictions = model.predict(self.x_test)
@@ -32,13 +33,13 @@ class GenAlgorithm(AbstractAlgorithm):
           fixed_y_test.append(1)
       
       if self.models[modeltype] == 'svm':
-        svm_actual, svm_predicted, svm_protected = fixed_y_test, fixed_predictions, self.x_control_test[self.sensitive_attr]
+        svm_actual, svm_predicted, svm_protected, svm_time = fixed_y_test, fixed_predictions, self.x_control_test[self.sensitive_attr], (datetime.now() - startTime)
       if self.models[modeltype] == 'nb':
-        nb_actual, nb_predicted, nb_protected = fixed_y_test, fixed_predictions, self.x_control_test[self.sensitive_attr]
+        nb_actual, nb_predicted, nb_protected, nb_time = fixed_y_test, fixed_predictions, self.x_control_test[self.sensitive_attr], (datetime.now() - startTime)
       if self.models[modeltype] == 'lr':
-        lr_actual, lr_predicted, lr_protected = fixed_y_test, fixed_predictions, self.x_control_test[self.sensitive_attr]
+        lr_actual, lr_predicted, lr_protected, lr_time = fixed_y_test, fixed_predictions, self.x_control_test[self.sensitive_attr], (datetime.now() - startTime)
 
-    return svm_actual, svm_predicted, svm_protected, nb_actual, nb_predicted, nb_protected, lr_actual, lr_predicted, lr_protected
+    return svm_actual, svm_predicted, svm_protected, svm_time,  nb_actual, nb_predicted, nb_protected, nb_time, lr_actual, lr_predicted, lr_protected, lr_time
 
       #actual, predicted, protected = fixed_y_test, fixed_predictions, self.x_control_test[self.sensitive_attr]
 
@@ -123,3 +124,4 @@ def test(data):
 if __name__ == "__main__":
   test('german')
   test('adult')
+"""
