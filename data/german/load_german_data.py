@@ -27,8 +27,8 @@ def load_german_data(filename):
   X = np.array(X)
   y = np.array(y)
   x_control = {"sex": x_control}
-  print( X, y, x_control)
-    
+
+  return X, y, x_control
 
 def test():
   load_german_data("german_numeric_sex_encoded_fixed.csv")

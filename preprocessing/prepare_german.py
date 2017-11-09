@@ -1,5 +1,6 @@
 import sys
-sys.path.append('/home/h205c/jnim/fairness/fairness-comparison')
+import os
+sys.path.append('/home/h205c/derek/fairness-comparison/')
 from data.german.load_german_data import *
 from preprocessing.black_box_auditing import *
 import numpy as np
@@ -14,7 +15,7 @@ def prepare_german():
 
   run_german_repair()
 
-  X, y, x_control = load_german_data("german_numeric_sex_encoded_fixed.csv")
+  X, y, x_control = load_german_data("data/german/german_numeric_sex_encoded_fixed.csv")
 
   perm = list(range(0, len(y)))
   shuffle(perm)

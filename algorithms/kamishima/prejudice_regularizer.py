@@ -178,7 +178,6 @@ def train_classify(sensitive_attr, dataname, X_train, y_train, X_test, y_test, n
         elif j == -1.0 or j == 0.0:
             y_test_updated.append(0)
         else:
-            print((j, type(j)))
             print("Invalid class value in y_control_test")
     f = open("algorithms/kamishima/00RESULT/"+str(dataname)+ "kamishima:eta="+str(fairness_param), 'w')
     for i in range(0, len(y_test)):

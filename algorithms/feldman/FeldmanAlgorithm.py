@@ -37,12 +37,20 @@ class FeldmanAlgorithm(AbstractAlgorithm):
       features_to_ignore = []
 
     if self.data == "retailer":
-      #datafile = 'data/retailer/cleaned-retailer.csv'
-      datafile = 'data/retailer/small-cleaned-retailer.csv'
+      datafile = 'data/retailer/cleaned-retailer.csv'
+      #datafile = 'data/retailer/small-cleaned-retailer.csv'
       export_to = 'audits/retailer'
       correct_types = [str for i in range(27)]
       train_percentage = 2.0/3.0
       response_header = "hired" 
+      features_to_ignore = []
+
+    if self.data == "small-retailer":
+      datafile = 'data/small-retailer/retailer/small-cleaned-retailer.csv'
+      export_to = 'audits/small-retailer'
+      correct_types = [str for i in range(27)]
+      train_percentage = 2.0/3.0
+      response_header = "hired"
       features_to_ignore = []
    
     data = BBA.load_from_file(datafile, testdata=None, correct_types=correct_types, train_percentage=train_percentage, response_header=response_header, features_to_ignore=features_to_ignore, missing_data_symbol="")
@@ -63,6 +71,9 @@ class FeldmanAlgorithm(AbstractAlgorithm):
     if self.data == "retailer":
       df = pd.read_csv('audits/retailer/urace_orig.audit.repaired_0.9999999999999999.predictions')
  
+    if self.data == "small-retailer":
+      df = pd.read_csv('audits/small-retailer/urace_orig.audit.repaired_0.9999999999999999.predictions')
+
     if self.data == "ricci":
       df = pd.read_csv('audits/ricci/Race.audit.repaired_0.9999999999999999.predictions')
 

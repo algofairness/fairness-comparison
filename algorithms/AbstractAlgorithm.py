@@ -3,6 +3,7 @@ import os, sys
 from preprocessing.prepare_german import prepare_german
 from preprocessing.prepare_adult import prepare_adult
 from preprocessing.prepare_retailer import prepare_retailer
+from preprocessing.prepare_small_retailer import prepare_small_retailer
 from preprocessing.prepare_ricci import prepare_ricci
 import numpy as np
 import pandas as pd
@@ -22,8 +23,8 @@ class AbstractAlgorithm(object):
     
     self.data = data
     self.params = params
-#    self.prepare = prepare
-#    self.classify = classify
+#    self.prepare = None
+#    self.classify = None
 
     if data == "adult":
       self.prepare = prepare_adult
@@ -42,6 +43,12 @@ class AbstractAlgorithm(object):
       self.name = "german"
       self.filename = "german_sex_nb_0"
       self.classify = classify_german
+
+    if data == "small-retailer":
+      self.prepare = prepare_small_retailer
+      self.name = "small-retailer"
+      self.filename = "retailer_cleaned_race_nb_0"
+      self.classify = classify_retailer
 
     if data == "retailer":
       self.prepare = prepare_retailer
