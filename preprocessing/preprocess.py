@@ -5,29 +5,47 @@ from PreprocessHelpers.RetailerCleaning import *
 import os
 import pandas as pd
 
-def prepareData(dataset):
+def prepareData(dataset, datatype):
 	os.chdir('../data')
 	if dataset == 'german':
 		print('German not done yet - have to redo according to paper')
 		###################
 		###GERMAN NOT DONE
 		###################
-		german_data = pd.read_csv(path + '/raw/german/german_data', sep = ' ', encoding = 'ISO-8859-1')
+		if datatype == 'categorical':
+			path = 'preprocessed/German'
+			german_data = pd.read_csv('/raw/german/german_data', sep = ' ', encoding = 'ISO-8859-1')
+			
+			#It's time to hard-code in the rows
+			german_data.columns = ['status', 'month', 'credit_history', 'purpose', 'credit_amount', \
+			'savings', 'employment', 'investment_as_income_percentage', 'personal_status', \
+			'other_debtors', 'residence_since', 'property', 'age', 'installment_plans', 'housing', \
+			'number_of_credits', 'skill_level', 'people_liable_for', 'telephone', 'foreign_worker', \
+			'credit']
 		
-		#It's time to hard-code in the rows
-		german_data.columns = ['status', 'month', 'credit_history', 'purpose', 'credit_amount', \
-		'savings', 'employment', 'investment_as_income_percentage', 'personal_status', \
-		'other_debtors', 'residence_since', 'property', 'age', 'installment_plans', 'housing', \
-		'number_of_credits', 'skill_level', 'people_liable_for', 'telephone', 'foreign_worker', \
-		'credit']
+			german_data.to_csv('/preprocessed/german_credit_data.csv', index = False) #Save the CSV because it gets used here and there
 		
-		german_data.to_csv(path + '/preprocessed/german_credit_data.csv', index = False) #Save the CSV because it gets used here and there
-		
-		#Load in the numeric data
-		#german_data_numeric = pd.read_csv(path + '/raw/german/german_data_numeric', sep = ' ', encoding = 'ISO-8859-1')
-		#
-		#german_data.to_csv(path + '/preprocessed/german_credit_data.csv', index = False) #Save this CSV
-		#print(len(german_data))
+		if datatype == 'numeric':
+			#Load in the numeric data - first create array where we keep data 
+			newlines = []
+			i = 0
+			#while i< 25:
+			#	newlines.append([])
+			#	i +=1
+				
+			for line in open('raw/german/german.data-numeric'):
+				#if "  " in line: #If there are multiple spaces, we want to replace them with one space so that the data can be read in.
+				newline = line.split()
+				newlines.append(newline)
+				
+			print(newlines[0])
+			CSVHeaders = ['One',	'Two',	'three',	'four',	'Five',	'Six',	'Seven', \
+			'eight', 'nine', 'Ten', 'Eleven', 'Twelve', '13', '14', '15', '16', '17',	'18', '19',\
+			'20',	'21',	'22',	'23',	'gender', 'Credit']			
+			german_data_numeric = pd.DataFrame(newlines, columns = CSVHeaders)
+				
+			german_data_numeric.to_csv('preprocessed/german/german_numeric.csv', index = False)
+
 		
 	if dataset == 'adult': 
 		print('Adult not done yet - have to do according to paper')
@@ -51,4 +69,4 @@ def prepareData(dataset):
 		
 		
 if __name__ == '__main__': 
-	prepareData('retailer')
+	prepareData('german', 'numeric')
