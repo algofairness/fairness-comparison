@@ -33,7 +33,6 @@ def run_metrics(data, listoflists, times):
   c2nb_actual, c2nb_predicted, c2nb_protected, c2nb_time = algorithm.run()
 
   # Feldman
-  '''
   params = {"model": Weka_SVM}
   algorithm = FeldmanAlgorithm(data, params)
   feldman_svm_actual, feldman_svm_predicted, feldman_svm_protected, feldman_svm_time = algorithm.run()
@@ -41,7 +40,6 @@ def run_metrics(data, listoflists, times):
   params = {"model": Weka_DecisionTree}
   algorithm = FeldmanAlgorithm(data, params)
   feldman_wdt_actual, feldman_wdt_predicted, feldman_wdt_protected, feldman_wdt_time = algorithm.run()
-  '''
 
   # Kamishima
   params = {}
@@ -87,10 +85,13 @@ def run_metrics(data, listoflists, times):
   algorithm = ZafarAlgorithm(data, params)
   zafar_opt_fairness_actual, zafar_opt_fairness_predicted, zafar_opt_fairness_protected, zafar_opt_fairness_time = algorithm.run()
 
-  params["sep_constraint"] = 1
-  params["gamma"] = 1000.0
-  algorithm = ZafarAlgorithm(data, params)
-  zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected, zafar_nopos_classification_time = algorithm.run()
+  if(data == "german"):
+    zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected, zafar_nopos_classification_time = [], [], [], 'NA'
+  else:
+    params["sep_constraint"] = 1
+    params["gamma"] = 1000.0
+    algorithm = ZafarAlgorithm(data, params)
+    zafar_nopos_classification_actual, zafar_nopos_classification_predicted, zafar_nopos_classification_protected, zafar_nopos_classification_time = algorithm.run()
 #  print("\n")
 
   # Generate Metric calculators
@@ -134,7 +135,6 @@ def run_metrics(data, listoflists, times):
 
 #  print("\n")
 
-  '''   
   feldman_svm_metrics = Metrics(feldman_svm_actual, feldman_svm_predicted, feldman_svm_protected)
   feldman_wdt_metrics = Metrics(feldman_wdt_actual, feldman_wdt_predicted, feldman_wdt_protected)
 #  print("======================================= Feldman ========================================\n")
@@ -151,7 +151,6 @@ def run_metrics(data, listoflists, times):
   times[5].append(feldman_wdt_time)
 
 #  print("\n")
-  '''
    
 
   kam_metrics = Metrics(kam_actual, kam_predicted, kam_protected)
@@ -160,8 +159,8 @@ def run_metrics(data, listoflists, times):
   #print_res(kam1_metrics)
   results = ret_res(kam_metrics)
   for i in range(0,len(listoflists)):
-    listoflists[i][4].append(results[i])
-  times[4].append(kam_time)
+    listoflists[i][6].append(results[i])
+  times[6].append(kam_time)
 
 #  print("\n")
 
@@ -213,8 +212,8 @@ def run_metrics(data, listoflists, times):
   #print_res(zafar_unconstrained_metrics)
   results = ret_res(zafar_unconstrained_metrics)
   for i in range(0,len(listoflists)):
-    listoflists[i][5].append(results[i])
-  times[5].append(zafar_unconstrained_time)
+    listoflists[i][7].append(results[i])
+  times[7].append(zafar_unconstrained_time)
 
 #  print("\n")
 
@@ -223,8 +222,8 @@ def run_metrics(data, listoflists, times):
   #print_res(zafar_opt_accuracy_metrics)
   results = ret_res(zafar_opt_accuracy_metrics)
   for i in range(0,len(listoflists)):
-    listoflists[i][6].append(results[i])
-  times[6].append(zafar_opt_accuracy_time)
+    listoflists[i][8].append(results[i])
+  times[8].append(zafar_opt_accuracy_time)
 
 #  print("\n")
 
@@ -233,8 +232,8 @@ def run_metrics(data, listoflists, times):
   #print_res(zafar_opt_fairness_metrics)
   results = ret_res(zafar_opt_fairness_metrics)
   for i in range(0,len(listoflists)):
-    listoflists[i][7].append(results[i])
-  times[7].append(zafar_opt_fairness_time)
+    listoflists[i][9].append(results[i])
+  times[9].append(zafar_opt_fairness_time)
 
 #  print("\n")
 
@@ -243,8 +242,8 @@ def run_metrics(data, listoflists, times):
   #print_res(zafar_nopos_classification_metrics)
   results = ret_res(zafar_nopos_classification_metrics)
   for i in range(0,len(listoflists)):
-    listoflists[i][8].append(results[i])
-  times[8].append(zafar_nopos_classification_time)
+    listoflists[i][10].append(results[i])
+  times[10].append(zafar_nopos_classification_time)
 
 
 def get_sd(vals_per_split, mean):
@@ -256,17 +255,17 @@ def get_sd(vals_per_split, mean):
   
 
 def run_repeatedly(data, runs=10):
-  acc, final_acc = [[] for i in range(9)], [] 
-  di, final_di = [[] for i in range(9)], [] 
-  ber, final_ber = [[] for i in range(9)], [] 
-  bcr, final_bcr = [[] for i in range(9)], [] 
-  cv, final_cv = [[] for i in range(9)], []
-  auc, final_auc = [[] for i in range(9)], []
-  mcc, final_mcc = [[] for i in range(9)], []
-  tim, final_time = [[] for i in range(9)], []
+  acc, final_acc = [[] for i in range(11)], [] 
+  di, final_di = [[] for i in range(11)], [] 
+  ber, final_ber = [[] for i in range(11)], [] 
+  bcr, final_bcr = [[] for i in range(11)], [] 
+  cv, final_cv = [[] for i in range(11)], []
+  auc, final_auc = [[] for i in range(11)], []
+  mcc, final_mcc = [[] for i in range(11)], []
+  tim, final_time = [[] for i in range(11)], []
   metrics = [acc,di,ber,bcr,cv,mcc]
   final_metrics = [final_acc,final_di,final_ber,final_bcr,final_cv,final_mcc]
-  sd = [[[0] for i in range(9)],[[0] for i in range(9)],[[0] for i in range(9)],[[0] for i in range(9)],[[0] for i in range(9)],[[0] for i in range(9)]]
+  sd = [[[0] for i in range(11)],[[0] for i in range(11)],[[0] for i in range(11)],[[0] for i in range(11)],[[0] for i in range(11)],[[0] for i in range(11)]]
 
   for i in range(0,runs):
     run_metrics(data, metrics, tim)
@@ -296,8 +295,8 @@ def run_repeatedly(data, runs=10):
   # Create DataFrame of results and export to csv located in results directory
   export_to = 'results/' + data + '.csv' 
   headers = ['Algorithms','Acc', 'Acc_SD', 'DI', 'DI_SD','BER', 'BER_SD', 'BCR', 'BCR_SD', 'CV', 'CV_SD','MCC','MCC_SD', 'Run Time']
-  algorithms = ['SVM','NB','LR','Calders','Kamishima','Zafar Unconstrained','Zafar w Accuracy Constraint','Zafar w Fairness Constraint','Zafar No Pos Misclassification']
-  #algorithms = ['SVM','NB','LR','Calders','Feldman SVM', 'Feldman WDT','Kamishima','Zafar Unconstrained','Zafar w Accuracy Constraint','Zafar w Fairness Constraint','Zafar No Pos Misclassification']
+  #algorithms = ['SVM','NB','LR','Calders','Kamishima','Zafar Unconstrained','Zafar w Accuracy Constraint','Zafar w Fairness Constraint','Zafar No Pos Misclassification']
+  algorithms = ['SVM','NB','LR','Calders','Feldman SVM', 'Feldman WDT','Kamishima','Zafar Unconstrained','Zafar w Accuracy Constraint','Zafar w Fairness Constraint','Zafar No Pos Misclassification']
   #algorithms = ['SVM','NB','LR','Calders','Feldman SVM', 'Feldman WDT','Kamishima eta=1','Kamishima eta=30','Kamishima eta=100','Kamishima eta=500','Kamishima eta=1000','Zafar Unconstrained','Zafar w Accuracy Constraint','Zafar w Fairness Constraint','Zafar No Pos Misclassification']
 
   d = {'Algorithms':algorithms,'Acc':final_acc, 'Acc_SD':sd[0] , 'DI':final_di, 'DI_SD':sd[1] , 'BER':final_ber, 'BER_SD':sd[2] , 'BCR':final_bcr, 'BCR_SD':sd[3] , 'CV':final_cv, 'CV_SD':sd[4], 'MCC':final_mcc, 'MCC_SD':sd[5], 'Run Time':final_time}
@@ -306,12 +305,12 @@ def run_repeatedly(data, runs=10):
   df.to_csv(export_to, index=False) 
 
 if __name__ == '__main__':
-  '''
   print('Analyzing German data...')
-  run_repeatedly('german')
+  run_repeatedly('german',5)
   print('Complete.')
   print("\n")
 
+  '''
   print('Analyzing Ricci data...')
   run_repeatedly("ricci")
   print('Complete.')
@@ -321,13 +320,11 @@ if __name__ == '__main__':
   run_repeatedly('adult')
   print('Complete.')
   print("\n")
-  '''
   
   print('Analyzing Retailer data...')
   run_repeatedly("retailer")
   print('Complete.')
 
-  '''
   print('Analyzing Small Retailer data...')
   run_repeatedly("small-retailer",1)
   print('Complete.')
