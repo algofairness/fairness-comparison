@@ -8,10 +8,7 @@ import pandas as pd
 def prepareData(dataset, datatype):
 	os.chdir('../data')
 	if dataset == 'german':
-		print('German not done yet - have to redo according to paper')
-		###################
-		###GERMAN NOT DONE
-		###################
+		
 		if datatype == 'categorical':
 			path = 'preprocessed/German'
 			german_data = pd.read_csv('/raw/german/german_data', sep = ' ', encoding = 'ISO-8859-1')
@@ -23,8 +20,8 @@ def prepareData(dataset, datatype):
 			'number_of_credits', 'skill_level', 'people_liable_for', 'telephone', 'foreign_worker', \
 			'credit']
 		
-			german_data.to_csv('/preprocessed/german_credit_data.csv', index = False) #Save the CSV because it gets used here and there
-		
+			german_data.to_csv('/preprocessed/german_credit_data.csv', index = False) 
+	
 		if datatype == 'numeric':
 			#Load in the numeric data - first create array where we keep data 
 			newlines = []
@@ -34,15 +31,23 @@ def prepareData(dataset, datatype):
 			#	i +=1
 				
 			for line in open('raw/german/german.data-numeric'):
-				#if "  " in line: #If there are multiple spaces, we want to replace them with one space so that the data can be read in.
-				newline = line.split()
+				newline = line.split() #Since the entries are separate by space, we will 
 				newlines.append(newline)
 				
 			print(newlines[0])
-			CSVHeaders = ['One',	'Two',	'three',	'four',	'Five',	'Six',	'Seven', \
+			CSVHeaders = ['One', 'Two', 'three', 'four', 'Five', 'Six', 'gender', 'Seven', 'eight',	\
+			'nine',	'Ten', 'Eleven', 'Twelve', '13', '14', '15', '16', '17', '18', '19', '20', '21', \
+			'22', '23', 'Credit']
+
+			german_data_numeric = pd.DataFrame(newlines, columns = CSVHeaders)	
+			
+			
+			orderedHeaders = ['One',	'Two',	'three',	'four',	'Five',	'Six',	'Seven', \
 			'eight', 'nine', 'Ten', 'Eleven', 'Twelve', '13', '14', '15', '16', '17',	'18', '19',\
 			'20',	'21',	'22',	'23',	'gender', 'Credit']			
-			german_data_numeric = pd.DataFrame(newlines, columns = CSVHeaders)
+			
+			#Put columns in correct order
+			german_data_numeric = german_data_numeric[orderedHeaders]
 				
 			german_data_numeric.to_csv('preprocessed/german/german_numeric.csv', index = False)
 
