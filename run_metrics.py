@@ -306,7 +306,7 @@ def run_repeatedly(data, runs=10):
 
 if __name__ == '__main__':
   print('Analyzing German data...')
-  run_repeatedly('german',5)
+  run_repeatedly('german')
   print('Complete.')
   print("\n")
 
