@@ -117,7 +117,7 @@ class Metrics:
     p_protected_pos = n_protected_pos / float(self.total_sensitive)
     p_nonprotected_pos = n_nonprotected_pos / float(self.total_nonsensitive)
     res = p_protected_pos - p_nonprotected_pos
-    return res
+    return 1-res
 
   def NPI_score_2(self):
     stats = BinClassStats(self.tp, self.fn, self.fp, self.tn)
