@@ -42,10 +42,18 @@ class ZafarAlgorithm(AbstractAlgorithm):
     # Defaults to {}
     if "sensitive_attrs_to_cov_thresh" in list(self.params.keys()):
       sensitive_attrs_to_cov_thresh = self.params["sensitive_attrs_to_cov_thresh"]
+      '''
+      f = open("compare.txt","w")
+      for y in self.y_train:
+        f.write(str(y) + ", ")
+      f.write("END OF Y_TRAIN\n")
+      for z in self.x_control_train[sensitive_attrs[0]]:
+        f.write(str(z) + ", ")
+      f.write("END OF CONTROL")
+      f.close()
+      '''
     else:
       sensitive_attrs_to_cov_thresh = {}
-
-    #print "SPLIT: ", self.x_train, self.y_train, self.x_control_train[sensitive_attrs[0]]
 
     w = ut.train_model(self.x_train, self.y_train, self.x_control_train, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs, sensitive_attrs_to_cov_thresh, gamma)
     distances_boundary_test = (np.dot(self.x_test, w)).tolist()
@@ -79,28 +87,40 @@ class ZafarAlgorithm(AbstractAlgorithm):
 
     return zafar_actual, zafar_predicted, zafar_protected, zafar_time
 
-def test(data):
-  params = {}
-  algorithm = ZafarAlgorithm(data, params)
-  print("Unconstrained: ", algorithm.run())
+def test():
 
-  params["apply_fairness_constraints"] = 1
-  params["sensitive_attrs_to_cov_thresh"] = {algorithm.sensitive_attr:0}
-  algorithm = ZafarAlgorithm(data, params)
-  print("Opt for accuracy: ", algorithm.run())
+  loss_function = lf._logistic_loss
+  x_train = [[1,0,1,0,0],[1,1,0,1,0],[1,0,0,1,1],[0,1,0,0,0],[0,1,0,0,1]]
+  x_control = [0,1,0,1,0]
+  y_train = [1,0,0,1,0]
+  
+  w = ut.train_model(x_train, y_train, x_control, loss_function, 0, 1, 1, 'race', {}, 1000.0)
+  distances_boundary_test = (np.dot(self.x_test, w)).tolist()
+  predictions = np.sign(distances_boundary_test)
 
-  params["apply_accuracy_constraint"] = 1
-  params["apply_fairness_constraints"] = 0
-  params["sensitive_attrs_to_cov_thresh"] = {}
-  params["gamma"] = 0.5
-  algorithm = ZafarAlgorithm(data, params)
-  print("Opt for fairness: ", algorithm.run())
+  fixed_y_test = []
+  fixed_predictions = []
 
-  params["sep_constraint"] = 1
-  params["gamma"] = 1000.0
-  algorithm = ZafarAlgorithm(data, params)
-  print("No pos classification errors: ", algorithm.run())
+  for x in self.y_test:
+    if x == -1:
+      fixed_y_test.append(0)
+    elif x == 1:
+      fixed_y_test.append(1)
+    elif x == 0:
+      fixed_y_test.append(0)
+    else:
+      print("Incorrect value in class values")
 
+  for x in predictions:
+    if x == -1:
+      fixed_predictions.append(0)
+    elif x == 1:
+      fixed_predictions.append(1)
+    elif x == 0:
+      fixed_predictions.append(0)
+    else:
+      print("Incorrect value in class values")
+
+  
 if __name__ == "__main__":
-  test("german")
-  test("adult")
+  test()

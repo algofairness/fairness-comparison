@@ -130,7 +130,7 @@ class KamishimaAlgorithm(AbstractAlgorithm):
         else:
             print("Invalid class value in y_control_test")
 
-    def getScore(fixed_y_test,y_classified_results,DI=True):
+    def getScore(fixed_y_test,y_classified_results, var=1): #var = 1-acc/DI, 2-acc, 3-DI
       total_sensitive = 0
       total_nonsensitive = 0
       for x in self.x_control_test[self.sensitive_attr]:
@@ -139,64 +139,84 @@ class KamishimaAlgorithm(AbstractAlgorithm):
         elif x == 1:
           total_nonsensitive += 1
       accuracy = accuracy_score(fixed_y_test, y_classified_results)
-      if DI:
+      if var == 2:
+        return accuracy
+      elif var == 1:
         return abs(1 - accuracy/DI_score(y_classified_results, self.x_control_test[self.sensitive_attr], total_sensitive, total_nonsensitive))
       else:
-        return abs(accuracy - (accuracy + CV_score(y_classified_results, self.x_control_test[self.sensitive_attr], total_sensitive, total_nonsensitive)))
+        return DI_score(y_classified_results, self.x_control_test[self.sensitive_attr], total_sensitive, total_nonsensitive)
 
     minDI = (1000,[])
-    minCV = (1000,[])
+    maxacc = (1000,[])
+    maxDI = (1000,[])
+    if self.data=="ricci":
+      minDI = (50,[])
+      maxacc = (50,[])
+      maxDI = (50,[])
 
-    def binMaxVar(first, last, minDI, minCV, DI=True):
+    def binMaxVar(first, last, minDI, maxacc, maxDI, var=1): #var = 1-acc/DI, 2-acc, 3-DI
       if first == last:
-        if DI:
+        if var == 1:
           return minDI
+        elif var == 2:
+          return maxacc
         else:
-          return minCV
+          return maxDI
       else:
         midpoint = (first + last)//2
         y_classified_results = train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, midpoint, self.x_control_test)
-        midScore = getScore(fixed_y_test, y_classified_results,DI)
+
+        midScore = getScore(fixed_y_test, y_classified_results, var)
 
         firstMid = (first + midpoint)//2
         first_y_classified_results = train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, firstMid, self.x_control_test)
-        firstMidScore = getScore(fixed_y_test, first_y_classified_results,DI)
+        firstMidScore = getScore(fixed_y_test, first_y_classified_results,var)
 
         secondMid = (firstMid + last)//2
         second_y_classified_results = train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, secondMid, self.x_control_test)
-        secondMidScore = getScore(fixed_y_test, second_y_classified_results,DI)
+        secondMidScore = getScore(fixed_y_test, second_y_classified_results,var)
         
         if firstMidScore <= secondMidScore:
-          if DI:
+          if var == 1:
             if firstMidScore <= minDI[0]:
-              return binMaxVar(first, midpoint, (firstMidScore, first_y_classified_results), minCV)
+              return binMaxVar(first, midpoint, (firstMidScore, first_y_classified_results), maxacc,maxDI)
             else:
-              return binMaxVar(first, midpoint, minDI, minCV)
+              return binMaxVar(first, midpoint, minDI, maxacc, maxDI)
+          elif var == 2:
+            if firstMidScore <= maxacc[0]:
+              return binMaxVar(first, midpoint, minDI, (firstMidScore,first_y_classified_results), maxDI)
+            else:
+              return binMaxVar(first, midpoint, minDI, maxacc, maxDI)
           else:
-            if firstMidScore <= minCV[0]:
-              return binMaxVar(first, midpoint, minDI, (firstMidScore,first_y_classified_results))
+            if firstMidScore <= maxDI[0]:
+              return binMaxVar(first, midpoint, minDI, maxacc, (firstMidScore,first_y_classified_results))
             else:
-              return binMaxVar(first, midpoint, minDI, minCV)
+              return binMaxVar(first, midpoint, minDI, maxacc, maxDI)
           
         else: 
-          if DI: 
+          if var == 1: 
             if secondMidScore <= minDI[0]:
-              return binMaxVar(midpoint, last, (secondMidScore,second_y_classified_results), minCV)
+              return binMaxVar(midpoint, last, (secondMidScore,second_y_classified_results), maxacc,maxDI)
             else:
-              return binMaxVar(first, midpoint, minDI, minCV)
+              return binMaxVar(first, midpoint, minDI, maxacc,maxDI)
+          elif var == 2:
+            if secondMidScore <= maxacc[0]:
+              return binMaxVar(midpoint, last, minDI, (secondMidScore, second_y_classified_results),maxDI)
+            else:
+              return binMaxVar(first, midpoint, minDI, maxacc,maxDI)
           else:
-            if secondMidScore <= minCV[0]:
-              return binMaxVar(midpoint, last, minDI, (secondMidScore, second_y_classified_results))
+            if secondMidScore <= maxDI[0]:
+              return binMaxVar(midpoint, last, minDI, maxacc, (secondMidScore, second_y_classified_results))
             else:
-              return binMaxVar(first, midpoint, minDI, minCV)
-
-    final_minDI = binMaxVar(1,1000, minDI, minCV, True) 
-    final_minCV = binMaxVar(1,1000, minDI, minCV, False)
- 
-    if final_minDI[0] <= final_minCV[0]:
-      predicted = final_minDI[1]
+              return binMaxVar(first, midpoint, minDI, maxacc,maxDI)
+    
+    if self.data == "ricci":
+      final = binMaxVar(1,50, minDI, maxacc, maxDI, self.params['var'])
+      #final = (0, train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, 1, self.x_control_test))
     else:
-      predicted = final_minCV[1]
+      final = binMaxVar(1,1000, minDI, maxacc, maxDI, self.params['var']) 
+    predicted = final[1]
+
     kam_actual, kam_predicted, kam_protected = fixed_y_test, predicted, self.x_control_test[self.sensitive_attr]
     kam_time = datetime.now() - startTime
 

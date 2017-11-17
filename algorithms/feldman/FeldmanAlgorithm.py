@@ -16,7 +16,7 @@ class FeldmanAlgorithm(AbstractAlgorithm):
       datafile = 'data/ricci/cleaned-ricci.csv'
       export_to = 'audits/ricci'
       correct_types = [str,str,str,str,str,str]
-      train_percentage = 1.0/2.0
+      train_percentage = 2.0/3.0 
       response_header = "Class"
       features_to_ignore = ["Position"]
     
@@ -53,6 +53,7 @@ class FeldmanAlgorithm(AbstractAlgorithm):
       response_header = "hired"
       features_to_ignore = []
    
+    print(datafile)
     data = BBA.load_from_file(datafile, testdata=None, correct_types=correct_types, train_percentage=train_percentage, response_header=response_header, features_to_ignore=features_to_ignore, missing_data_symbol="")
     #data = BBA.load_data(self.data)
     auditor = BBA.Auditor()

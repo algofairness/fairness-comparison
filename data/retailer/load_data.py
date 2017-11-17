@@ -11,8 +11,8 @@ To switch between cleaned and small-cleaned, check blackboxauditing.py, FeldmanA
 '''
 
 train_percentage = 2.0/3.0
-train_filename = "data/retailer/cleaned-retailer.csv"
-#train_filename = "data/small-retailer/retailer/small-cleaned-retailer.csv"
+#train_filename = "data/retailer/cleaned-retailer.csv"
+train_filename = "data/small-retailer/retailer/small-cleaned-retailer.csv"
 test_filename = "data/retailer.test.csv"
 max_entries = None
 reqs = [int]*25
