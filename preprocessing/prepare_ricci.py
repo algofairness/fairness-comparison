@@ -7,7 +7,7 @@ from random import shuffle
 def prepare_ricci():
   sensitive_attrs = ['Race']
   sensitive_attr = sensitive_attrs[0]
-  train_fold_size = 1.0/2.0
+  train_fold_size = 0.66 
 
   run_ricci_repair()
 

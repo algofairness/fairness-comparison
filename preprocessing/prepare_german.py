@@ -11,7 +11,7 @@ from random import shuffle
 def prepare_german():
   sensitive_attrs = ["sex"]
   sensitive_attr = sensitive_attrs[0]
-  train_fold_size = 0.3
+  train_fold_size = 0.66
 
   run_german_repair()
 
