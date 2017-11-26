@@ -1,13 +1,14 @@
 import sys
-#from PreprocessHelpers.GermanProcessing import *
-#from PreprocessHelpers.RicciCleaning import *
-#from PreprocessHelpers.RetailerCleaning import *
+from german_processing import *
+from ricci_processing import *
+from retailer_processing import *
 import os
 import pandas as pd
 import fire
 
 def prepareData(dataset=None):
     os.chdir('../data')
+    path = '../data'
     if dataset == 'german' or dataset == None:
         print('German not done yet - have to redo according to paper')
 	###################

@@ -1,6 +1,5 @@
 import numpy as np
 import sys
-sys.path.append('/home/jnim/fairness/fairness-comparison/data')
 import pandas as pd
 
 
