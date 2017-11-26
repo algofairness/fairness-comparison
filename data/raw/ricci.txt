@@ -1,0 +1,65 @@
+NAME: Data set arising from the Ricci v. DeStefano case
+TYPE: Observational data
+SIZE: 118 observations, 5 variables
+
+DESCRIPTIVE ABSTRACT:
+The data set contains the oral, written and combined test scores for 2003 New Haven Fire Department 
+promotion exams. The Race and Position for each test taker are also given. 
+
+
+SOURCES:
+The data was obtained from the district court's decision, the briefs and appendices to them. 
+
+Ricci v. DeStefeno, 554 F. Supp. 2d 142 (United States District Court for the district of Connecticut)
+
+
+VARIABLE DESCRIPTIONS:
+
+Columns 
+1	Race -- W = white, H=Hispanic, B=black
+3-12	Position -- Captain or Lieutenant
+14-18	Oral -- Oral exam score
+20-21	Written -- Written exam score
+23-28	Combine -- Weighted total score, with 60% written and 40% oral
+
+Values are centered and delimited by blanks. There are no missing values.
+
+STORY BEHIND THE DATA:
+In November and December of 2003, the New Haven Fire Department administered oral and written exams 
+for promotion to Lieutenant and Captain. Under the contract between the City of New Haven and the 
+firefighter's union, the written exam received a weight of 60% and oral exam received a weight of 40%.
+Applicants with a total score of 70% or above pass the exam and become eligible for promotion. A total 
+of 118 firefighters took the exam. Among them, 77 took the Lieutenant exam, and 41 took the Captain exam. 
+During the time of the exams, there were 8 Lieutenant and 7 Captain positions available. The City Charter of
+New Haven specifies that when "g" promotions are made, the Department must select them from the top
+"g+2" scorers. Consequently, top 10 Lieutenant scorers and top 9 Captain scorers are eligible for 
+potential promotion. The City of New Haven decided not to certify the exam and promoted no one, 
+because an insufficient number of minorities would receive a promotion to an existing position. 
+Ricci and other test-takers who would be considered for promotion had the city certified the exam 
+sued the city for reverse discrimination. The District Court decided that the plaintiffs did not 
+have a viable disparate impact claim. The appeals court confirmed the district court's ruling in 
+Feb, 2008. On June 29, 2009, the Supreme Court decided that the City's failure to certify the tests 
+was a violation of Title VII of the Civil Rights Act of 1964. 
+
+PEDAGOGICAL NOTES:
+There are three races in the data: white, Hispanic and black. The data can be used for one-way ANOVA on 
+equality of average test scores for three races; two-way ANOVA for 
+equlity of test scores for race and position; chi-square test on the equality 
+of pass rates for three races; Fisher-Freeman-Halton test on the equality of the potential promotion 
+rates.
+
+Instructors can also combine blacks and Hispanics as minority. Then the following analysis can be made: 
+two-sample t-test on equality of average test scores for majority v. minority; chi-square test on the 
+equality of pass rates for majority v. minority; Fisher's exact test on equality of the potential 
+promotion rates for majority v.minority.
+
+SUBMITTED BY:
+Weiwen Miao
+Department of Mathematics
+Haverford College
+Haverford, PA 19041
+wmiao@haverford.edu
+
+
+
+
