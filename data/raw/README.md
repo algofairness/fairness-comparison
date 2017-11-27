@@ -1,5 +1,3 @@
-# Readme for Raw Data
-
 ## Data sources and citations
 
 ### German Credit Data
