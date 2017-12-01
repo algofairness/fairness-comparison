@@ -270,7 +270,6 @@ def run_kamishima(data, times=10):
       final_time.append(str(mean_time))
 
   for i in range(len(collected_metrics)):
-    # x is list of lists where each list is a metric 
     for x in range(len(collected_metrics[i])):
       if 'NA' in collected_metrics[i][x]:
         collected_metrics[i][x] = [k for k in collected_metrics[i][x] if k != 'NA']
@@ -393,7 +392,7 @@ def run_zafar(data, times):
   return zafar_unconstrained, zafar_opt_accuracy, zafar_opt_fairness, zafar_nopos_classification 
 
 def run_metrics(data, times=10):
-  with open("results/"+data+".csv",'w') as f:
+  with open("results/"+data+"-gen.csv",'w') as f:
     f.write('Algorithms,Acc,Acc_SD,BCR,BCR_SD,MCC,MCC_SD,DI,DI_SD,CV,CV_SD,Run Time'+'\n')
 
     # GEN
@@ -401,21 +400,39 @@ def run_metrics(data, times=10):
     f.write(svm+'\n')
     f.write(nb+'\n')
     f.write(lr+'\n')
+  f.close()
+
+  with open("results/"+data+"-calders.csv",'w') as f:
+    f.write('Algorithms,Acc,Acc_SD,BCR,BCR_SD,MCC,MCC_SD,DI,DI_SD,CV,CV_SD,Run Time'+'\n')
 
     # CALDERS
     c2nb = run_calders(data,times)
     f.write(c2nb+'\n')
+  f.close()
 
+  with open("results/"+data+"-feldman.csv",'w') as f:
+    f.write('Algorithms,Acc,Acc_SD,BCR,BCR_SD,MCC,MCC_SD,DI,DI_SD,CV,CV_SD,Run Time'+'\n')
+
+    '''
     # FELDMAN
     feldman_svm, feldman_dt = run_feldman(data,times)
     f.write(feldman_svm+'\n')
     f.write(feldman_dt+'\n') 
+  f.close()
+
+  with open("results/"+data+"-kamishima.csv",'w') as f:
+    f.write('Algorithms,Acc,Acc_SD,BCR,BCR_SD,MCC,MCC_SD,DI,DI_SD,CV,CV_SD,Run Time'+'\n')
 
     # KAMISHIMA
     kamboth, kamacc, kamDI = run_kamishima(data,times)
     f.write(kamboth+'\n')
     f.write(kamacc+'\n')
     f.write(kamDI+'\n')
+  f.close()
+  '''
+
+  with open("results/"+data+"-zafar.csv",'w') as f:
+    f.write('Algorithms,Acc,Acc_SD,BCR,BCR_SD,MCC,MCC_SD,DI,DI_SD,CV,CV_SD,Run Time'+'\n')
 
     # ZAFAR
     zafar_unconstrained, zafar_opt_accuracy, zafar_opt_fairness, zafar_nopos_classification = run_zafar(data,times)
@@ -423,13 +440,14 @@ def run_metrics(data, times=10):
     f.write(zafar_opt_accuracy+'\n')
     f.write(zafar_opt_fairness+'\n')
     f.write(zafar_nopos_classification)
+  f.close()
 
 if __name__ == '__main__':
   '''
-  print("Running German data...")
+  print("Analyzing German data...")
   run_metrics('german')
   print("Complete.")
-  '''
+
   print('Analyzing Ricci data...')
   run_metrics("ricci")
   print('Complete.')
@@ -440,6 +458,7 @@ if __name__ == '__main__':
   print('Complete.')
   print("\n")
 
+  '''
   print('Analyzing Retailer data...')
   run_metrics("retailer")
   print('Complete.')

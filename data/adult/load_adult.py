@@ -22,7 +22,6 @@ def load_adult_data(filename, load_data_size=None):
     """
     attrs = ['age', 'education_num', 'capital_gain', 'capital_loss', 'hours_per_week', 'sex', 'income_per_year']
     int_attrs = ['age', 'education_num', 'capital_gain', 'capital_loss', 'hours_per_week']
-    #int_attrs = ['age', 'fnlwgt', 'education_num', 'capital_gain', 'capital_loss', 'hours_per_week'] # attributes with integer values -- the rest are categorical
     sensitive_attrs = ['sex'] # the fairness constraints will be used for this feature
     attrs_to_ignore = ['fnlwgt', 'sex', 'race']
     attrs_for_classification = set(attrs) - set(attrs_to_ignore)
@@ -77,11 +76,13 @@ def load_adult_data(filename, load_data_size=None):
             if attr_name == "native_country":
                 if attr_val!="United-States":
                     attr_val = "Non-United-Stated"
+            '''
             elif attr_name == "education":
                 if attr_val in ["Preschool", "1st-4th", "5th-6th", "7th-8th"]:
                     attr_val = "prim-middle-school"
                 elif attr_val in ["9th", "10th", "11th", "12th"]:
                     attr_val = "high-school"
+            '''
 
             if attr_name in sensitive_attrs:
                 x_control[attr_name].append(attr_val)

@@ -11,8 +11,8 @@ To switch between cleaned and small-cleaned, check blackboxauditing.py, FeldmanA
 '''
 
 train_percentage = 2.0/3.0
-#train_filename = "data/retailer/cleaned-retailer.csv"
-train_filename = "data/small-retailer/retailer/small-cleaned-retailer.csv"
+train_filename = "data/retailer/cleaned-retailer.csv"
+#train_filename = "data/small-retailer/retailer/small-cleaned-retailer.csv"
 test_filename = "data/retailer.test.csv"
 max_entries = None
 reqs = [int]*25
@@ -20,27 +20,34 @@ correct_types = [int,int,int,str,str,float,int,float,str] + reqs
 
 def clean_retailer_data():
   f = pd.read_csv('data/retailer/retailer.csv', encoding='latin1', error_bad_lines=False)
-  keep_cols = ['usite','apscustpersonid','azip','urace_orig','udateofbirth','ugender','szip','csvr2','hired']
+  keep_cols = ['usite','azip','urace_orig','uhiredate','udateofbirth','ugender','szip','csvr2','hired']
   for col in list(f):
     if 'req_' in col:
       keep_cols.append(col)
   data = f[keep_cols].dropna()
+  # data.urace_orig.replace(['White','Black or African American', 'Black/African-American', 'Asian', 'Amer. Indian or Native Alaskan', 'Amer. Indian or Alaska Native','American Indian or Alaska Native', 'Nat. Hawaiin/Pac. Islander', 'Native Hawaiian/Other Pacific Islander', 'Hispanic or Latino','Hispanic/Latino'], [5,0,0,1,2,2,2,3,3,4,4], inplace=True)
   data.urace_orig.replace(['White','Black or African American', 'Black/African-American', 'Asian', 'Amer. Indian or Native Alaskan', 'Amer. Indian or Alaska Native','American Indian or Alaska Native', 'Nat. Hawaiin/Pac. Islander', 'Native Hawaiian/Other Pacific Islander', 'Hispanic or Latino','Hispanic/Latino'], [1,0,0,0,0,0,0,0,0,0,0], inplace=True)
 
   # Change DOB to age
+  hd = data['uhiredate'].tolist()
   dob = data['udateofbirth'].tolist()
   agelist = []
-  for x in dob:
-    day = x[0:2]
-    month = datetime.datetime.strptime(str(x[2:5]), '%b').month
-    year = x[5:9]
+  for x in range(len(dob)):
+    birthmonth = datetime.datetime.strptime(str(dob[x][2:5]), '%b').month
+    birthyear = dob[x][5:9]
+    hiremonth = datetime.datetime.strptime(str(hd[x][2:5]), '%b').month
+    hireyear = hd[x][5:9]
+
+    age = int(hireyear) - int(birthyear) + (hiremonth - birthmonth)/12
+
     # Code from:
     # https://stackoverflow.com/questions/2217488/age-from-birthdate-in-python
-    age = date.today().year - int(year) - ((date.today().month, date.today().day) < (month, int(day)))
+    # age = date.today().year - int(year) - ((date.today().month, date.today().day) < (month, int(day)))
     agelist.append(age)    
   se = pd.Series(agelist)
   data['age'] = se.values 
   data.drop(['udateofbirth'],axis=1,inplace=True)
+  data.drop(['uhiredate'],axis=1,inplace=True)
 
   data.to_csv(train_filename, index=False)
 

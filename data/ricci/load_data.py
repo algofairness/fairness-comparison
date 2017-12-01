@@ -2,7 +2,7 @@ import csv
 import pandas as pd
 import numpy as np
 
-train_percentage = 1.0/2.0
+train_percentage = 2.0/3.0
 train_filename = "data/ricci/cleaned-ricci.csv"
 test_filename = "data/ricci/ricci.test.csv"
 correct_types = [str,float,int,str,float,str]

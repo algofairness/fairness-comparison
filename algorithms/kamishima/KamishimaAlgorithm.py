@@ -188,7 +188,7 @@ class KamishimaAlgorithm(AbstractAlgorithm):
             else:
               return binMaxVar(first, midpoint, minDI, maxacc, maxDI)
           else:
-            if firstMidScore <= maxDI[0]:
+            if abs(1-firstMidScore) <= abs(1-maxDI[0]):
               return binMaxVar(first, midpoint, minDI, maxacc, (firstMidScore,first_y_classified_results))
             else:
               return binMaxVar(first, midpoint, minDI, maxacc, maxDI)
@@ -205,7 +205,7 @@ class KamishimaAlgorithm(AbstractAlgorithm):
             else:
               return binMaxVar(first, midpoint, minDI, maxacc,maxDI)
           else:
-            if secondMidScore <= maxDI[0]:
+            if abs(1-secondMidScore) <= abs(1-maxDI[0]):
               return binMaxVar(midpoint, last, minDI, maxacc, (secondMidScore, second_y_classified_results))
             else:
               return binMaxVar(first, midpoint, minDI, maxacc,maxDI)
