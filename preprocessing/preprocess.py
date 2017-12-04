@@ -4,44 +4,29 @@ from PreprocessHelpers.RetailerCleaning import *
 import os
 import pandas as pd
 
-def prepareData(dataset, datatype):
-	os.chdir('../data')
-	if dataset == 'german':
-		path = 'preprocessed/german/'
+def prepare_data(dataset, datatype):
+    os.chdir('../data')
+    if dataset == 'german':
+        path = 'preprocessed/german/'
 		
-		if datatype == 'categorical':
-			#Load in categorical data to the array below
-			newlines = []
-		
-			for line in open('raw/german/german_data'):
-				newline = line.split() #Since the entries are separated by multiple spaces 
-				newlines.append(newline)	
-			#german_data = pd.read_csv('raw/german/german_data', sep = ' ', encoding = 'UTF-8')
-			
-			#It's time to hard-code in the header row
-			german_data_categorical = pd.DataFrame(newlines)
-			
-			csvHeaders = ['status', 'month', 'credit_history', 'purpose', 'credit_amount', 'savings', \
-			'employment', 'investment_as_income_percentage', 'personal_status', 'other_debtors', \
-			'residence_since', 'property', 'age', 'installment_plans', 'housing', 'number_of_credits',\
-			'skill_level', 'people_liable_for', 'telephone', 'foreign_worker', 'credit']
-
-			german_data_categorical.columns = csvHeaders
-			
-			german_data_categorical.to_csv(path + 'german_credit_data.csv', index = False, header = True) 
+        data = pd.read_csv('raw/german/german_data', sep = ' ', encoding = 'ISO-8859-1')
+	
+        data.columns = ['Status of Existing Checking Account', 'Duration in month', 'Credit' + 
+        ' history', 'Purpose', 'Credit amount', 'Savings account/bonds', 'Present employment ' +
+        ' since', 'Installment rate in percentage of disposable income', 'Personal status and ' +
+        ' sex',  'Other debtors/guarantors', 'Present residence since', 'Property',  'Age in ' +
+        ' years', 'Other installment plans', 'Housing', 'Number of existing credits at this ' + 
+        'bank', 'Job', 'Number of people being liable to provide maintenance for', 'Telephone',\
+         'foreign worker', 'Approved']
+	        
+	    if datatype == 'categorical':
+	        data.to_csv('../data/preprocessed/german/german_categorical.csv', index = False) 
 	
 		if datatype == 'numeric':
-			#Load in the numeric data - first create array where we keep data 
-			newlines = []
 			
-			for line in open('raw/german/german.data-numeric'):
+			data[]
 				newline = line.split() #Since the entries are separated by multiple spaces 
 				newlines.append(newline)
-				
-			print(newlines[0])
-			csvHeaders = ['One', 'Two', 'three', 'four', 'Five', 'Six', 'gender', 'Seven', 'eight',	\
-			'nine',	'Ten', 'Eleven', 'Twelve', '13', '14', '15', '16', '17', '18', '19', '20', '21', \
-			'22', '23', 'Credit']
 
 			german_data_numeric = pd.DataFrame(newlines, columns = csvHeaders)	
 			
