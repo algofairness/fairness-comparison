@@ -4,13 +4,18 @@ import os
 import pandas as pd
 import fire
 
+RAW_DATA_DIR = 'raw/'
+PROCESSED_DATA_DIR = 'preprocessed/'
+
 def prepare_data(dataset_names=DATASETS):
 
     for dataset in dataset_names:
         data_path = RAW_DATA_DIR + dataset + '.csv'
         data_frame = pd.read_csv(data_path)
         processed_data, processed_numerical = preprocess(dataset, data_frame)
+        print("Writing data to: " + PROCESSED_DATA_DIR + dataset + '.csv')
         processed_data.to_csv(PROCESSED_DATA_DIR + dataset + '.csv')
+        print("Writing data to: " + PROCESSED_DATA_DIR + dataset + '_numerical.csv')
         processed_numerical.to_csv(PROCESSED_DATA_DIR + dataset + '_numerical.csv')
 
 def preprocess(dataset_name, data_frame):
@@ -21,11 +26,22 @@ def preprocess(dataset_name, data_frame):
     2) only the numerical and ordered categorical data, sensitive attributes, and class attribute.
     Categorical attributes are one-hot encoded.
     """
-    data_frame = data_frame[FEATURES_TO_KEEP[dataset_name]].dropna()
-    ## TODO: any dataset sepcific preprocessing
+    processed_data = data_frame[FEATURES_TO_KEEP[dataset_name]]
+
+    ## TODO: any dataset sepcific preprocessing - this should include any ordered categorical
+    ## replacement by numbers.
+
+    ## TODO: handle missing data, which may be indicated differently per data set.  If missing
+    ## data should be treated as a category, then it needs to be replaced by a np.nan
+
+    # Create a one-hot encoding of the categorical variables.
+    processed_numerical = pd.get_dummies(processed_data, 
+                                         columns = CATEGORICAL_FEATURES[dataset_name],
+                                         dummy_na=True)
+
     ## TODO: replace non-protected with single value as needed
-    ## TODO: create two versions of the data
-    return data_frame, data_frame	
+
+    return processed_data, processed_numerical	
 		
 def main():
     fire.Fire(prepare_data)
