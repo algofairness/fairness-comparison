@@ -16,14 +16,6 @@ UNPROTECTED_CLASS_NAMES = { 'german' : ['M'] , # TODO: check this
                            'retailer' : ['White']  # TODO: check this
                           }
 
-# Feature types per data set - numerical (float), ordered categorical (to be converted to int),
-# and categorical (string).
-# TODO: gather this information for german and retailer
-FEATURE_TYPES = { 'ricci' : [ 'cat', 'num', 'num', 'cat', 'num' ] ,
-                  'adult' : [ 'num', 'cat', 'num', 'ord', 'num', 'cat', 'cat', 'cat', 'cat', 'cat',
-                              'num', 'num', 'num', 'cat', 'cat' ]
-                }
-
 # Features that should be expanded to one-hot versions for numerical-only algorithms.  This
 # should not include the protected features or the outcome class variable.
 # TODO: include german and retailer

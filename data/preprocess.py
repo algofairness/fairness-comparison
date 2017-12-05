@@ -14,9 +14,9 @@ def prepare_data(dataset_names=DATASETS):
         data_frame = pd.read_csv(data_path)
         processed_data, processed_numerical = preprocess(dataset, data_frame)
         print("Writing data to: " + PROCESSED_DATA_DIR + dataset + '.csv')
-        processed_data.to_csv(PROCESSED_DATA_DIR + dataset + '.csv')
+        processed_data.to_csv(PROCESSED_DATA_DIR + dataset + '.csv', index = False)
         print("Writing data to: " + PROCESSED_DATA_DIR + dataset + '_numerical.csv')
-        processed_numerical.to_csv(PROCESSED_DATA_DIR + dataset + '_numerical.csv')
+        processed_numerical.to_csv(PROCESSED_DATA_DIR + dataset + '_numerical.csv', index = False)
 
 def preprocess(dataset_name, data_frame):
     """
