@@ -30,4 +30,4 @@ To add a data set, you need to:
 
 All preprocessed versions of the data should be committed to the preprocessed directory.
 To regenerate them, run:
->>> python preprocess.py
+> python preprocess.py
