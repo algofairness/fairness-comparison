@@ -3,4 +3,4 @@ from Adult import Adult
 from German import German
 from Retailer import Retailer
 
-DATASETS = [ Ricci(), Adult(), German()]  ## TODO: Retailer() ]
+DATASETS = [ Ricci(), Adult(), German(), Retailer() ]

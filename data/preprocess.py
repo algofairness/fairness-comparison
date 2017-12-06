@@ -12,8 +12,11 @@ PROCESSED_NUM_STUB = "_numerical.csv"
 def prepare_data():
 
     for dataset in DATASETS:
+        print("--- Processing dataset:" + dataset.get_dataset_name() + " ---")
         data_path = RAW_DATA_DIR + dataset.get_dataset_name() + '.csv'
-        data_frame = pd.read_csv(data_path)
+        ## TODO: right now the retailer data won't load without ignoring errors - fix this
+        ## and remove the below error_bad_lines=False.
+        data_frame = pd.read_csv(data_path, error_bad_lines=False)
 	
         processed_data, processed_numerical = preprocess(dataset, data_frame)
 	
@@ -32,16 +35,23 @@ def preprocess(dataset, data_frame):
     2) only the numerical and ordered categorical data, sensitive attributes, and class attribute.
     Categorical attributes are one-hot encoded.
     """
-    smaller_data = data_frame[dataset.get_features_to_keep()]
-    processed_data = dataset.data_specific_processing(smaller_data)
 
-    ## TODO: handle missing data, which may be indicated differently per data set.  If missing
-    ## data should be treated as a category, then it needs to be replaced by a np.nan
+    # Remove any columns not included in the list of features to keep.
+    smaller_data = data_frame[dataset.get_features_to_keep()]
+
+    ## TODO: handle missing data that is not indicated by np.nan
+    # Remove any rows that have missing data.
+    missing_data_removed = smaller_data.dropna()
+    missing_data_count = smaller_data.shape[0] - missing_data_removed.shape[0]
+    if missing_data_count > 0:
+        print(str(missing_data_count) + " rows removed from dataset " + dataset.get_dataset_name()) 
+
+    # Do any data specific processing.
+    processed_data = dataset.data_specific_processing(missing_data_removed)
 
     # Create a one-hot encoding of the categorical variables.
     processed_numerical = pd.get_dummies(processed_data, 
-                                         columns = dataset.get_categorical_features(),
-                                         dummy_na=True)
+                                         columns = dataset.get_categorical_features())
 
     ## TODO: replace non-protected with single value as needed
 

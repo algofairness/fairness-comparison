@@ -5,6 +5,7 @@ algorithms/kamishima/00RESULT/
 algorithms/kamishima/00MODEL/
 algorithms/feldman/MATLAB_code
 algorithms/feldman/find_contexts
+data/raw/retailer.csv
 data/retailer/cleaned-retailer.csv
 data/retailer/small-retailer.csv
 data/retailer/retailer.csv
