@@ -1,15 +1,13 @@
 import sys
-from dataset_info import *
 import os
 import pandas as pd
 import fire
-
-from Ricci import Ricci
-
-DATASETS = [ Ricci() ]
+from datasets.list import DATASETS
 
 RAW_DATA_DIR = 'raw/'
 PROCESSED_DATA_DIR = 'preprocessed/'
+PROCESSED_ALL_STUB = "_processed.csv"
+PROCESSED_NUM_STUB = "_numerical.csv"
 
 def prepare_data(dataset_names=DATASETS):
 
@@ -17,10 +15,12 @@ def prepare_data(dataset_names=DATASETS):
         data_path = RAW_DATA_DIR + dataset.get_dataset_name() + '.csv'
         data_frame = pd.read_csv(data_path)
         processed_data, processed_numerical = preprocess(dataset, data_frame)
-        print("Writing data to: " + PROCESSED_DATA_DIR + dataset.get_dataset_name() + '.csv')
-        processed_data.to_csv(PROCESSED_DATA_DIR + dataset.get_dataset_name() + '.csv', index = False)
-        print("Writing data to: " + PROCESSED_DATA_DIR + dataset.get_dataset_name() + '_numerical.csv')
-        processed_numerical.to_csv(PROCESSED_DATA_DIR + dataset.get_dataset_name() + '_numerical.csv', index = False)
+        processed_file_name = PROCESSED_DATA_DIR + dataset.get_dataset_name() + PROCESSED_ALL_STUB
+        print("Writing data to: " + processed_file_name)
+        processed_data.to_csv(processed_file_name, index = False)
+        numerical_file_name = PROCESSED_DATA_DIR + dataset.get_dataset_name() + PROCESSED_NUM_STUB
+        print("Writing data to: " + numerical_file_name)
+        processed_numerical.to_csv(numerical_file_name, index = False)
 
 def preprocess(dataset, data_frame):
     """
