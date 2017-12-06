@@ -9,7 +9,7 @@ PROCESSED_DATA_DIR = 'preprocessed/'
 PROCESSED_ALL_STUB = "_processed.csv"
 PROCESSED_NUM_STUB = "_numerical.csv"
 
-def prepare_data(dataset_names=DATASETS):
+def prepare_data():
 
     for dataset in DATASETS:
         data_path = RAW_DATA_DIR + dataset.get_dataset_name() + '.csv'

@@ -24,3 +24,10 @@ To add a data set, you need to:
 2. Put the raw data set in the raw/ directory at *name*.csv.  Add any data info at *name*.txt.
 3. Create a class *Name*.py that extends Data.py and implements all the required methods.  Add it to datasets/
 4. Add your dataset object to the list at datasets/list.py
+
+
+## Generating the preprocessed versions of the data
+
+All preprocessed versions of the data should be committed to the preprocessed directory.
+To regenerate them, run:
+>>> python preprocess.py
