@@ -36,6 +36,15 @@ class Ricci(Data):
         return self.dataset_name
 
     def data_specific_processing(self, dataframe):
-        ## TODO: any dataset sepcific preprocessing - this should include any ordered categorical
-        ## replacement by numbers.
+        dataframe['Class'] = dataframe.apply(passing_grade, axis=1)
         return dataframe
+
+def passing_grade(row):
+    """
+    A passing grade in the Ricci data is defined as any grade above a 70 in the combined
+    oral and written score.  (See Miao 2010.)
+    """
+    if row['Combine'] >= 70.0:
+        return 1
+    else:
+        return 0
