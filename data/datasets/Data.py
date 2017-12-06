@@ -2,6 +2,13 @@
 class Data():
     def __init__(self):
         pass
+	
+    def get_dataset_name(self):
+        """
+        This is the stub name that will be used to generate the processed filenames and is the
+        assumed stub for the raw data filename.
+        """
+        raise NotImplementedError("get_dataset_name() in Data is not implemented")
 
     def get_sensitive_attributes(self):
         """
@@ -23,9 +30,6 @@ class Data():
 
     def get_features_to_keep(self):
         raise NotImplementedError("get_features_to_keep() in Data is not implemented")
-
-    def get_dataset_name(self):
-        raise NotImplementedError("get_dataset_name() in Data is not implemented")
 
     def data_specific_processing(self, dataframe):
         raise NotImplementedError("data_specific_processing() in Data is not implemented")
