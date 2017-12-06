@@ -15,6 +15,10 @@ class Stub(Data):
         self.unprotected_class_names = ['W', 'M']
         self.categorical_features = [ 'feature_name1', 'feature_name2' ]
         self.features_to_keep = [ 'feature_name1', 'feature_name2', 'feature_name3']
+        self.missing_val_indicators = ['?']
+
+    def get_dataset_name(self):
+        return self.dataset_name
 
     def get_sensitive_attributes(self):
         """
@@ -37,8 +41,8 @@ class Stub(Data):
     def get_features_to_keep(self):
         return self.features_to_keep
 
-    def get_dataset_name(self):
-        return self.dataset_name
+    def get_missing_val_indicators(self):
+        return self.missing_val_indicators
 
     def data_specific_processing(self, dataframe):
         ## TODO: any dataset sepcific preprocessing - this should include any ordered categorical

@@ -16,13 +16,15 @@ def prepare_data():
         data_path = RAW_DATA_DIR + dataset.get_dataset_name() + '.csv'
         ## TODO: right now the retailer data won't load without ignoring errors - fix this
         ## and remove the below error_bad_lines=False.
-        data_frame = pd.read_csv(data_path, error_bad_lines=False)
+        data_frame = pd.read_csv(data_path, error_bad_lines=False, 
+                                 na_values=dataset.get_missing_val_indicators())
 	
         processed_data, processed_numerical = preprocess(dataset, data_frame)
 	
         processed_file_name = PROCESSED_DATA_DIR + dataset.get_dataset_name() + PROCESSED_ALL_STUB
         print("Writing data to: " + processed_file_name)
         processed_data.to_csv(processed_file_name, index = False)
+
         numerical_file_name = PROCESSED_DATA_DIR + dataset.get_dataset_name() + PROCESSED_NUM_STUB
         print("Writing data to: " + numerical_file_name)
         processed_numerical.to_csv(numerical_file_name, index = False)
@@ -39,7 +41,6 @@ def preprocess(dataset, data_frame):
     # Remove any columns not included in the list of features to keep.
     smaller_data = data_frame[dataset.get_features_to_keep()]
 
-    ## TODO: handle missing data that is not indicated by np.nan
     # Remove any rows that have missing data.
     missing_data_removed = smaller_data.dropna()
     missing_data_count = smaller_data.shape[0] - missing_data_removed.shape[0]

@@ -31,6 +31,9 @@ class Data():
     def get_features_to_keep(self):
         raise NotImplementedError("get_features_to_keep() in Data is not implemented")
 
+    def get_missing_val_indicators(self):
+        raise NotImplementedError("get_missing_val_indicators() in Data is not implemented")
+
     def data_specific_processing(self, dataframe):
         raise NotImplementedError("data_specific_processing() in Data is not implemented")
 

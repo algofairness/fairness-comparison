@@ -16,6 +16,7 @@ class German(Data):
                                   'property', 'age', 'installment_plans', 'housing', 
                                   'number_of_credits', 'skill_level', 'people_liable_for',
                                   'telephone', 'foreign_worker', 'credit' ]
+        self.missing_val_indicators = []
 
     def get_sensitive_attributes(self):
         """
@@ -40,6 +41,9 @@ class German(Data):
 
     def get_dataset_name(self):
         return self.dataset_name
+
+    def get_missing_val_indicators(self):
+        return self.missing_val_indicators
 
     def data_specific_processing(self, dataframe):
         ## TODO: any dataset sepcific preprocessing - this should include any ordered categorical

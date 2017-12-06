@@ -12,6 +12,7 @@ class Adult(Data):
                                   'occupation', 'relationship', 'race', 'sex', 'capital-gain',
                                   'capital-loss', 'hours-per-week', 'native-country',
                                   'income-per-year' ]
+        self.missing_val_indicators = ['?']
 	
     def get_dataset_name(self):
         """
@@ -40,6 +41,9 @@ class Adult(Data):
 
     def get_features_to_keep(self):
         return self.features_to_keep
+
+    def get_missing_val_indicators(self):
+        return self.missing_val_indicators
 
     def data_specific_processing(self, dataframe):
         return dataframe

@@ -10,6 +10,7 @@ class Ricci(Data):
         self.unprotected_class_names = ['W']
         self.categorical_features = [ 'Position' ]
         self.features_to_keep = [ 'Position', 'Oral', 'Written', 'Race', 'Combine' ]
+        self.missing_val_indicators = []
 
     def get_sensitive_attributes(self):
         """
@@ -34,6 +35,9 @@ class Ricci(Data):
 
     def get_dataset_name(self):
         return self.dataset_name
+
+    def get_missing_val_indicators(self):
+        return self.missing_val_indicators
 
     def data_specific_processing(self, dataframe):
         dataframe['Class'] = dataframe.apply(passing_grade, axis=1)

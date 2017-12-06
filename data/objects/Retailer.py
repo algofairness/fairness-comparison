@@ -15,6 +15,7 @@ class Retailer(Data):
         self.categorical_features = []   ## TODO
         self.features_to_keep = [ 'usite', 'azip', 'urace_orig', 'udateofbirth',
                                   'ugender', 'szip', 'csvr2', 'hired' ]
+        self.missing_val_indicators = ['""']
 
     def get_sensitive_attributes(self):
         """
@@ -39,6 +40,9 @@ class Retailer(Data):
 
     def get_dataset_name(self):
         return self.dataset_name
+
+    def get_missing_val_indicators(self):
+        return self.missing_val_indicators
 
     def data_specific_processing(self, dataframe):
         # Change DOB to age
