@@ -48,3 +48,6 @@ class Stub(Data):
         ## TODO: any dataset sepcific preprocessing - this should include any ordered categorical
         ## replacement by numbers.
         return dataframe
+
+    def handle_missing_data(self, dataframe):
+        return dataframe

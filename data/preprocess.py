@@ -4,16 +4,19 @@ import pandas as pd
 import fire
 from objects.list import DATASETS
 
-RAW_DATA_DIR = 'raw/'
-PROCESSED_DATA_DIR = 'preprocessed/'
-PROCESSED_ALL_STUB = "_processed.csv"
-PROCESSED_NUM_STUB = "_numerical.csv"
+def get_dataset_names():
+    names = []
+    for dataset in DATASETS:
+        names.append(dataset.get_dataset_name())
+    return names
 
-def prepare_data():
+def prepare_data(dataset_names = get_dataset_names()):
 
     for dataset in DATASETS:
+        if not dataset.get_dataset_name() in dataset_names:
+            continue
         print("--- Processing dataset:" + dataset.get_dataset_name() + " ---")
-        data_path = RAW_DATA_DIR + dataset.get_dataset_name() + '.csv'
+        data_path = dataset.get_raw_filename()
         ## TODO: right now the retailer data won't load without ignoring errors - fix this
         ## and remove the below error_bad_lines=False.
         data_frame = pd.read_csv(data_path, error_bad_lines=False, 
@@ -21,11 +24,11 @@ def prepare_data():
 	
         processed_data, processed_numerical = preprocess(dataset, data_frame)
 	
-        processed_file_name = PROCESSED_DATA_DIR + dataset.get_dataset_name() + PROCESSED_ALL_STUB
+        processed_file_name = dataset.get_processed_filename()
         print("Writing data to: " + processed_file_name)
         processed_data.to_csv(processed_file_name, index = False)
 
-        numerical_file_name = PROCESSED_DATA_DIR + dataset.get_dataset_name() + PROCESSED_NUM_STUB
+        numerical_file_name = dataset.get_processed_numerical_filename()
         print("Writing data to: " + numerical_file_name)
         processed_numerical.to_csv(numerical_file_name, index = False)
 
@@ -41,11 +44,14 @@ def preprocess(dataset, data_frame):
     # Remove any columns not included in the list of features to keep.
     smaller_data = data_frame[dataset.get_features_to_keep()]
 
+    # Handle missing data.
+    missing_processed = dataset.handle_missing_data(smaller_data) 
+
     # Remove any rows that have missing data.
-    missing_data_removed = smaller_data.dropna()
-    missing_data_count = smaller_data.shape[0] - missing_data_removed.shape[0]
+    missing_data_removed = missing_processed.dropna()
+    missing_data_count = missing_processed.shape[0] - missing_data_removed.shape[0]
     if missing_data_count > 0:
-        print(str(missing_data_count) + " rows removed from dataset " + dataset.get_dataset_name()) 
+        print("Missing Data: " + str(missing_data_count) + " rows removed from dataset " + dataset.get_dataset_name()) 
 
     # Do any data specific processing.
     processed_data = dataset.data_specific_processing(missing_data_removed)

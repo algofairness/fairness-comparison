@@ -50,3 +50,6 @@ class German(Data):
         ## replacement by numbers.
         ## This needs to include the creation of the sex attribute.
         return dataframe
+
+    def handle_missing_data(self, dataframe):
+        return dataframe

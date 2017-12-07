@@ -1,3 +1,7 @@
+RAW_DATA_DIR = 'raw/'
+PROCESSED_DATA_DIR = 'preprocessed/'
+PROCESSED_ALL_STUB = "_processed.csv"
+PROCESSED_NUM_STUB = "_numerical.csv"
 
 class Data():
     def __init__(self):
@@ -37,3 +41,19 @@ class Data():
     def data_specific_processing(self, dataframe):
         raise NotImplementedError("data_specific_processing() in Data is not implemented")
 
+    def handle_missing_data(self, dataframe):
+        """
+        This method implements any data specific missing data processing.  Any missing data
+        not replaced by values in this step will be removed by the general preprocessing 
+        script.
+        """
+        raise NotImplementedError("handle_missing_data() in Data is not implemented")
+
+    def get_raw_filename(self):
+        return RAW_DATA_DIR + self.get_dataset_name() + '.csv'
+
+    def get_processed_filename(self):
+        return PROCESSED_DATA_DIR + self.get_dataset_name() + PROCESSED_ALL_STUB
+
+    def get_processed_numerical_filename(self):
+        return PROCESSED_DATA_DIR + self.get_dataset_name() + PROCESSED_NUM_STUB

@@ -48,3 +48,5 @@ class Adult(Data):
     def data_specific_processing(self, dataframe):
         return dataframe
 
+    def handle_missing_data(self, dataframe):
+        return dataframe

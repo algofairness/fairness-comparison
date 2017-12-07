@@ -61,3 +61,6 @@ class Retailer(Data):
         dataframe['age'] = se.values 
         dataframe.drop(['udateofbirth'], axis=1, inplace=True)
         return dataframe
+
+    def handle_missing_data(self, dataframe):
+        return dataframe

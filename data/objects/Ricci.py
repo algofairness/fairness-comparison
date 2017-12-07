@@ -43,6 +43,9 @@ class Ricci(Data):
         dataframe['Class'] = dataframe.apply(passing_grade, axis=1)
         return dataframe
 
+    def handle_missing_data(self, dataframe):
+        return dataframe
+
 def passing_grade(row):
     """
     A passing grade in the Ricci data is defined as any grade above a 70 in the combined
