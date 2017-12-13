@@ -1,4 +1,4 @@
-from Data import Data
+from data.objects.Data import Data
 	
 class Adult(Data):
     def __init__(self):

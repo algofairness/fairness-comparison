@@ -1,5 +1,5 @@
-RAW_DATA_DIR = 'raw/'
-PROCESSED_DATA_DIR = 'preprocessed/'
+RAW_DATA_DIR = 'data/raw/'
+PROCESSED_DATA_DIR = 'data/preprocessed/'
 PROCESSED_ALL_STUB = "_processed.csv"
 PROCESSED_NUM_STUB = "_numerical.csv"
 
