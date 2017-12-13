@@ -38,9 +38,8 @@ class FeldmanAlgorithm(AbstractAlgorithm):
 
     if self.data == "retailer":
       datafile = 'data/retailer/cleaned-retailer.csv'
-      #datafile = 'data/retailer/small-cleaned-retailer.csv'
       export_to = 'audits/retailer'
-      correct_types = [str for i in range(27)]
+      correct_types = [int,int,int,float,int,float,str] + [int]*26 
       train_percentage = 2.0/3.0
       response_header = "hired" 
       features_to_ignore = []
@@ -62,9 +61,6 @@ class FeldmanAlgorithm(AbstractAlgorithm):
     if self.data == "adult":
       df = pd.read_csv('audits/adult/sex.audit.repaired_0.9999999999999999.predictions')
  
-    if self.data == "compas":
-      pass
-
     if self.data == "german":
       df = pd.read_csv('audits/german/sex.audit.repaired_0.9999999999999999.predictions')
 

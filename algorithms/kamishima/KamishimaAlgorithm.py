@@ -154,6 +154,29 @@ class KamishimaAlgorithm(AbstractAlgorithm):
       maxacc = (50,[])
       maxDI = (50,[])
 
+    # PRINT ETAS TO SHOW PLATEAU
+    if self.data == 'ricci':
+      r = 50
+    else:
+      r = 1000
+
+    def printScores():
+      scoresBoth = []
+      scoresAcc = []
+      scoresDI = []
+      for i in range(r):
+        y_classified_results = train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, i, self.x_control_test)
+        scoresBoth.append(getScore(fixed_y_test,y_classified_results))
+        scoresAcc.append(getScore(fixed_y_test,y_classified_results, 2))
+        scoresDI.append(getScore(fixed_y_test,y_classified_results,3))
+      with open("etas/" + self.data + "-etas.csv",'w') as f:
+        f.write('Acc/DI, Acc, DI' + '\n')
+        for i in range(len(scoresBoth)):
+          f.write(str(scoresBoth[i]) + ',' + str(scoresAcc[i]) + ',' + str(scoresDI[i]) +'\n')
+      f.close()
+      print("SCORES WRITTEN.")
+    #############################
+
     def binMaxVar(first, last, minDI, maxacc, maxDI, var=1): #var = 1-acc/DI, 2-acc, 3-DI
       if first == last:
         if var == 1:
@@ -210,6 +233,7 @@ class KamishimaAlgorithm(AbstractAlgorithm):
             else:
               return binMaxVar(first, midpoint, minDI, maxacc,maxDI)
     
+    printScores()
     if self.data == "ricci":
       final = binMaxVar(1,50, minDI, maxacc, maxDI, self.params['var'])
       #final = (0, train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, 1, self.x_control_test))
