@@ -22,8 +22,8 @@ Source: https://www.dropbox.com/sh/r1q4ha5c0corzmt/AACYL2SMB_nxG6LNbXeGjXKAa?dl=
 To add a data set, you need to:
 1. Choose a single word lower case *name* to identify your data set.
 2. Put the raw data set in the raw/ directory at *name*.csv.  Add any data info at *name*.txt.
-3. Create a class *Name*.py that extends Data.py and implements all the required methods.  Add it to datasets/  A Stub.py file is provided that you can copy and edit.
-4. Add your dataset object to the list at datasets/list.py
+3. Create a class *Name*.py that extends Data.py and implements all the required methods.  Add it to objects/  A Stub.py file is provided that you can copy and edit.
+4. Add your dataset object to the list at objects/list.py
 
 
 ## Generating the preprocessed versions of the data
