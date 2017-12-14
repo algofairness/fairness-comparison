@@ -1,7 +1,7 @@
-from Ricci import Ricci
-from Adult import Adult
-from German import German
-from Retailer import Retailer
+from data.objects.Ricci import Ricci
+from data.objects.Adult import Adult
+from data.objects.German import German
+from data.objects.Retailer import Retailer
 
 DATASETS = [ Ricci(), Adult(), German(), Retailer() ]
 

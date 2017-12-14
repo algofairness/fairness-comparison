@@ -2,7 +2,7 @@ import sys
 import os
 import pandas as pd
 import fire
-from objects.list import DATASETS, get_dataset_names
+from data.objects.list import DATASETS, get_dataset_names
 
 def prepare_data(dataset_names = get_dataset_names()):
 

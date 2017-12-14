@@ -1,5 +1,5 @@
 import pandas as pd
-from Data import Data
+from data.objects.Data import Data
 
 class Stub(Data):
     """
