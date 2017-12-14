@@ -5,8 +5,8 @@ TRAINING_PERCENT = 2.0 / 3.0
 class ProcessedData():
     def __init__(self, data_obj):
         self.data = data_obj
-        self.processed_df =  pd.read_csv("data/" + self.data.get_processed_filename())
-        self.numerical_df = pd.read_csv("data/" + self.data.get_processed_numerical_filename())
+        self.processed_df = pd.read_csv(self.data.get_processed_filename())
+        self.numerical_df = pd.read_csv(self.data.get_processed_numerical_filename())
         self.processed_splits = []
         self.numerical_splits = []
 

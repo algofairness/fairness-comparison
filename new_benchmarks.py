@@ -3,6 +3,7 @@ import fire
 from data.objects.list import DATASETS, get_dataset_names
 from data.objects.ProcessedData import ProcessedData
 from algorithms.list import ALGORITHMS
+from metrics.list import METRICS
 
 NUM_TRIALS_DEFAULT = 10
 
@@ -15,7 +16,7 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset_names = get_dataset_names()):
         for algorithm in ALGORITHMS:
             for i in range(0, num_trials):
                 train, test = processed_splits[i]
-                algorithm.run(train, test, dataset.get_sensitive_attrs, params)
+                algorithm.run(train, test, dataset.get_sensitive_attributes(), None)
 
                 for metric in METRICS:
                     # write metric, algorithm to dataset file
