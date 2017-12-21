@@ -130,7 +130,7 @@ class KamishimaAlgorithm(AbstractAlgorithm):
         else:
             print("Invalid class value in y_control_test")
 
-    def getScore(fixed_y_test,y_classified_results, var=1): #var = 1-acc/DI, 2-acc, 3-DI
+    def getScore(fixed_y_test,y_classified_results, var=1): #var = |1-DI|/acc, 2-acc, 3-|1-DI|
       total_sensitive = 0
       total_nonsensitive = 0
       for x in self.x_control_test[self.sensitive_attr]:
@@ -142,10 +142,47 @@ class KamishimaAlgorithm(AbstractAlgorithm):
       if var == 2:
         return accuracy
       elif var == 1:
-        return abs(1 - accuracy/DI_score(y_classified_results, self.x_control_test[self.sensitive_attr], total_sensitive, total_nonsensitive))
+        return abs(1 - DI_score(y_classified_results, self.x_control_test[self.sensitive_attr], total_sensitive, total_nonsensitive))/accuracy
       else:
-        return DI_score(y_classified_results, self.x_control_test[self.sensitive_attr], total_sensitive, total_nonsensitive)
+        return abs(1-DI_score(y_classified_results, self.x_control_test[self.sensitive_attr], total_sensitive, total_nonsensitive))
 
+    def binMinMax(first, last, var):  #var = |1-DI|/acc, 2-acc, 3-|1-DI|
+      if first == last:
+        print(first)
+        y = train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, first, self.x_control_test)
+        return y
+      elif (last-1) == first:
+        firstScore = getScore(fixed_y_test, train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, first, self.x_control_test),var)
+        lastScore = getScore(fixed_y_test, train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, last, self.x_control_test),var)
+        if firstScore <= lastScore:
+          if var == 1 or var == 3:
+            return binMinMax(first,first,var)
+          else:
+            return binMinMax(last,last,var)
+        else:
+          if var == 1 or var == 3:
+            return binMinMax(last,last,var)
+          else:
+            return binMinMax(first,first,var)
+      else:
+        mid = (first + last)//2
+        firstScore = getScore(fixed_y_test, train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, first, self.x_control_test),var)
+        lastScore = getScore(fixed_y_test, train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, last, self.x_control_test),var)
+        midY = y_classified_results = train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, mid, self.x_control_test)
+        midScore = getScore(fixed_y_test, midY, var)
+
+        if midScore <= lastScore:
+          if var == 1 or var == 3:
+            return binMinMax(first,mid,var)
+          else:
+            return binMinMax(mid,last,var)
+        else:
+          if var == 1 or var == 3:
+            return binMinMax(mid,last,var)
+          else:
+            return binMinMax(first,mid,var)
+
+    '''
     minDI = (1000,[])
     maxacc = (1000,[])
     maxDI = (1000,[])
@@ -153,6 +190,7 @@ class KamishimaAlgorithm(AbstractAlgorithm):
       minDI = (50,[])
       maxacc = (50,[])
       maxDI = (50,[])
+    '''
 
     # PRINT ETAS TO SHOW PLATEAU
     if self.data == 'ricci':
@@ -169,16 +207,18 @@ class KamishimaAlgorithm(AbstractAlgorithm):
         scoresBoth.append(getScore(fixed_y_test,y_classified_results))
         scoresAcc.append(getScore(fixed_y_test,y_classified_results, 2))
         scoresDI.append(getScore(fixed_y_test,y_classified_results,3))
-      with open("etas/" + self.data + "-etas.csv",'w') as f:
-        f.write('Acc/DI, Acc, DI' + '\n')
+      with open("etas/" + self.data + "-etas-" + self.params['num'] + ".csv",'w') as f:
+        f.write('|1-DI|/Acc, Acc, |1-DI|' + '\n')
         for i in range(len(scoresBoth)):
           f.write(str(scoresBoth[i]) + ',' + str(scoresAcc[i]) + ',' + str(scoresDI[i]) +'\n')
       f.close()
       print("SCORES WRITTEN.")
     #############################
 
+    '''
     def binMaxVar(first, last, minDI, maxacc, maxDI, var=1): #var = 1-acc/DI, 2-acc, 3-DI
       if first == last:
+        print(first)
         if var == 1:
           return minDI
         elif var == 2:
@@ -232,16 +272,26 @@ class KamishimaAlgorithm(AbstractAlgorithm):
               return binMaxVar(midpoint, last, minDI, maxacc, (secondMidScore, second_y_classified_results))
             else:
               return binMaxVar(first, midpoint, minDI, maxacc,maxDI)
-    
-    printScores()
+
     if self.data == "ricci":
       final = binMaxVar(1,50, minDI, maxacc, maxDI, self.params['var'])
       #final = (0, train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, 1, self.x_control_test))
     else:
       final = binMaxVar(1,1000, minDI, maxacc, maxDI, self.params['var']) 
     predicted = final[1]
+    '''
 
-    kam_actual, kam_predicted, kam_protected = fixed_y_test, predicted, self.x_control_test[self.sensitive_attr]
+    if self.params['print'] == 1:
+      printScores()
+
+    if self.data == "ricci":
+      final = binMinMax(1,50,self.params['var'])
+    else:
+      final = binMinMax(1,1000,self.params['var'])
+
+    # predicted = train_classify(self.sensitive_attr, self.name, x_train_with_sensitive_feature, self.y_train, x_test_with_sensitive_feature, self.y_test, 1, 100, self.x_control_test)
+
+    kam_actual, kam_predicted, kam_protected = fixed_y_test, final, self.x_control_test[self.sensitive_attr]
     kam_time = datetime.now() - startTime
 
     return kam_actual, kam_predicted, kam_protected, kam_time

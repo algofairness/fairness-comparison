@@ -231,10 +231,13 @@ def run_kamishima(data, times=10):
   for i in range(times):
     params = {}
     params['var'] = 1
+    params['print'] = 1
+    params['num'] = str(i)
     algorithm = KamishimaAlgorithm(data, params)
     kamboth_actual, kamboth_predicted, kamboth_protected, kamboth_time = algorithm.run()
 
     params['var'] = 2
+    params['print'] = 0
     algorithm = KamishimaAlgorithm(data, params)
     kamacc_actual, kamacc_predicted, kamacc_protected, kamacc_time = algorithm.run()
 
@@ -447,20 +450,21 @@ def run_metrics(data, times=10):
 if __name__ == '__main__':
   '''
   print("Analyzing German data...")
-  run_metrics('german',1)
+  run_metrics('german')
   print("Complete.")
+  print("\n")
 
   print('Analyzing Ricci data...')
-  run_metrics("ricci",1)
+  run_metrics("ricci")
   print('Complete.')
   print("\n")
 
   print('Analyzing Adult data...')
-  run_metrics('adult',1)
+  run_metrics('adult')
   print('Complete.')
   print("\n")
   '''
 
   print('Analyzing Retailer data...')
-  run_metrics("retailer",1)
+  run_metrics("retailer")
   print('Complete.')

@@ -1,13 +1,12 @@
 from abc import ABCMeta, abstractmethod
 import os, sys
-from preprocessing.prepare_german import prepare_german
-from preprocessing.prepare_adult import prepare_adult
-from preprocessing.prepare_retailer import prepare_retailer
-from preprocessing.prepare_small_retailer import prepare_small_retailer
-from preprocessing.prepare_ricci import prepare_ricci
+from preprocessing.deprecated.prepare_german import prepare_german
+from preprocessing.deprecated.prepare_adult import prepare_adult
+from preprocessing.deprecated.prepare_retailer import prepare_retailer
+from preprocessing.deprecated.prepare_ricci import prepare_ricci
 import numpy as np
 import pandas as pd
-from preprocessing.black_box_auditing import *
+from preprocessing.deprecated.black_box_auditing import *
 from data.german.load_german_data import *
 from data.adult.load_adult import *
 from data.ricci.load_data import *

@@ -1,0 +1,12 @@
+GFA Audit for:req_5
+tmp2/req_5.audit.test.repaired_0.0.data:[0.0, {"1": {"1": 17280}, "0": {"1": 1700}}]
+tmp2/req_5.audit.test.repaired_0.1.data:[0.1, {"1": {"1": 17280}, "0": {"1": 1700}}]
+tmp2/req_5.audit.test.repaired_0.2.data:[0.2, {"1": {"1": 17280}, "0": {"1": 1700}}]
+tmp2/req_5.audit.test.repaired_0.30000000000000004.data:[0.30000000000000004, {"1": {"1": 17280}, "0": {"1": 1700}}]
+tmp2/req_5.audit.test.repaired_0.4.data:[0.4, {"1": {"1": 17280}, "0": {"1": 1700}}]
+tmp2/req_5.audit.test.repaired_0.5.data:[0.5, {"1": {"1": 17280}, "0": {"1": 1700}}]
+tmp2/req_5.audit.test.repaired_0.6.data:[0.6, {"1": {"1": 17280}, "0": {"1": 1700}}]
+tmp2/req_5.audit.test.repaired_0.7.data:[0.7, {"1": {"1": 17280}, "0": {"1": 1700}}]
+tmp2/req_5.audit.test.repaired_0.7999999999999999.data:[0.7999999999999999, {"1": {"1": 17280}, "0": {"1": 1700}}]
+tmp2/req_5.audit.test.repaired_0.8999999999999999.data:[0.8999999999999999, {"1": {"1": 17280}, "0": {"1": 1700}}]
+tmp2/req_5.audit.test.repaired_0.9999999999999999.data:[0.9999999999999999, {"1": {"1": 17280}, "0": {"1": 1700}}]

@@ -1,5 +1,5 @@
 from data.ricci.load_data import *
-from preprocessing.black_box_auditing import *
+from preprocessing.deprecated.black_box_auditing import *
 import numpy as np
 import algorithms.zafar.fair_classification.utils as ut
 from random import shuffle
