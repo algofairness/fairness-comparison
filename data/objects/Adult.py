@@ -4,6 +4,7 @@ class Adult(Data):
     def __init__(self):
         Data.__init__(self)
         self.dataset_name = 'adult'
+        self.class_attr = 'income-per-year'
         self.sensitive_attrs = ['race', 'sex']
         self.unprotected_class_names = ['White', 'Male']
         self.categorical_features = [ 'workclass', 'marital-status', 'occupation', 'relationship',
@@ -20,6 +21,12 @@ class Adult(Data):
         assumed stub for the raw data filename.
         """
         return "adult"
+
+    def get_class_attribute(self):
+        """
+        Returns the name of the class attribute to be used for classification.
+        """
+        return self.class_attr
 
     def get_sensitive_attributes(self):
         """

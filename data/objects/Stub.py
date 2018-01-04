@@ -20,6 +20,12 @@ class Stub(Data):
     def get_dataset_name(self):
         return self.dataset_name
 
+    def get_class_attribute(self):
+        """
+        Returns the name of the class attribute to be used for classification.
+        """
+        return self.class_attr
+
     def get_sensitive_attributes(self):
         """
         Returns a list of the names of any sensitive / protected attribute(s) that will be used 

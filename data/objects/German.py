@@ -7,6 +7,7 @@ class German(Data):
         Data.__init__(self)
 
         self.dataset_name = 'german'
+        self.class_attr = 'credit'
         self.sensitive_attrs = ['sex']
         self.unprotected_class_names = ['M']  # TODO: check this
         self.categorical_features = []  # TODO
@@ -17,6 +18,12 @@ class German(Data):
                                   'number_of_credits', 'skill_level', 'people_liable_for',
                                   'telephone', 'foreign_worker', 'credit' ]
         self.missing_val_indicators = []
+
+    def get_class_attribute(self):
+        """
+        Returns the name of the class attribute to be used for classification.
+        """
+        return self.class_attr
 
     def get_sensitive_attributes(self):
         """

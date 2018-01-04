@@ -6,11 +6,22 @@ class Ricci(Data):
     def __init__(self):
         Data.__init__(self)
         self.dataset_name = 'ricci'
+        # Class attribute will not be created until data_specific_processing is run.
+        self.class_attr = 'Class'
         self.sensitive_attrs = ['Race'] 
         self.unprotected_class_names = ['W']
         self.categorical_features = [ 'Position' ]
         self.features_to_keep = [ 'Position', 'Oral', 'Written', 'Race', 'Combine' ]
         self.missing_val_indicators = []
+
+    def get_dataset_name(self):
+        return self.dataset_name
+
+    def get_class_attribute(self):
+        """
+        Returns the name of the class attribute to be used for classification.
+        """
+        return self.class_attr
 
     def get_sensitive_attributes(self):
         """
@@ -32,9 +43,6 @@ class Ricci(Data):
 
     def get_features_to_keep(self):
         return self.features_to_keep
-
-    def get_dataset_name(self):
-        return self.dataset_name
 
     def get_missing_val_indicators(self):
         return self.missing_val_indicators

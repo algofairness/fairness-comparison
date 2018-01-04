@@ -9,14 +9,20 @@ class Retailer(Data):
     def __init__(self):
         Data.__init__(self)
 
-        ## TODO: replace the below information with the correct info for your dataset.
         self.dataset_name = 'retailer'
+        self.class_attr = 'hired'
         self.sensitive_attrs = ['urace_orig']
         self.unprotected_class_names = ['White']
         self.categorical_features = []   ## TODO
         self.features_to_keep = [ 'usite', 'azip', 'urace_orig', 'udateofbirth',
                                   'ugender', 'szip', 'csvr2', 'hired' ]
         self.missing_val_indicators = ['""']
+
+    def get_class_attribute(self):
+        """
+        Returns the name of the class attribute to be used for classification.
+        """
+        return self.class_attr
 
     def get_sensitive_attributes(self):
         """

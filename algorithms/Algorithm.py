@@ -3,9 +3,15 @@ class Algorithm():
     def __init__(self):
         pass
 
-    def run(self, train_df, test_df, sensitive_attrs, params):
+    def run(self, train_df, test_df, class_attr, sensitive_attrs, params):
         """
         Runs the algorithm and returns the actual classifications, predicted classifications,
-        and a vector of associated sensitive attributes.
+        and a vector of associated sensitive attributes from the test set.
         """
         raise NotImplementedError("run() in Algorithm is not implemented")
+
+    def numerical_data_only(self):
+        """
+        Returns True if this algorithm can only handle numerical data as input.
+        """
+        return False 

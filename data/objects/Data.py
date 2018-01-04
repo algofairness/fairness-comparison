@@ -13,6 +13,12 @@ class Data():
         assumed stub for the raw data filename.
         """
         raise NotImplementedError("get_dataset_name() in Data is not implemented")
+  
+    def get_class_attribute(self):
+        """
+        Returns the name of the class attribute to be used for classification.
+        """
+        raise NotImplementedError("get_class_attribute() in Data is not implemented")
 
     def get_sensitive_attributes(self):
         """
