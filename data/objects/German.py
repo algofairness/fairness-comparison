@@ -9,8 +9,10 @@ class German(Data):
         self.dataset_name = 'german'
         self.class_attr = 'credit'
         self.sensitive_attrs = ['sex']
-        self.unprotected_class_names = ['M']  # TODO: check this
-        self.categorical_features = []  # TODO
+        self.unprotected_class_names = ['male']
+        self.categorical_features = ['status', 'credit_history', 'purpose', 'savings', 'employment', 
+                                     'personal_status', 'other_debtors', 'property', 'installment_plans', 
+                                     'housing', 'skill_level', 'telephone', 'foreign_worker'] 
         self.features_to_keep = [ 'status', 'month', 'credit_history', 'purpose', 'credit_amount',
                                   'savings', 'employment', 'investment_as_income_percentage', 
                                   'personal_status', 'other_debtors', 'residence_since',
@@ -53,10 +55,9 @@ class German(Data):
         return self.missing_val_indicators
 
     def data_specific_processing(self, dataframe):
-        ## TODO: any dataset sepcific preprocessing - this should include any ordered categorical
-        ## replacement by numbers.
-        ## This needs to include the creation of the sex attribute.
-        print("WARNING: German data_specific_processing not yet implemented and definitely needed.")
+        sexdict = {('A91', 'A93', 'A94'): 'male', ('A92', 'A95'):'female'}
+        dataframe['sex'] = dataframe['personal_status'].map(sexdict)
+        dataframe.drop('personal_status', 1)
         return dataframe
 
     def handle_missing_data(self, dataframe):
