@@ -6,29 +6,40 @@ PROCESSED_NUM_STUB = "_numerical.csv"
 class Data():
     def __init__(self):
         pass
-	
+
     def get_dataset_name(self):
         """
         This is the stub name that will be used to generate the processed filenames and is the
         assumed stub for the raw data filename.
         """
-        raise NotImplementedError("get_dataset_name() in Data is not implemented")
-  
+        return self.dataset_name
+
     def get_class_attribute(self):
         """
         Returns the name of the class attribute to be used for classification.
         """
-        raise NotImplementedError("get_class_attribute() in Data is not implemented")
+        return self.class_attr
+
+    def get_positive_class_val(self):
+        """
+        Returns the value used in the dataset to indicate the positive classification choice.
+        """
+        return self.positive_class_val
 
     def get_sensitive_attributes(self):
         """
         Returns a list of the names of any sensitive / protected attribute(s) that will be used 
         for a fairness analysis and should not be used to train the model.
         """
-        raise NotImplementedError("get_sensitive_attributes() in Data is not implemented")
+        return self.sensitive_attrs
 
-    def get_unprotected_class_names(self):
-        raise NotImplementedError("get_unprotected_class_names() in Data is not implemented")
+    def get_privileged_class_names(self):
+        """
+        Returns a list in the same order as the sensitive attributes list above of the
+        privileged class name (exactly as it appears in the data) of the associated sensitive
+        attribute.
+        """
+        return self.unprotected_class_names
 
     def get_categorical_features(self):
         """
@@ -36,15 +47,29 @@ class Data():
         numerical-only algorithms.  This should not include the protected features 
         or the outcome class variable.
         """
-        raise NotImplementedError("get_categorical_features() in Data is not implemented")
+        return self.categorical_features
 
     def get_features_to_keep(self):
-        raise NotImplementedError("get_features_to_keep() in Data is not implemented")
+        return self.features_to_keep
 
     def get_missing_val_indicators(self):
-        raise NotImplementedError("get_missing_val_indicators() in Data is not implemented")
+        return self.missing_val_indicators
+
+    def get_raw_filename(self):
+        return RAW_DATA_DIR + self.get_dataset_name() + '.csv'
+
+    def get_processed_filename(self):
+        return PROCESSED_DATA_DIR + self.get_dataset_name() + PROCESSED_ALL_STUB
+
+    def get_processed_numerical_filename(self):
+        return PROCESSED_DATA_DIR + self.get_dataset_name() + PROCESSED_NUM_STUB
 
     def data_specific_processing(self, dataframe):
+        """
+        Takes a pandas dataframe and modifies it to do any data specific processing.  This should
+        include any ordered categorical replacement by numbers.  The resulting pandas dataframe is
+        returned.
+        """
         raise NotImplementedError("data_specific_processing() in Data is not implemented")
 
     def handle_missing_data(self, dataframe):
@@ -55,11 +80,3 @@ class Data():
         """
         raise NotImplementedError("handle_missing_data() in Data is not implemented")
 
-    def get_raw_filename(self):
-        return RAW_DATA_DIR + self.get_dataset_name() + '.csv'
-
-    def get_processed_filename(self):
-        return PROCESSED_DATA_DIR + self.get_dataset_name() + PROCESSED_ALL_STUB
-
-    def get_processed_numerical_filename(self):
-        return PROCESSED_DATA_DIR + self.get_dataset_name() + PROCESSED_NUM_STUB
