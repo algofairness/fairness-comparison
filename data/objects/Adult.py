@@ -7,8 +7,8 @@ class Adult(Data):
         self.class_attr = 'income-per-year'
         self.sensitive_attrs = ['race', 'sex']
         self.unprotected_class_names = ['White', 'Male']
-        self.categorical_features = [ 'workclass', 'marital-status', 'occupation', 'relationship',
-                                      'native-country' ]
+        self.categorical_features = [ 'workclass', 'education', 'marital-status', 'occupation', 
+                                      'relationship', 'native-country' ]
         self.features_to_keep = [ 'age', 'workclass', 'education', 'education-num', 'marital-status',
                                   'occupation', 'relationship', 'race', 'sex', 'capital-gain',
                                   'capital-loss', 'hours-per-week', 'native-country',

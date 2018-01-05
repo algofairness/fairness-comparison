@@ -10,6 +10,8 @@ NUM_TRIALS_DEFAULT = 10
 RESULT_DIR = "results/"
 
 def run(num_trials = NUM_TRIALS_DEFAULT, dataset_names = get_dataset_names()):
+    print("WARNING: be sure that you have run `python3 preprocess.py` before running this script.")
+
     for dataset in DATASETS:
         if not dataset.get_dataset_name() in dataset_names:
             continue
@@ -61,7 +63,7 @@ def run_eval_alg(algorithm, train, test, dataset, results_dict):
 def run_alg(algorithm, train, test, dataset):
     class_attr = dataset.get_class_attribute()
     sensitive_attrs = dataset.get_sensitive_attributes()
-    params = {}
+    params = {}  ## TODO: algorithm specific parameters still need to be handled
     return algorithm.run(train, test, class_attr, sensitive_attrs, params)
 
 def main():
