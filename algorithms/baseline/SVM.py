@@ -20,11 +20,7 @@ class SVM(Algorithm):
         X_test = test_df_nosensitive.drop(class_attr, axis=1)
         predictions = classifier.predict(X_test)
 
-        # get the actual classifications and sensitive attributes
-        actual = test_df[class_attr]
-        sensitive = test_df[sensitive_attrs]
-
-        return actual, predictions, sensitive
+        return predictions
 
     def numerical_data_only(self):
         """

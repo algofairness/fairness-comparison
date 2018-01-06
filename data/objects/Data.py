@@ -39,7 +39,7 @@ class Data():
         privileged class name (exactly as it appears in the data) of the associated sensitive
         attribute.
         """
-        return self.unprotected_class_names
+        return self.privileged_class_names
 
     def get_categorical_features(self):
         """

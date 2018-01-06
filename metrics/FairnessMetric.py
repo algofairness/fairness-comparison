@@ -1,4 +1,4 @@
-from Metric import Metric
+from metrics.Metric import Metric
 
 class FairnessMetric(Metric):
     def __init__(self, actual, predicted, sensitive, unprotected_vals, positive_pred):
@@ -8,7 +8,7 @@ class FairnessMetric(Metric):
         the positive value of the prediction task.  The actual and predicted results and the sensitive
         attributes vector should have the same length (the length of the test set).
         """
-        Metric.__init__(actual, predicted)
+        Metric.__init__(self, actual, predicted)
         self.sensitive = sensitive
         self.unprotected_vals = unprotected_vals
         self.positive_pred = positive_pred

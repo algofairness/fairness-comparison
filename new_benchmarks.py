@@ -52,8 +52,10 @@ def run_eval_alg(algorithm, train, test, dataset, results_dict):
             results_dict[name] = []
         results_dict[name].append(result)
 
-    for Metric in FAIRNESS_METRICS:
-        m = FairnessMetric(actual, predicted, sensitive)
+    privileged_vals = dataset.get_privileged_class_names()
+    positive_val = dataset.get_positive_class_val()
+    for FairnessMetric in FAIRNESS_METRICS:
+        m = FairnessMetric(actual, predicted, sensitive, privileged_vals, positive_val)
         result = m.calc() 
         name = m.get_metric_name()
         if not name in results_dict:
@@ -64,7 +66,16 @@ def run_alg(algorithm, train, test, dataset):
     class_attr = dataset.get_class_attribute()
     sensitive_attrs = dataset.get_sensitive_attributes()
     params = {}  ## TODO: algorithm specific parameters still need to be handled
-    return algorithm.run(train, test, class_attr, sensitive_attrs, params)
+
+    # get the actual classifications and sensitive attributes
+    actual = test[class_attr]
+    for attr in sensitive_attrs:
+       ## TODO: actually deal with multiple protected attributes
+       sensitive = test[attr].values.tolist()
+ 
+    predictions = algorithm.run(train, test, class_attr, sensitive_attrs, params)
+
+    return actual, predictions, sensitive
 
 def main():
     fire.Fire(run)

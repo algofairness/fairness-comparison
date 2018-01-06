@@ -5,8 +5,7 @@ class Algorithm():
 
     def run(self, train_df, test_df, class_attr, sensitive_attrs, params):
         """
-        Runs the algorithm and returns the actual classifications, predicted classifications,
-        and a vector of associated sensitive attributes from the test set.
+        Runs the algorithm and returns the predicted classifications on the test set.
         """
         raise NotImplementedError("run() in Algorithm is not implemented")
 

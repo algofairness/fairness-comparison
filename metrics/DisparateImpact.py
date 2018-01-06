@@ -1,12 +1,13 @@
-from FairnessMetric import FairnessMetric
+from metrics.FairnessMetric import FairnessMetric
 
 class DisparateImpact(FairnessMetric):
     """
     This metric calculates disparate imapct in the sense of the 80% rule before the 80%
     threshold is applied.  This is described as DI in: https://arxiv.org/abs/1412.3756
+    If there are no positive protected classifications, 0.0 is returned. 
     """
-    def __init__(self, actual, predicted, sensitive, unprotected_vals):
-        FairnessMetric.__init__(actual, predicted, sensitive, unprotected_vals, positive_pred)
+    def __init__(self, actual, predicted, sensitive, unprotected_vals, positive_pred):
+        FairnessMetric.__init__(self, actual, predicted, sensitive, unprotected_vals, positive_pred)
         self.name = 'disparate impact'
 
     def calc(self):
@@ -19,20 +20,24 @@ class DisparateImpact(FairnessMetric):
             protected_val = self.sensitive[i]
             predicted_val = self.predicted[i]
             if protected_val in self.unprotected_vals:
-                if predicted_val == self.positive_pred:
+                if str(predicted_val) == str(self.positive_pred):
                     unprotected_positive += 1
                 else:
                     unprotected_negative += 1
             else:
-                if predicted_val == self.positive_pred:
+                if str(predicted_val) == str(self.positive_pred):
                     protected_positive += 1
                 else:
                     protected_negative += 1
-  
-        protected_pos_percent = protected_positive / (protected_positive + protected_negative)
-        unprotected_pos_percent = unprotected_positive / 
-                                  (unprotected_positive + unprotected_negative)
-        return protected_pos_percent / unprotected_pos_percent
-            
-                
-        
+
+        protected_pos_percent = 0.0
+        if protected_positive + protected_negative > 0: 
+            protected_pos_percent = protected_positive / (protected_positive + protected_negative)
+        unprotected_pos_percent = 0.0
+        if unprotected_positive + unprotected_negative > 0:
+            unprotected_pos_percent = unprotected_positive /  \
+                                      (unprotected_positive + unprotected_negative)
+        DI = 0.0
+        if unprotected_pos_percent > 0:
+            DI = protected_pos_percent / unprotected_pos_percent
+        return DI
