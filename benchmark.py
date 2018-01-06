@@ -21,6 +21,7 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset_names = get_dataset_names()):
         processed_splits, numerical_splits = processed_dataset.create_train_test_splits(num_trials)
 
         for algorithm in ALGORITHMS:
+            print("    Algorithm:" + algorithm.get_name())
             numeric_results = {}
             alldata_results = {}
             for i in range(0, num_trials):
@@ -33,12 +34,12 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset_names = get_dataset_names()):
                 run_eval_alg(algorithm, train, test, dataset, numeric_results)
            
             for metric_name in numeric_results:
-                print("average " + metric_name + ": " + str(statistics.mean(numeric_results[metric_name])))
-                print("stdev " + metric_name + ": " + str(statistics.stdev(numeric_results[metric_name])))
+                print("        average " + metric_name + ": " + str(statistics.mean(numeric_results[metric_name])))
+                print("        stdev " + metric_name + ": " + str(statistics.stdev(numeric_results[metric_name])))
                 
             for metric_name in alldata_results:
-                print("average " + metric_name + ": " + str(statistics.mean(alldata_results[metric_name])))
-                print("stdev " + metric_name + ": " + str(statistics.stdev(alldata_results[metric_name])))
+                print("        average " + metric_name + ": " + str(statistics.mean(alldata_results[metric_name])))
+                print("        stdev " + metric_name + ": " + str(statistics.stdev(alldata_results[metric_name])))
             ## TODO: write avg and stddev per metric to file
 
 def run_eval_alg(algorithm, train, test, dataset, results_dict):
@@ -72,7 +73,10 @@ def run_alg(algorithm, train, test, dataset):
     for attr in sensitive_attrs:
        ## TODO: actually deal with multiple protected attributes
        sensitive = test[attr].values.tolist()
- 
+
+    # Note: the training and test set here still include the sensitive attributes because
+    # some fairness aware algorithms may need those in the dataset.  They should be removed
+    # before any model training is done. 
     predictions = algorithm.run(train, test, class_attr, sensitive_attrs, params)
 
     return actual, predictions, sensitive

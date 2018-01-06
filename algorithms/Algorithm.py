@@ -14,3 +14,6 @@ class Algorithm():
         Returns True if this algorithm can only handle numerical data as input.
         """
         return False 
+
+    def get_name(self):
+        return self.name
