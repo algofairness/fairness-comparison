@@ -6,26 +6,26 @@ class DisparateImpact(FairnessMetric):
     threshold is applied.  This is described as DI in: https://arxiv.org/abs/1412.3756
     If there are no positive protected classifications, 0.0 is returned. 
     """
-    def __init__(self, actual, predicted, sensitive, unprotected_vals, positive_pred):
-        FairnessMetric.__init__(self, actual, predicted, sensitive, unprotected_vals, positive_pred)
+    def __init__(self):
+        FairnessMetric.__init__(self)
         self.name = 'disparate impact'
 
-    def calc(self):
+    def calc(self, actual, predicted, sensitive, unprotected_vals, positive_pred):
         # This implementation assumes that predicted and sensitive both have the same lengths.
         unprotected_positive = 0.0
         unprotected_negative = 0.0
         protected_positive = 0.0
         protected_negative = 0.0
-        for i in range(0, len(self.predicted)):
-            protected_val = self.sensitive[i]
-            predicted_val = self.predicted[i]
-            if protected_val in self.unprotected_vals:
-                if str(predicted_val) == str(self.positive_pred):
+        for i in range(0, len(predicted)):
+            protected_val = sensitive[i]
+            predicted_val = predicted[i]
+            if protected_val in unprotected_vals:
+                if str(predicted_val) == str(positive_pred):
                     unprotected_positive += 1
                 else:
                     unprotected_negative += 1
             else:
-                if str(predicted_val) == str(self.positive_pred):
+                if str(predicted_val) == str(positive_pred):
                     protected_positive += 1
                 else:
                     protected_negative += 1

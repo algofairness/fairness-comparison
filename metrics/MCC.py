@@ -2,9 +2,9 @@ from metrics.Metric import Metric
 from sklearn.metrics import matthews_corrcoef
 
 class MCC(Metric):
-    def __init__(self, actual, predicted):
-        Metric.__init__(self, actual, predicted)
+    def __init__(self):
+        Metric.__init__(self)
         self.name = 'MCC'
 
-    def calc(self):
-        return matthews_corrcoef(self.actual, self.predicted)
+    def calc(self, actual, predicted):
+        return matthews_corrcoef(actual, predicted)
