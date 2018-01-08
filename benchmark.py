@@ -14,7 +14,7 @@ def run(num_trials = NUM_TRIALS_DEFAULT,
         algorithm = ""):
     algorithm_name = algorithm
     print("WARNING: be sure that you have run `python3 preprocess.py` before running this script.")
-    metrics_line, metrics_list = get_metrics_name_list()
+    metrics_list = get_metrics_list()
 
     print("Datasets: '%s'" % dataset_names)
     for dataset in DATASETS:
@@ -23,13 +23,10 @@ def run(num_trials = NUM_TRIALS_DEFAULT,
 
         print("\nEvaluating dataset:" + dataset.get_dataset_name())
 
-        filename_num = RESULT_DIR + dataset.get_dataset_name() + '_numerical_only.csv' 
-        f_num = open(filename_num, 'w')
-        f_num.write(metrics_line + '\n')
-
-        filename_all = RESULT_DIR + dataset.get_dataset_name() + '_all.csv' 
-        f_all = open(filename_all, 'w')
-        f_all.write(metrics_line + '\n')
+        f_num_summary = create_summary_file(dataset, '_numerical_only_summary.csv')
+        f_all_summary = create_summary_file(dataset, '_all_summary.csv')
+        f_num = create_detailed_file(dataset, '_numerical_only.csv')
+        f_all = create_detailed_file(dataset, '_all.csv')
 
         processed_dataset = ProcessedData(dataset)
         processed_splits, numerical_splits = processed_dataset.create_train_test_splits(num_trials)
@@ -53,23 +50,41 @@ def run(num_trials = NUM_TRIALS_DEFAULT,
                 train, test = numerical_splits[i]
                 run_eval_alg(algorithm, train, test, dataset, numeric_results)
 
+            detailed_numeric_results = []
+            detailed_alldata_results = []
             for metric_name in metrics_list:
                 if not algorithm.numerical_data_only():
                     avg = statistics.mean(alldata_results[metric_name])
                     stdev = statistics.stdev(alldata_results[metric_name])
                     line_all += ', ' + str(avg) + ', ' + str(stdev)
+                    if len(detailed_alldata_results) == 0:
+                        detailed_alldata_results = list([algorithm.get_name(), v] for v in alldata_results[metric_name])
+                    else:
+                        for l, el in zip(detailed_alldata_results, alldata_results[metric_name]):
+                            l.append(el)
                 
                 avg = statistics.mean(numeric_results[metric_name])
                 stdev = statistics.stdev(numeric_results[metric_name])
                 line_num += ', ' + str(avg) + ', ' + str(stdev)
-
-            f_num.write(line_num + '\n')                
+                if len(detailed_numeric_results) == 0:
+                    print(numeric_results)
+                    detailed_numeric_results = list([algorithm.get_name(), v] for v in numeric_results[metric_name])
+                else:
+                    for l, el in zip(detailed_numeric_results, numeric_results[metric_name]):
+                        l.append(el)
+            for l in detailed_numeric_results:
+                f_num.write(','.join(str(i) for i in l) + '\n')
+            f_num_summary.write(line_num + '\n')                
 
             if not algorithm.numerical_data_only():
-                f_all.write(line_all + '\n')
+                for l in detailed_alldata_results:
+                    f_all.write(','.join(str(i) for i in l) + '\n')
+                f_all_summary.write(line_all + '\n')
 
         print("Results written to file(s) in: " + RESULT_DIR)
 
+        f_num_summary.close()
+        f_all_summary.close()
         f_num.close()
         f_all.close()
 
@@ -110,16 +125,30 @@ def run_alg(algorithm, train, test, dataset):
 
     return actual, predictions, sensitive
 
-def get_metrics_name_list():
-    name_list = []
-    name_line = ''
-    for metric in METRICS:
-        name_list.append(metric.get_name())
-        name_line += ', ' + metric.get_name() + ', ' + metric.get_name() + ' stdev'
-    for metric in FAIRNESS_METRICS:
-        name_list.append(metric.get_name())
-        name_line += ', ' + metric.get_name() + ', ' + metric.get_name() + ' stdev'
-    return name_line, name_list
+def get_metrics_list():
+    return ([metric.get_name() for metric in METRICS] +
+            [metric.get_name() for metric in FAIRNESS_METRICS])
+
+def get_summary_metrics_header():
+    result = ['algorithm']
+    for name in get_metrics_list():
+        result.extend([name, name + ' stdev'])
+    return ', '.join(result)
+
+def get_detailed_metrics_header():
+    return ', '.join(['algorithm'] + get_metrics_list())
+
+def create_summary_file(dataset, suffix):
+    filename = RESULT_DIR + dataset.get_dataset_name() + suffix
+    f = open(filename, 'w')
+    f.write(get_summary_metrics_header() + '\n')
+    return f
+
+def create_detailed_file(dataset, suffix):
+    filename = RESULT_DIR + dataset.get_dataset_name() + suffix
+    f = open(filename, 'w')
+    f.write(get_detailed_metrics_header() + '\n')
+    return f
 
 def main():
     fire.Fire(run)
