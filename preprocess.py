@@ -12,7 +12,8 @@ def prepare_data(dataset_names = get_dataset_names()):
         print("--- Processing dataset:" + dataset.get_dataset_name() + " ---")
         data_path = dataset.get_raw_filename()
         data_frame = pd.read_csv(data_path, error_bad_lines=False, 
-                                 na_values=dataset.get_missing_val_indicators())
+                                 na_values=dataset.get_missing_val_indicators(),
+                                 encoding = 'ISO-8859-1')
 	
         processed_data, processed_numerical = preprocess(dataset, data_frame)
 	
