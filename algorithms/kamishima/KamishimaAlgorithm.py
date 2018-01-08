@@ -48,10 +48,10 @@ class KamishimaAlgorithm(Algorithm):
         os.close(fd)
         train_name = create_file_in_kamishima_format(train_df)
         test_name = create_file_in_kamishima_format(test_df)
-        subprocess.run(['./algorithms/kamishima/kamfadm-2012ecmlpkdd/train_pr.py',
+        subprocess.run(['python3', './algorithms/kamishima/kamfadm-2012ecmlpkdd/train_pr.py',
                         '-i', train_name,
                         '-o', model_name])
-        subprocess.run(['./algorithms/kamishima/kamfadm-2012ecmlpkdd/predict_lr.py',
+        subprocess.run(['python3', './algorithms/kamishima/kamfadm-2012ecmlpkdd/predict_lr.py',
                         '-i', test_name,
                         '-m', model_name,
                         '-o', output_name])
