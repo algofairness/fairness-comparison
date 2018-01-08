@@ -26,6 +26,8 @@ class German(Data):
         sexdict = {('A91', 'A93', 'A94'): 'male', ('A92', 'A95'):'female'}
         dataframe['sex'] = dataframe['personal_status'].map(sexdict)
         dataframe.drop('personal_status', 1)
+
+        ## TODO: convert age as done in calders so that it's a binary sensitive attribute
         return dataframe
 
     def handle_missing_data(self, dataframe):
