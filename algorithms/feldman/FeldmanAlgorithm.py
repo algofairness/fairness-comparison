@@ -12,7 +12,8 @@ class FeldmanAlgorithm(Algorithm):
         self.repair_level = REPAIR_LEVEL_DEFAULT
         print("WARNING: Feldman algorithm does not yet handle multiple sensitive attrs.")
 
-    def run(self, train_df, test_df, class_attr, sensitive_attrs, params):
+    def run(self, train_df, test_df, class_attr, sensitive_attrs, single_sensitive, params):
+        ## TODO: check about multiple sensitive attrs
         repaired_train_df = self.repair(train_df, sensitive_attrs)
 
         # What should be happening here is that the test_df is transformed using exactly the same
@@ -21,8 +22,8 @@ class FeldmanAlgorithm(Algorithm):
         # in the training set and the test set.
         repaired_test_df = self.repair(test_df, sensitive_attrs) 
 
-        return self.model.run(repaired_train_df, repaired_test_df, class_attr, sensitive_attrs, 
-                              params)
+        return self.model.run(repaired_train_df, repaired_test_df, class_attr, sensitive_attrs,
+                              single_sensitive, params)
        
     def repair(self, data_df, sensitive_attrs):
         data = data_df.values.tolist()

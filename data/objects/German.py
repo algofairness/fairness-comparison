@@ -12,7 +12,7 @@ class German(Data):
         self.sensitive_attrs = ['sex']
         self.privileged_class_names = ['male']
         self.categorical_features = ['status', 'credit_history', 'purpose', 'savings', 'employment', 
-                                     'personal_status', 'other_debtors', 'property', 'installment_plans', 
+                                     'other_debtors', 'property', 'installment_plans', 
                                      'housing', 'skill_level', 'telephone', 'foreign_worker'] 
         self.features_to_keep = [ 'status', 'month', 'credit_history', 'purpose', 'credit_amount',
                                   'savings', 'employment', 'investment_as_income_percentage', 
@@ -23,9 +23,13 @@ class German(Data):
         self.missing_val_indicators = []
 
     def data_specific_processing(self, dataframe):
-        sexdict = {('A91', 'A93', 'A94'): 'male', ('A92', 'A95'):'female'}
-        dataframe['sex'] = dataframe['personal_status'].map(sexdict)
-        dataframe.drop('personal_status', 1)
+        sexdict = {'A91' : 'male', 'A93' : 'male', 'A94' : 'male',
+                   'A92' : 'female', 'A95' : 'female'}
+        dataframe = dataframe.assign(personal_status =  \
+                        dataframe['personal_status'].replace(to_replace = sexdict))
+        dataframe = dataframe.rename(columns = {'personal_status' : 'sex'})
+
+        ## TODO: convert age as done in calders so that it's a binary sensitive attribute
         return dataframe
 
     def handle_missing_data(self, dataframe):

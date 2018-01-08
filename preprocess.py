@@ -11,10 +11,9 @@ def prepare_data(dataset_names = get_dataset_names()):
             continue
         print("--- Processing dataset:" + dataset.get_dataset_name() + " ---")
         data_path = dataset.get_raw_filename()
-        ## TODO: right now the retailer data won't load without ignoring errors - fix this
-        ## and remove the below error_bad_lines=False.
         data_frame = pd.read_csv(data_path, error_bad_lines=False, 
-                                 na_values=dataset.get_missing_val_indicators())
+                                 na_values=dataset.get_missing_val_indicators(),
+                                 encoding = 'ISO-8859-1')
 	
         processed_data, processed_numerical = preprocess(dataset, data_frame)
 	
@@ -50,11 +49,21 @@ def preprocess(dataset, data_frame):
     # Do any data specific processing.
     processed_data = dataset.data_specific_processing(missing_data_removed)
 
+    # Handle multiple sensitive attributes by creating a new attribute that's the joint distribution
+    # of all of those attributes.  For example, if a dataset has both 'Race' and 'Gender', the
+    # combined feature 'RaceGender' is created that has attributes, e.g., 'White-Woman'.
+    sensitive_attrs = dataset.get_sensitive_attributes()
+    if len(sensitive_attrs) > 1:
+        new_attr_name = '-'.join(sensitive_attrs)
+        ## TODO: the below will currently fail for non-string attributes
+        processed_data = processed_data.assign(temp_name = 
+                             processed_data[sensitive_attrs].apply('-'.join, axis=1))
+        processed_data = processed_data.rename(columns = {'temp_name' : new_attr_name})
+        dataset.append_sensitive_attribute(new_attr_name)
+
     # Create a one-hot encoding of the categorical variables.
     processed_numerical = pd.get_dummies(processed_data, 
                                          columns = dataset.get_categorical_features())
-
-    ## TODO: replace non-protected with single value as needed
 
     return processed_data, processed_numerical	
 		

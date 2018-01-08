@@ -9,7 +9,7 @@ class KamishimaAlgorithm(Algorithm):
         Algorithm.__init__(self)
         self.name = "Kamishima"
 
-    def run(self, train_df, test_df, class_attr, sensitive_attrs, params):
+    def run(self, train_df, test_df, class_attr, sensitive_attrs, single_sensitive, params):
         if len(sensitive_attrs) > 1:
             print("THIS CAN ONLY HANDLE ONE SENSITIVE ATTRIBUTE, PANIC")
             exit(10000)
@@ -25,7 +25,6 @@ class KamishimaAlgorithm(Algorithm):
                 if col in sensitive_attrs:
                     continue
                 x.append(numpy.array(df[col].values, dtype=numpy.float64))
-
 
             s_dict = dict((k, i)
                             for (i, k) in enumerate(

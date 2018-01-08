@@ -33,6 +33,13 @@ class Data():
         """
         return self.sensitive_attrs
 
+    def append_sensitive_attribute(self, attr):
+        """
+        Adds a new sensitive attribute to the end of the list of sensitive attributes.  Used to
+        create a new sensitive attribute that combines all the other ones.
+        """
+        self.sensitive_attrs.append(attr)
+
     def get_privileged_class_names(self):
         """
         Returns a list in the same order as the sensitive attributes list above of the

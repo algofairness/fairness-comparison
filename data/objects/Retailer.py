@@ -33,7 +33,7 @@ class Retailer(Data):
             age = date.today().year - int(year) - ((date.today().month, date.today().day) < (month, int(day)))
             agelist.append(age)    
         se = pd.Series(agelist)
-        dataframe['age'] = se.values 
+        dataframe = dataframe.assign(age = se.values)
         dataframe.drop(['udateofbirth'], axis=1, inplace=True)
         return dataframe
 
