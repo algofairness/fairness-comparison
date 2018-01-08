@@ -74,7 +74,7 @@ def fill_missing_with_mean(D, default=0.0):
         a data matrix whose missing values are filled
     """
 
-    for i in xrange(D.shape[1]):
+    for i in range(D.shape[1]):
         if np.any(np.isnan(D[:, i])):
             v = np.mean(D[np.isfinite(D[:, i]), i])
             if np.isnan(v):

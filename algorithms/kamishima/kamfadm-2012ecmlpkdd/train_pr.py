@@ -171,7 +171,7 @@ def main(opt):
         clr = None
         best_loss = np.inf
         best_trial = 0
-        for trial in xrange(opt.ntry):
+        for trial in range(opt.ntry):
             logger.info("Trial No. " + str(trial + 1))
             tmp_clr = train(X, y, ns, opt)
             logger.info("loss = " + str(tmp_clr.f_loss_))
@@ -213,7 +213,7 @@ def main(opt):
     # write file
     pickle.dump(clr, opt.outfile)
     info = {}
-    for key, key_val in vars(opt).iteritems():
+    for key, key_val in vars(opt).items():
         info[key] = str(key_val)
     pickle.dump(info, opt.outfile)
 
@@ -262,9 +262,9 @@ if __name__ == '__main__':
     ap.add_argument('infilep', nargs='?', metavar='INFILE',
                     default=sys.stdin, type=argparse.FileType('r'))
     ap.add_argument('-o', '--out', dest='outfile',
-                    default=None, type=argparse.FileType('w'))
+                    default=None, type=argparse.FileType('wb'))
     ap.add_argument('outfilep', nargs='?', metavar='OUTFILE',
-                    default=sys.stdout, type=argparse.FileType('w'))
+                    default=sys.stdout, type=argparse.FileType('wb'))
 
     # script specific options
     ap.add_argument('-C', '--reg', dest='C', type=float, default=1.0)

@@ -9,10 +9,14 @@ from metrics.list import METRICS, FAIRNESS_METRICS
 NUM_TRIALS_DEFAULT = 10
 RESULT_DIR = "results/"
 
-def run(num_trials = NUM_TRIALS_DEFAULT, dataset_names = get_dataset_names()):
+def run(num_trials = NUM_TRIALS_DEFAULT,
+        dataset_names = get_dataset_names(),
+        algorithm = ""):
+    algorithm_name = algorithm
     print("WARNING: be sure that you have run `python3 preprocess.py` before running this script.")
     metrics_line, metrics_list = get_metrics_name_list()
 
+    print("Datasets: '%s'" % dataset_names)
     for dataset in DATASETS:
         if not dataset.get_dataset_name() in dataset_names:
             continue
@@ -31,6 +35,9 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset_names = get_dataset_names()):
         processed_splits, numerical_splits = processed_dataset.create_train_test_splits(num_trials)
 
         for algorithm in ALGORITHMS:
+            if algorithm_name != "" and algorithm.get_name() != algorithm_name:
+                print("SKIPPING %s" % algorithm.get_name())
+                continue
             print("    Algorithm:" + algorithm.get_name())
             line_num = algorithm.get_name()
             line_all = algorithm.get_name()

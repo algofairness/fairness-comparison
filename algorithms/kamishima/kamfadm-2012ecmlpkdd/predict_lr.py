@@ -135,7 +135,7 @@ def main(opt):
     # output prediction
     n = 0
     m = 0
-    for i in xrange(p.shape[0]):
+    for i in range(p.shape[0]):
         c = np.argmax(p[i, :])
         opt.outfile.write("%d %d " % (y[i], c))
         opt.outfile.write(" ".join(S[i, :].astype(str)) + " ")
@@ -173,7 +173,7 @@ def main(opt):
             opt.outfile.write("#classifier_%s=%s\n" %
                               (key, str(clr_info[key])))
 
-        for key, key_val in vars(opt).iteritems():
+        for key, key_val in vars(opt).items():
             opt.outfile.write("#%s=%s\n" % (key, str(key_val)))
 
     ### post process
@@ -228,7 +228,7 @@ if __name__ == '__main__':
                     default=sys.stdout, type=argparse.FileType('w'))
 
     # script specific options
-    ap.add_argument('-m', '--model', type=argparse.FileType('r'),
+    ap.add_argument('-m', '--model', type=argparse.FileType('rb'),
                     required=True)
     ap.set_defaults(ns=False)
     ap.add_argument("--ns", dest="ns", action="store_true")
