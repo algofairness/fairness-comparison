@@ -62,36 +62,7 @@ class KamishimaAlgorithm(Algorithm):
         m = numpy.loadtxt(output_name)
         os.unlink(output_name)
 
-        return m[:,0]
-
-        # exit(100)
-
-    # def run(self, train_df, test_df, class_attr, sensitive_attrs, params):
-    #     # print(train_df)
-    #     y = train_df[class_attr]
-    #     # print(y)
-
-    #     s = train_df[sensitive_attrs]
-    #     # kamishima only takes numeric attributes
-
-    #     # FIXME: does it handle the existence of privileged class values? what does it do then?
-
-
-    #     s_dict = dict((k, i)
-    #                     for (i, k) in enumerate(
-    #         v[0] for v in s.drop_duplicates().values.tolist()))
-    #     s_numeric_values = numpy.array(list(s_dict[s_value[0]] for s_value in s.values),
-    #                                    dtype=numpy.float64)
-    #     y = numpy.array(y.values, dtype=numpy.float64)
-
-    #     print(s_numeric_values)
-    #     print(y)
-
-    #     print(train_df)
-
-
-
-    #     exit(100)
+        return m[:,1]
 
     def numerical_data_only(self):
         return True
