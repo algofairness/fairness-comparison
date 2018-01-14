@@ -1,14 +1,15 @@
 This repository is meant to facilitate the benchmarking of fairness aware machine learning algorithms.
 
 To run the benchmarks, clone the repository and run:
-`python3 preprocess.py`
+> python3 preprocess.py
 to make the preprocessed versions of the datasets if you desire (they are also added to the
-repository so that you can skip this step if you would like).
+repository so that **you can skip this step if you would like**).
+
 Then run:
-`python3 benchmark.py`
+> python3 benchmark.py
 to perform the benchmarks.
 
-This will print out metrics for each dataset to the results/ directory.
+This will write out metrics for each dataset to the results/ directory.
 
 To add new datasets or algorithms, see the instructions in the readme files in those directories.
 
