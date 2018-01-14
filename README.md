@@ -1,64 +1,16 @@
 This repository is meant to facilitate the benchmarking of fairness aware machine learning algorithms.
 
-To run the benchmarks, download the repository, and run the run_metrics.py file.
+To run the benchmarks, clone the repository and run:
+`python3 preprocess.py`
+to make the preprocessed versions of the datasets if you desire (they are also added to the
+repository so that you can skip this step if you would like).
+Then run:
+`python3 benchmark.py`
+to perform the benchmarks.
 
-This will print out metrics for each dataset.
+This will print out metrics for each dataset to the results/ directory.
 
-
-Drawing heavily on original code from:
-
-https://github.com/mbilalzafar/fair-classification
-
-https://github.com/tkamishima/kamfadm
-
-
-
-As for a layout of the repository:
-
-  Algorithms each have own dir, with an algorithm class inside, specific to each algorithm (ex: Kamishima, Zafar, etc.)
-  Data is found in the data dir, with each data set getting its own sub-dir.
-  Audits is where all of the audit results are stored.
-  Metrics contains the Metric class that calculates different metrics.
-  Misc contains benchmark scripts for Adult, Compas, and German data sets. It also contains necessary files for Zafar, Kamishima, Calders, and Feldman algorithms.
-  Preprocessing contains the methods that prepare each data set to be run through the metrics.
-  
-  To run the working metrics on the Adult and German data sets, cd into the outermost dir and run "python run_metrics.py".
-
-
-To add a new dataset:
-  Dataset must be formatted as csv.
-  Make new directory under data and save dataset there.
-  Each dataset must have a load_data script which will also be saved in this dir.
-  Create preprocessing script for new dataset called prepare_[name] in preprocessing dir.
-  Now go into misc/black_box_auditing.py and create classify and repair scripts based on
-  the ones present already.
-  Finally, go to algorithms/AbstractAlgorithm.py.
-  Import prepare script and load_data script.
-  Add if statement for [name] with prepare func., name, filename, and classify func.
-  Return to outermost directory and edit run_metrics.py
-  Add run_metrics([name])
-
-To add new algorithm:
-  Create new subdir in algorithms directory.
-  Put all files (scripts, etc.) needed to run algorithm into subdirectory.
-  Create new Algorithm class in subdir extending AbstractAlgorithm with a run function 
-  that runs the algorithm that takes a string representing the name of the dataset (e.g.
-  "german") and a dictionary of parameters and returns actual, predicted, and protected 
-  lists.
-  Import new Algorithm class in run_metrics.py
-  Add new section for new algorithm which creates instance of new Algorithm class, runs
-  algorithm on data and params, and outputs uniquely named variables for actual,
-  predicted, and protected.
-  Add new section towards bottom with new instance of Metric calculator that takes
-  actual, predicted, and protected vars and runs metrics on them (printed with print_res)
-
-
-
-
-
-
-
-
+To add new datasets or algorithms, see the instructions in the readme files in those directories.
 
 
 
