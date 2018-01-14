@@ -17,5 +17,6 @@ ALGORITHMS = [ SVM(), GaussianNB(), LogisticRegression(),                     # 
                FeldmanAlgorithm(LogisticRegression()),
                ParamGridSearch(FeldmanAlgorithm(SVM()), DisparateImpact()),   # Feldman params
                ParamGridSearch(FeldmanAlgorithm(SVM()), Accuracy()),
-               ParamGridSearch(FeldmanAlgorithm(SVM()), MCC())
+               ParamGridSearch(FeldmanAlgorithm(GaussianNB()), DisparateImpact()),
+               ParamGridSearch(FeldmanAlgorithm(GaussianNB()), Accuracy())
              ]
