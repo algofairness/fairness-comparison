@@ -31,13 +31,19 @@ class Algorithm():
         """
         Returns True if this algorithm can only handle numerical data as input.
         """
-        return False 
+        return False
 
     def handles_multiple_sensitive_attrs(self):
         """
         Returns True if this algorithm can handle multiple sensitive attributes.
         """
-        return False 
+        return False
+
+    def binary_sensitive_attrs_only(self):
+        """
+        Returns True if this algorithm can only handle sensitive attributes that are binary.
+        """
+        return True
 
     def get_name(self):
         return self.name

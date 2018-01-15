@@ -28,7 +28,7 @@ def run(num_trials = NUM_TRIALS_DEFAULT,
 
         all_sensitive_attributes = dataset.get_sensitive_attributes()
         if len(all_sensitive_attributes) > 1:
-            # all the joint sensitive attribute (e.g., race-sex) to the list
+            # add the joint sensitive attribute (e.g., race-sex) to the list
             all_sensitive_attributes += [ processed_dataset.get_combined_sensitive_attr_name() ]
 
         for sensitive in all_sensitive_attributes:
@@ -149,6 +149,9 @@ def run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_se
                                 single_sensitive, privileged_vals, params)
 
     return actual, predictions, sensitive, params
+
+def make_sensitive_attr_binary(dataframe, sensitive_attr, privileged_val):
+    
 
 def get_metrics_list():
     return [metric.get_name() for metric in METRICS]

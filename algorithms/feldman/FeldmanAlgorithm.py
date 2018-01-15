@@ -55,3 +55,6 @@ class FeldmanAlgorithm(Algorithm):
         factor is the capacity of the model that data is then passed to.
         """
         return self.model.numerical_data_only()
+
+    def binary_sensitive_attrs_only(self):
+        return False

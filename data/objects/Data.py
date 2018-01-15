@@ -2,6 +2,7 @@ RAW_DATA_DIR = 'data/raw/'
 PROCESSED_DATA_DIR = 'data/preprocessed/'
 PROCESSED_ALL_STUB = "_processed.csv"
 PROCESSED_NUM_STUB = "_numerical.csv"
+PROCESSED_BINSENS_STUB = "_numerical_binsensitive.csv"
 
 class Data():
     def __init__(self):
@@ -28,7 +29,7 @@ class Data():
 
     def get_sensitive_attributes(self):
         """
-        Returns a list of the names of any sensitive / protected attribute(s) that will be used 
+        Returns a list of the names of any sensitive / protected attribute(s) that will be used
         for a fairness analysis and should not be used to train the model.
         """
         return self.sensitive_attrs
@@ -50,8 +51,8 @@ class Data():
 
     def get_categorical_features(self):
         """
-        Returns a list of features that should be expanded to one-hot versions for 
-        numerical-only algorithms.  This should not include the protected features 
+        Returns a list of features that should be expanded to one-hot versions for
+        numerical-only algorithms.  This should not include the protected features
         or the outcome class variable.
         """
         return self.categorical_features
@@ -71,6 +72,14 @@ class Data():
     def get_processed_numerical_filename(self):
         return PROCESSED_DATA_DIR + self.get_dataset_name() + PROCESSED_NUM_STUB
 
+    def get_processed_binsensitive_filename(self):
+        """
+        Returns the filename for a processed version of this dataset that is all numerical with a
+        binary (numerical) sensitive attribute.  All privileged values will be replaced by 1 and
+        all other sensitive values by 0.
+        """
+        return PROCESSED_DATA_DIR + self.get_dataset_name() + PROCESSED_BINSENS_STUB
+
     def data_specific_processing(self, dataframe):
         """
         Takes a pandas dataframe and modifies it to do any data specific processing.  This should
@@ -82,7 +91,7 @@ class Data():
     def handle_missing_data(self, dataframe):
         """
         This method implements any data specific missing data processing.  Any missing data
-        not replaced by values in this step will be removed by the general preprocessing 
+        not replaced by values in this step will be removed by the general preprocessing
         script.
         """
         raise NotImplementedError("handle_missing_data() in Data is not implemented")
