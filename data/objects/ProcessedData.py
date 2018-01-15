@@ -7,8 +7,10 @@ class ProcessedData():
         self.data = data_obj
         self.processed_df = pd.read_csv(self.data.get_processed_filename())
         self.numerical_df = pd.read_csv(self.data.get_processed_numerical_filename())
+        self.binsensitive_df = pd.read_csv(self.data.get_processed_binsensitive_filename())
         self.processed_splits = []
         self.numerical_splits = []
+        self.binsensitive_splits = []
 
     def get_processed_filename(self):
         return self.data.get_processed_filename()
@@ -33,8 +35,11 @@ class ProcessedData():
             train = self.numerical_df.sample(frac = TRAINING_PERCENT)
             test = self.numerical_df.drop(train.index)
             self.numerical_splits.append((train, test))
+            train = self.binsensitive_df.sample(frac = TRAINING_PERCENT)
+            test = self.binsensitive_df.drop(train.index)
+            self.binsensitive_splits.append((train, test))
 
-        return self.processed_splits, self.numerical_splits
+        return self.processed_splits, self.numerical_splits, self.binsensitive_splits
 
     def get_combined_sensitive_attr_name(self):
         return '-'.join(self.data.get_sensitive_attributes())
