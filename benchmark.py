@@ -150,9 +150,6 @@ def run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_se
 
     return actual, predictions, sensitive, params
 
-def make_sensitive_attr_binary(dataframe, sensitive_attr, privileged_val):
-    
-
 def get_metrics_list():
     return [metric.get_name() for metric in METRICS]
 
