@@ -17,8 +17,6 @@ class ParamGridSearch(Algorithm):
         the algorithm's search space (accessed via get_param_info).  Given 'params' should be
         empty in the call to this function - the best discovered params are
         returned by mutating the given dictionary.
-
-        Warning: assumes that metric values are above 0 and that bigger is better.
         """
         all_predictions = []
         search_space = self.algorithm.get_param_info()
@@ -61,7 +59,7 @@ class ParamGridSearch(Algorithm):
         param_dict[param_name] = param_val
 
     def numerical_data_only(self):
-        return self.algorithm.numerical_data_only() 
+        return self.algorithm.numerical_data_only()
 
     def handles_multiple_sensitive_attrs(self):
         """

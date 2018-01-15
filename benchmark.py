@@ -1,4 +1,5 @@
 import fire
+import os
 import statistics
 
 from data.objects.list import DATASETS, get_dataset_names
@@ -10,23 +11,23 @@ NUM_TRIALS_DEFAULT = 10
 RESULT_DIR = "results/"
 
 def run(num_trials = NUM_TRIALS_DEFAULT,
-        dataset_names = get_dataset_names(),
+        dataset = get_dataset_names(),
         algorithm = ""):
     algorithm_name = algorithm
     print("WARNING: be sure that you have run `python3 preprocess.py` before running this script.")
     metrics_list = get_metrics_list()
 
-    print("Datasets: '%s'" % dataset_names)
-    for dataset in DATASETS:
-        if not dataset.get_dataset_name() in dataset_names:
+    print("Datasets: '%s'" % dataset)
+    for dataset_obj in DATASETS:
+        if not dataset_obj.get_dataset_name() in dataset:
             continue
 
-        print("\nEvaluating dataset:" + dataset.get_dataset_name())
+        print("\nEvaluating dataset:" + dataset_obj.get_dataset_name())
 
-        processed_dataset = ProcessedData(dataset)
+        processed_dataset = ProcessedData(dataset_obj)
         processed_splits, numerical_splits = processed_dataset.create_train_test_splits(num_trials)
 
-        all_sensitive_attributes = dataset.get_sensitive_attributes()
+        all_sensitive_attributes = dataset_obj.get_sensitive_attributes()
         if len(all_sensitive_attributes) > 1:
             # add the joint sensitive attribute (e.g., race-sex) to the list
             all_sensitive_attributes += [ processed_dataset.get_combined_sensitive_attr_name() ]
@@ -35,83 +36,45 @@ def run(num_trials = NUM_TRIALS_DEFAULT,
 
             print("Sensitive attribute:" + sensitive)
 
-            f_num_summary = create_summary_file(dataset, sensitive, '_numerical_only_summary.csv')
-            f_all_summary = create_summary_file(dataset, sensitive, '_all_summary.csv')
-            f_num = create_detailed_file(dataset, sensitive, '_numerical_only.csv')
-            f_all = create_detailed_file(dataset, sensitive, '_all.csv')
+            f_num = create_detailed_file(dataset_obj, sensitive, '_numerical_only.csv')
+            f_all = create_detailed_file(dataset_obj, sensitive, '_all.csv')
 
             for algorithm in ALGORITHMS:
-                if algorithm_name != "" and not algorithm_name in algorithm.get_name():
+                if algorithm_name != "" and algorithm_name != algorithm.get_name():
                     print("SKIPPING %s" % algorithm.get_name())
                     continue
                 print("    Algorithm:" + algorithm.get_name())
-                line_num = algorithm.get_name()
-                line_all = algorithm.get_name()
 
-                numeric_results = {}
-                alldata_results = {}
                 for i in range(0, num_trials):
 
                     if not algorithm.numerical_data_only():
                         train, test = processed_splits[i]
-                        run_eval_alg(algorithm, train, test, dataset, all_sensitive_attributes,
-                                     sensitive, alldata_results)
+                        params, results = run_eval_alg(algorithm, train, test, dataset_obj,
+                                                       all_sensitive_attributes, sensitive)
+                        write_alg_results(f_all, algorithm.get_name(), params, results)
 
                     train, test = numerical_splits[i]
-                    run_eval_alg(algorithm, train, test, dataset, all_sensitive_attributes,
-                                 sensitive, numeric_results)
-
-                detailed_numeric_results = []
-                detailed_alldata_results = []
-
-                for metric_name in ['params'] + metrics_list:
-                    if not algorithm.numerical_data_only():
-                        if not metric_name == 'params':
-                            avg = statistics.mean(alldata_results[metric_name])
-                            stdev = statistics.stdev(alldata_results[metric_name])
-                            line_all += ', ' + str(avg) + ', ' + str(stdev)
-                        if len(detailed_alldata_results) == 0:
-                            detailed_alldata_results =  \
-                                list([algorithm.get_name(), v] for v in alldata_results[metric_name])
-                        else:
-                            for l, el in zip(detailed_alldata_results, alldata_results[metric_name]):
-                                l.append(el)
-
-                    if not metric_name == 'params':
-                        avg = statistics.mean(numeric_results[metric_name])
-                        stdev = statistics.stdev(numeric_results[metric_name])
-                        line_num += ', ' + str(avg) + ', ' + str(stdev)
-                    if len(detailed_numeric_results) == 0:
-                        detailed_numeric_results =  \
-                            list([algorithm.get_name(), v] for v in numeric_results[metric_name])
-                    else:
-                        for l, el in zip(detailed_numeric_results, numeric_results[metric_name]):
-                            l.append(el)
-
-                for l in detailed_numeric_results:
-                    f_num.write(','.join(str(i) for i in l) + '\n')
-                f_num_summary.write(line_num + '\n')
-
-                if not algorithm.numerical_data_only():
-                    for l in detailed_alldata_results:
-                        f_all.write(','.join(str(i) for i in l) + '\n')
-                    f_all_summary.write(line_all + '\n')
+                    params, results = run_eval_alg(algorithm, train, test, dataset_obj,
+                                                   all_sensitive_attributes, sensitive)
+                    write_alg_results(f_num, algorithm.get_name(), params, results)
 
         print("Results written to file(s) in: " + RESULT_DIR)
 
-        f_num_summary.close()
-        f_all_summary.close()
         f_num.close()
         f_all.close()
 
-def run_eval_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_sensitive,
-                 results_dict):
+def write_alg_results(file_handle, alg_name, params, results_list):
+    line = alg_name + ','
+    line += str(params) + ','  ## TODO: do something more parseable with multiple params here
+    line += ','.join(str(x) for x in results_list) + '\n'
+    file_handle.write(line)
+    # Make sure the file is written to disk line-by-line:
+    file_handle.flush()
+    os.fsync(file_handle.fileno())
+
+def run_eval_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_sensitive):
     """
-    Runs the algorithm and gets the resulting metric evaluations.  Results are returned via the
-    results_dict which maps metric names to lists of results.  This function is called once per
-    trial, so the resulting lists have one calculated metric per trial.  Parameters per trial
-    are also returned by setting the keyword 'params' in the results_dict to point to a similar
-    list of parameter dictionary results.
+    Runs the algorithm and gets the resulting metric evaluations.
     """
     privileged_vals = dataset.get_privileged_class_names()
     positive_val = dataset.get_positive_class_val()
@@ -120,32 +83,26 @@ def run_eval_alg(algorithm, train, test, dataset, all_sensitive_attributes, sing
         run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_sensitive,
                 privileged_vals, positive_val)
 
-    if not 'params' in results_dict:
-        results_dict['params'] = []
-    results_dict['params'].append(params)
-
+    one_run_results = []
     for metric in METRICS:
         result = metric.calc(actual, predicted, sensitive, privileged_vals, positive_val)
-        name = metric.get_name()
-        if not name in results_dict:
-            results_dict[name] = []
-        results_dict[name].append(result)
+        one_run_results.append(result)
 
-def run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_sensitive, 
+    return params, one_run_results
+
+def run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_sensitive,
             privileged_vals, positive_val):
     class_attr = dataset.get_class_attribute()
     params = algorithm.get_default_params()
 
     # get the actual classifications and sensitive attributes
     actual = test[class_attr]
-    for attr in all_sensitive_attributes:
-       ## TODO: actually deal with multiple protected attributes
-       sensitive = test[attr].values.tolist()
+    sensitive = test[single_sensitive].values.tolist()
 
     # Note: the training and test set here still include the sensitive attributes because
     # some fairness aware algorithms may need those in the dataset.  They should be removed
     # before any model training is done.
-    predictions = algorithm.run(train, test, class_attr, positive_val, all_sensitive_attributes, 
+    predictions = algorithm.run(train, test, class_attr, positive_val, all_sensitive_attributes,
                                 single_sensitive, privileged_vals, params)
 
     return actual, predictions, sensitive, params
@@ -153,20 +110,8 @@ def run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_se
 def get_metrics_list():
     return [metric.get_name() for metric in METRICS]
 
-def get_summary_metrics_header():
-    result = ['algorithm']
-    for name in get_metrics_list():
-        result.extend([name, name + ' stdev'])
-    return ', '.join(result)
-
 def get_detailed_metrics_header():
     return ', '.join(['algorithm', 'params'] + get_metrics_list())
-
-def create_summary_file(dataset, sensitive, suffix):
-    filename = RESULT_DIR + dataset.get_dataset_name() + '_' + sensitive + suffix
-    f = open(filename, 'w')
-    f.write(get_summary_metrics_header() + '\n')
-    return f
 
 def create_detailed_file(dataset, sensitive, suffix):
     filename = RESULT_DIR + dataset.get_dataset_name() + '_' + sensitive + suffix
