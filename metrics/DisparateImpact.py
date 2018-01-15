@@ -10,7 +10,7 @@ class DisparateImpact(Metric):
     """
     def __init__(self):
         Metric.__init__(self)
-        self.name = 'disparate impact'
+        self.name = 'DisparateImpact'
 
     def calc(self, actual, predicted, sensitive, unprotected_vals, positive_pred):
         # This implementation assumes that predicted and sensitive both have the same lengths.

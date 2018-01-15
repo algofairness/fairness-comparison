@@ -10,11 +10,12 @@ from metrics.list import METRICS
 NUM_TRIALS_DEFAULT = 10
 RESULT_DIR = "results/"
 
-def run(num_trials = NUM_TRIALS_DEFAULT,
-        dataset = get_dataset_names(),
-        algorithm = ""):
-    algorithm_name = algorithm
-    print("WARNING: be sure that you have run `python3 preprocess.py` before running this script.")
+def get_algorithm_names():
+    return [algorithm.get_name() for algorithm in ALGORITHMS]
+
+def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
+        algorithm = get_algorithm_names()):
+    algorithms_to_run = algorithm
     metrics_list = get_metrics_list()
 
     print("Datasets: '%s'" % dataset)
@@ -42,7 +43,7 @@ def run(num_trials = NUM_TRIALS_DEFAULT,
             f_all = create_detailed_file(dataset_obj, sensitive, '_all.csv')
 
             for algorithm in ALGORITHMS:
-                if algorithm_name != "" and algorithm_name != algorithm.get_name():
+                if not algorithm.get_name() in algorithms_to_run:
                     continue
 
                 print("    Algorithm:" + algorithm.get_name())
