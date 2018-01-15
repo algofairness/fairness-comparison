@@ -1,13 +1,15 @@
-from metrics.FairnessMetric import FairnessMetric
+import math
 
-class DisparateImpact(FairnessMetric):
+from metrics.Metric import Metric
+
+class DisparateImpact(Metric):
     """
     This metric calculates disparate imapct in the sense of the 80% rule before the 80%
     threshold is applied.  This is described as DI in: https://arxiv.org/abs/1412.3756
-    If there are no positive protected classifications, 0.0 is returned. 
+    If there are no positive protected classifications, 0.0 is returned.
     """
     def __init__(self):
-        FairnessMetric.__init__(self)
+        Metric.__init__(self)
         self.name = 'disparate impact'
 
     def calc(self, actual, predicted, sensitive, unprotected_vals, positive_pred):
@@ -31,7 +33,7 @@ class DisparateImpact(FairnessMetric):
                     protected_negative += 1
 
         protected_pos_percent = 0.0
-        if protected_positive + protected_negative > 0: 
+        if protected_positive + protected_negative > 0:
             protected_pos_percent = protected_positive / (protected_positive + protected_negative)
         unprotected_pos_percent = 0.0
         if unprotected_positive + unprotected_negative > 0:
@@ -41,3 +43,8 @@ class DisparateImpact(FairnessMetric):
         if unprotected_pos_percent > 0:
             DI = protected_pos_percent / unprotected_pos_percent
         return DI
+
+    def is_better_than(self, val1, val2):
+        dist1 = math.fabs(1.0 - val1)
+        dist2 = math.fabs(1.0 - val2)
+        return dist1 <= dist2

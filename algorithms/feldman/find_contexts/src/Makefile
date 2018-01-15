@@ -1,6 +1,0 @@
-all: bonus-indirect
-
-bonus-indirect:
-	python3 main.py ../input/bonus_indirect_race/original.csv ../input/bonus_indirect_race/obscured.csv ../input/bonus_indirect_race/summary.txt ../input/bonus_indirect_race/feature_data.csv Race 200 20 3 False ../output/bonus_indirect_race
-
-

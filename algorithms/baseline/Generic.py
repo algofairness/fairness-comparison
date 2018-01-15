@@ -5,7 +5,8 @@ class Generic(Algorithm):
         Algorithm.__init__(self)
         ## self.classifier should be set in any class that extends this one
 
-    def run(self, train_df, test_df, class_attr, sensitive_attrs, single_sensitive, params):
+    def run(self, train_df, test_df, class_attr, positive_class_val, sensitive_attrs, 
+            single_sensitive, privileged_vals, params):
         # remove sensitive attributes from the training set
         train_df_nosensitive = train_df.drop(columns = sensitive_attrs)
         test_df_nosensitive = test_df.drop(columns = sensitive_attrs)

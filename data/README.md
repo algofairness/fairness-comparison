@@ -16,6 +16,7 @@ http://ww2.amstat.org/publications/jse/v18n3/miao.pdf
 ### Retailer Data
 Source: https://www.dropbox.com/sh/r1q4ha5c0corzmt/AACYL2SMB_nxG6LNbXeGjXKAa?dl=0&preview=cleaned-apps-public-csv.zip
 
+Citation: David Autor and David Scarborough.  "Does job testing harm minority workers? evidence from retail establishments." The Quarterly Journal of Economics, 123(1):219–277, 2008.
 
 ## Adding a data set
 
@@ -30,4 +31,4 @@ To add a data set, you need to:
 
 All preprocessed versions of the data should be committed to the preprocessed directory.
 To regenerate them, run:
-> python preprocess.py
+> python3 preprocess.py
