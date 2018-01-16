@@ -61,9 +61,12 @@ class ParamGridSearch(Algorithm):
     def numerical_data_only(self):
         return self.algorithm.numerical_data_only()
 
+    def binary_sensitive_attrs_only(self):
+        return self.algorithm.binary_sensitive_attrs_only()
+
     def handles_multiple_sensitive_attrs(self):
         """
         Returns True if this algorithm can handle multiple sensitive attributes.
         """
-        return self.algorithm.handles_multiple_sensitive_attrs() 
+        return self.algorithm.handles_multiple_sensitive_attrs()
 

@@ -43,7 +43,7 @@ class Algorithm():
         """
         Returns True if this algorithm can only handle sensitive attributes that are binary.
         """
-        return True
+        return False
 
     def get_name(self):
         return self.name

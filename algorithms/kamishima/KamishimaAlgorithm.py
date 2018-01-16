@@ -100,6 +100,9 @@ class KamishimaAlgorithm(Algorithm):
     def numerical_data_only(self):
         return True
 
+    def binary_sensitive_attrs_only(self):
+        return True
+
     def get_default_params(self):
         """
         Fairness penalty parameter eta should default to 1.0 according to the code.

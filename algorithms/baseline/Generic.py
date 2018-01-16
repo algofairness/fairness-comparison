@@ -34,4 +34,3 @@ class Generic(Algorithm):
         Returns the created SKLearn classifier object.
         """
         return self.classifier
-        
