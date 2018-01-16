@@ -28,11 +28,14 @@ def run(dataset = get_dataset_names()):
                                dataset_obj.get_analysis_filename(sensitive))
 
             # Write graphs per dataset
-            make_graph(dataset_obj.get_dataset_name() + " dataset - numerical and binary sensitive",
+            make_graph(dataset_obj.get_dataset_name() + " dataset, " + sensitive + \
+                           " - numerical and binary sensitive",
                        dataset_obj.get_analysis_numerical_binsensitive_filename(sensitive))
-            make_graph(dataset_obj.get_dataset_name() + " dataset - numerical",
+            make_graph(dataset_obj.get_dataset_name() + " dataset, " + sensitive + \
+                           " - numerical",
                        dataset_obj.get_analysis_numerical_filename(sensitive))
-            make_graph(dataset_obj.get_dataset_name() + " dataset - numerical and categorical",
+            make_graph(dataset_obj.get_dataset_name() + " dataset, " + sensitive + \
+                           "- numerical and categorical",
                        dataset_obj.get_analysis_filename(sensitive))
 
 def write_summary_file(infile, outfile):
