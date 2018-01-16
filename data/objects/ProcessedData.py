@@ -40,6 +40,3 @@ class ProcessedData():
             self.binsensitive_splits.append((train, test))
 
         return self.processed_splits, self.numerical_splits, self.binsensitive_splits
-
-    def get_combined_sensitive_attr_name(self):
-        return '-'.join(self.data.get_sensitive_attributes())

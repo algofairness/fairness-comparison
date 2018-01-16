@@ -8,7 +8,6 @@ from algorithms.list import ALGORITHMS
 from metrics.list import METRICS
 
 NUM_TRIALS_DEFAULT = 10
-RESULT_DIR = "results/"
 
 def get_algorithm_names():
     return [algorithm.get_name() for algorithm in ALGORITHMS]
@@ -32,15 +31,18 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
         all_sensitive_attributes = dataset_obj.get_sensitive_attributes()
         if len(all_sensitive_attributes) > 1:
             # add the joint sensitive attribute (e.g., race-sex) to the list
-            all_sensitive_attributes += [ processed_dataset.get_combined_sensitive_attr_name() ]
+            all_sensitive_attributes += [ dataset_obj.get_combined_sensitive_attr_name() ]
 
         for sensitive in all_sensitive_attributes:
 
             print("Sensitive attribute:" + sensitive)
 
-            f_bin = create_detailed_file(dataset_obj, sensitive, '_numerical_only_binarysens.csv')
-            f_num = create_detailed_file(dataset_obj, sensitive, '_numerical_only.csv')
-            f_all = create_detailed_file(dataset_obj, sensitive, '_all.csv')
+            f_bin = create_detailed_file(
+                        dataset_obj.get_results_numerical_binsensitive_filename(sensitive))
+            f_num = create_detailed_file(
+                        dataset_obj.get_results_numerical_filename(sensitive))
+            f_all = create_detailed_file(
+                        dataset_obj.get_results_filename(sensitive))
 
             for algorithm in ALGORITHMS:
                 if not algorithm.get_name() in algorithms_to_run:
@@ -72,7 +74,10 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
                                                            all_sensitive_attributes, sensitive)
                             write_alg_results(f_all, algorithm.get_name(), params, results)
 
-        print("Results written to file(s) in: " + RESULT_DIR)
+        print("Results written to:")
+        print("    " + dataset_obj.get_results_filename(sensitive))
+        print("    " + dataset_obj.get_results_numerical_filename(sensitive))
+        print("    " + dataset_obj.get_results_numerical_binsensitive_filename(sensitive))
 
         f_bin.close()
         f_num.close()
@@ -126,10 +131,9 @@ def get_metrics_list():
     return [metric.get_name() for metric in METRICS]
 
 def get_detailed_metrics_header():
-    return ', '.join(['algorithm', 'params'] + get_metrics_list())
+    return ','.join(['algorithm', 'params'] + get_metrics_list())
 
-def create_detailed_file(dataset, sensitive, suffix):
-    filename = RESULT_DIR + dataset.get_dataset_name() + '_' + sensitive + suffix
+def create_detailed_file(filename):
     f = open(filename, 'w')
     f.write(get_detailed_metrics_header() + '\n')
     return f

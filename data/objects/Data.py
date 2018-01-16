@@ -1,8 +1,13 @@
 RAW_DATA_DIR = 'data/raw/'
 PROCESSED_DATA_DIR = 'data/preprocessed/'
+RESULT_DIR = "results/"
+ANALYSIS_DIR = "analysis/"
+
 PROCESSED_ALL_STUB = "_processed.csv"
-PROCESSED_NUM_STUB = "_numerical.csv"
-PROCESSED_BINSENS_STUB = "_numerical_binsensitive.csv"
+RESULTS_ALL_STUB = "_results.csv"
+ANALYSIS_ALL_STUB = "_analysis.csv"
+NUM_STUB = "_numerical.csv"
+BINSENS_STUB = "_numerical_binsensitive.csv"
 
 class Data():
     def __init__(self):
@@ -33,6 +38,9 @@ class Data():
         for a fairness analysis and should not be used to train the model.
         """
         return self.sensitive_attrs
+
+    def get_combined_sensitive_attr_name(self):
+        return '-'.join(self.get_sensitive_attributes())
 
     def append_sensitive_attribute(self, attr):
         """
@@ -70,7 +78,7 @@ class Data():
         return PROCESSED_DATA_DIR + self.get_dataset_name() + PROCESSED_ALL_STUB
 
     def get_processed_numerical_filename(self):
-        return PROCESSED_DATA_DIR + self.get_dataset_name() + PROCESSED_NUM_STUB
+        return PROCESSED_DATA_DIR + self.get_dataset_name() + NUM_STUB
 
     def get_processed_binsensitive_filename(self):
         """
@@ -78,7 +86,25 @@ class Data():
         binary (numerical) sensitive attribute.  All privileged values will be replaced by 1 and
         all other sensitive values by 0.
         """
-        return PROCESSED_DATA_DIR + self.get_dataset_name() + PROCESSED_BINSENS_STUB
+        return PROCESSED_DATA_DIR + self.get_dataset_name() + BINSENS_STUB
+
+    def get_results_filename(self, sensitive_attr):
+        return RESULT_DIR + self.get_dataset_name() + "_" + sensitive_attr + RESULTS_ALL_STUB
+
+    def get_results_numerical_filename(self, sensitive_attr):
+        return RESULT_DIR + self.get_dataset_name() + "_" + sensitive_attr + NUM_STUB
+
+    def get_results_numerical_binsensitive_filename(self, sensitive_attr):
+        return RESULT_DIR + self.get_dataset_name() + "_" + sensitive_attr + BINSENS_STUB
+
+    def get_analysis_filename(self, sensitive_attr):
+        return ANALYSIS_DIR + self.get_dataset_name() + "_" + sensitive_attr + ANALYSIS_ALL_STUB
+
+    def get_analysis_numerical_filename(self, sensitive_attr):
+        return ANALYSIS_DIR + self.get_dataset_name() + "_" + sensitive_attr + NUM_STUB
+
+    def get_analysis_numerical_binsensitive_filename(self, sensitive_attr):
+        return ANALYSIS_DIR + self.get_dataset_name() + "_" + sensitive_attr + BINSENS_STUB
 
     def data_specific_processing(self, dataframe):
         """
