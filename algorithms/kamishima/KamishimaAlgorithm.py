@@ -62,13 +62,7 @@ class KamishimaAlgorithm(Algorithm):
                     continue
                 x.append(numpy.array(df[col].values, dtype=numpy.float64))
 
-            s_dict = dict((k, i)
-                            for (i, k) in enumerate(
-                v[0] for v in s.drop_duplicates().values.tolist()))
-            s_numeric_values = numpy.array(list(s_dict[s_value[0]] for s_value in s.values),
-                                           dtype=numpy.float64)
-
-            x.append(s_numeric_values)
+            x.append(numpy.array(s, dtype=numpy.float64))
             x.append(numpy.array(df[class_attr], dtype=numpy.float64))
 
             result = numpy.array(x).T
