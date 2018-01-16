@@ -1,22 +1,20 @@
 
 ## Data sources and citations
 
+### Adult Income Data
+Source: https://archive.ics.uci.edu/ml/machine-learning-databases/adult/
+
 ### German Credit Data
 Source: https://archive.ics.uci.edu/ml/machine-learning-databases/statlog/german/
 
-### Adult Income Data
-Source: https://archive.ics.uci.edu/ml/machine-learning-databases/adult/
+### Propublica Recidivism Data
+Source: https://github.com/propublica/compas-analysis
 
 ### Ricci Data
 Source: https://ww2.amstat.org/publications/jse/v18n3/RicciData.csv 
 
 Citation: Miao, Weiwen. "Did the results of promotion exams have a disparate impact on minorities? Using statistical evidence in Ricci v. DeStefano." Journal of Statistics Education 18.3 (2010): 1-26.
 http://ww2.amstat.org/publications/jse/v18n3/miao.pdf
-
-### Retailer Data
-Source: https://www.dropbox.com/sh/r1q4ha5c0corzmt/AACYL2SMB_nxG6LNbXeGjXKAa?dl=0&preview=cleaned-apps-public-csv.zip
-
-Citation: David Autor and David Scarborough.  "Does job testing harm minority workers? evidence from retail establishments." The Quarterly Journal of Economics, 123(1):219–277, 2008.
 
 ## Adding a data set
 

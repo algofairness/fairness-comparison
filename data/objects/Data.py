@@ -86,7 +86,7 @@ class Data():
         include any ordered categorical replacement by numbers.  The resulting pandas dataframe is
         returned.
         """
-        raise NotImplementedError("data_specific_processing() in Data is not implemented")
+        return dataframe
 
     def handle_missing_data(self, dataframe):
         """
@@ -94,5 +94,5 @@ class Data():
         not replaced by values in this step will be removed by the general preprocessing
         script.
         """
-        raise NotImplementedError("handle_missing_data() in Data is not implemented")
+        return dataframe
 
