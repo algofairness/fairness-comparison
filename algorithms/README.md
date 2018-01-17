@@ -2,7 +2,7 @@
 # Algorithms included (alphabetically)
 
 ## Calders and Verwer
-The included implementation is from Kamishima et al. (see below).
+The included implementation is from Kamishima et al. (see below).  The code in this directory is in kamishima/
 
 ### Paper to cite:
 Calders, T., Verwer, S.: Three naive bayes approaches for discrimination-free classification.  Data Mining and Knowledge Discovery 21, 277–292 (2010) . http://www.cs.ru.nl/~sicco/papers/dmkd10.pdf
@@ -14,9 +14,11 @@ https://github.com/algofairness/BlackBoxAuditing/
 
 ### Papers to cite:
 Numerical data:
+
 Michael Feldman, Sorelle A. Friedler, John Moeller, Carlos Scheidegger, and Suresh Venkatasubramanian. Certifying and Removing Disparate Impact. Proceedings of the 21st ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, 2015. http://arxiv.org/abs/1412.3756
 
 Categorical data:
+
 Philip Adler, Casey Falk, Sorelle A. Friedler, Gabriel Rybeck, Carlos Scheidegger, Brandon Smith, and Suresh Venkatasubramanian. Auditing Black-box Models for Indirect Influence. In Proceedings of the IEEE International Conference on Data Mining (ICDM), 2016.  https://arxiv.org/abs/1602.07043
 
 ## Kamishima et al.
