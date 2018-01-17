@@ -12,6 +12,9 @@ Calders, T., Verwer, S.: Three naive bayes approaches for discrimination-free cl
 ### Code source:
 https://github.com/algofairness/BlackBoxAuditing/
 
+also available via:
+> pip3 install BlackBoxAuditing
+
 ### Papers to cite:
 Numerical data:
 
