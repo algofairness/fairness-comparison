@@ -3,5 +3,7 @@
 import subprocess
 
 def getoutput(cmd):
-    return subprocess.run(cmd, shell=True, encoding='utf-8', stdout=subprocess.PIPE).stdout
+    output = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE).stdout
+    output = str(output, 'utf-8')
+    return output
 
