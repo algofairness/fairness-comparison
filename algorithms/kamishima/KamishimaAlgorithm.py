@@ -50,6 +50,8 @@ class KamishimaAlgorithm(Algorithm):
         if not 'eta' in params:
             params = self.get_default_params()
 
+        class_type = type(train_df[class_attr].values[0].item())
+
         def create_file_in_kamishima_format(df):
             y = df[class_attr]
             s = df[single_sensitive]
@@ -95,7 +97,10 @@ class KamishimaAlgorithm(Algorithm):
         m = numpy.loadtxt(output_name)
         os.unlink(output_name)
 
-        return m[:,1]
+        predictions = m[:,1]
+        predictions_correct = [class_type(x) for x in predictions]
+
+        return predictions_correct
 
     def numerical_data_only(self):
         return True
