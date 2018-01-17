@@ -15,7 +15,7 @@ ALGORITHMS = [ SVM(), GaussianNB(), LogisticRegression(), DecisionTree(),     # 
                ParamGridSearch(KamishimaAlgorithm(), Accuracy()),             # Kamishima params
                ParamGridSearch(KamishimaAlgorithm(), DisparateImpact()),
                FeldmanAlgorithm(SVM()), FeldmanAlgorithm(GaussianNB()),       # Feldman
-               FeldmanAlgorithm(LogisticRegression()),
+               FeldmanAlgorithm(LogisticRegression()), FeldmanAlgorithm(DecisionTree()),
                ParamGridSearch(FeldmanAlgorithm(SVM()), DisparateImpact()),   # Feldman params
                ParamGridSearch(FeldmanAlgorithm(SVM()), Accuracy()),
                ParamGridSearch(FeldmanAlgorithm(GaussianNB()), DisparateImpact()),
