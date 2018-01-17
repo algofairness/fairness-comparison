@@ -16,13 +16,13 @@ class FeldmanAlgorithm(Algorithm):
             params = get_default_params()
         repair_level = params['lambda']
 
-        repaired_train_df = self.repair(train_df, single_sensitive, repair_level)
+        repaired_train_df = self.repair(train_df, single_sensitive, class_attr, repair_level)
 
         # What should be happening here is that the test_df is transformed using exactly the same
         # transformation as the train_df.  This will only be the case based on the usage below if
         # the distribution of each attribute conditioned on the sensitive attribute is the same
         # in the training set and the test set.
-        repaired_test_df = self.repair(test_df, single_sensitive, repair_level)
+        repaired_test_df = self.repair(test_df, single_sensitive, class_attr, repair_level)
 
         return self.model.run(repaired_train_df, repaired_test_df, class_attr, positive_class_val,
                               sensitive_attrs, single_sensitive, privileged_vals, params)
@@ -36,7 +36,8 @@ class FeldmanAlgorithm(Algorithm):
     def get_default_params(self):
         return { 'lambda' : REPAIR_LEVEL_DEFAULT }
 
-    def repair(self, data_df, single_sensitive, repair_level):
+    def repair(self, data_df, single_sensitive, class_attr, repair_level):
+        types = data_df.dtypes
         data = data_df.values.tolist()
 
         index_to_repair = data_df.columns.get_loc(single_sensitive)
@@ -46,6 +47,7 @@ class FeldmanAlgorithm(Algorithm):
 
         # The repaired data no longer includes its headers.
         data_df = DataFrame(data, columns = headers)
+        data_df = data_df.astype(dtype=types)
 
         return data_df
 
