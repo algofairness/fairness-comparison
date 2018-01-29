@@ -28,11 +28,8 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
         processed_splits, numerical_splits, binsensitive_splits =  \
             processed_dataset.create_train_test_splits(num_trials)
 
-        all_sensitive_attributes = dataset_obj.get_sensitive_attributes()
-        if len(all_sensitive_attributes) > 1:
-            # add the joint sensitive attribute (e.g., race-sex) to the list
-            all_sensitive_attributes += [ dataset_obj.get_combined_sensitive_attr_name() ]
-
+        all_sensitive_attributes = dataset_obj.get_sensitive_attributes_with_joint()
+        print(all_sensitive_attributes)
         for sensitive in all_sensitive_attributes:
 
             print("Sensitive attribute:" + sensitive)
@@ -98,7 +95,7 @@ def run_eval_alg(algorithm, train, test, dataset, all_sensitive_attributes, sing
     """
     Runs the algorithm and gets the resulting metric evaluations.
     """
-    privileged_vals = dataset.get_privileged_class_names()
+    privileged_vals = dataset.get_privileged_class_names_with_joint()
     positive_val = dataset.get_positive_class_val()
     if bin_sensitive:
         # in this case, the real data has been overwritten with 0/1

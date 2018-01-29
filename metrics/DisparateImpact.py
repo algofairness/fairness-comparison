@@ -42,6 +42,8 @@ class DisparateImpact(Metric):
         DI = 0.0
         if unprotected_pos_percent > 0:
             DI = protected_pos_percent / unprotected_pos_percent
+        if unprotected_pos_percent == 0.0 and protected_pos_percent == 0.0:
+            DI = 1.0
         return DI
 
     def is_better_than(self, val1, val2):
