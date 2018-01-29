@@ -64,7 +64,6 @@ class KamishimaAlgorithm(Algorithm):
                     continue
                 x.append(numpy.array(df[col].values, dtype=numpy.float64))
 
-            print(s)
             x.append(numpy.array(s, dtype=numpy.float64))
             x.append(numpy.array(df[class_attr], dtype=numpy.float64))
 
@@ -103,8 +102,8 @@ class KamishimaAlgorithm(Algorithm):
 
         return predictions_correct
 
-    def supported_data_types(self):
-        return set(["numerical", "numerical-binsensitive"])
+    def get_supported_data_types(self):
+        return set(["numerical-binsensitive"])
 
     def get_default_params(self):
         """

@@ -23,7 +23,7 @@ class Generic(Algorithm):
 
         return predictions
 
-    def supported_data_types(self):
+    def get_supported_data_types(self):
         return set(["numerical"])
 
     def get_classifier(self):

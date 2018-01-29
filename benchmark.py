@@ -45,18 +45,19 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
                     continue
 
                 print("    Algorithm: %s" % algorithm.get_name())
-                print("       supported types: %s" % algorithm.supported_data_types())
+                print("       supported types: %s" % algorithm.get_supported_data_types())
                 for i in range(0, num_trials):
-                    for supported_tag in algorithm.supported_data_types():
+                    for supported_tag in algorithm.get_supported_data_types():
                         print("      running %s" % supported_tag)
                         train, test = train_test_splits[supported_tag][i]
                         params, results = run_eval_alg(algorithm, train, test, dataset_obj,
-                                                       all_sensitive_attributes, sensitive, True)
+                                                       all_sensitive_attributes, sensitive, supported_tag)
                         write_alg_results(detailed_files[supported_tag],
                                           algorithm.get_name(), params, results)
 
             print("Results written to:")
-            for supported_tag in algorithm.supported_data_types():
+            print(algorithm)
+            for supported_tag in algorithm.get_supported_data_types():
                 print("    " + dataset_obj.get_results_filename(sensitive, supported_tag))
 
             for detailed_file in detailed_files.values():
@@ -72,16 +73,12 @@ def write_alg_results(file_handle, alg_name, params, results_list):
     os.fsync(file_handle.fileno())
 
 def run_eval_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_sensitive,
-                 bin_sensitive):
+                 tag):
     """
     Runs the algorithm and gets the resulting metric evaluations.
     """
-    privileged_vals = dataset.get_privileged_class_names()
-    positive_val = dataset.get_positive_class_val()
-    if bin_sensitive:
-        # in this case, the real data has been overwritten with 0/1
-        privileged_vals = [1 for x in all_sensitive_attributes]
-        positive_val = 1
+    privileged_vals = dataset.get_privileged_class_names(tag)
+    positive_val = dataset.get_positive_class_val(tag)
 
     actual, predicted, sensitive, params =  \
         run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_sensitive,

@@ -27,11 +27,15 @@ class Data():
         """
         return self.class_attr
 
-    def get_positive_class_val(self):
+    def get_positive_class_val(self, tag):
         """
         Returns the value used in the dataset to indicate the positive classification choice.
         """
-        return self.positive_class_val
+        # FIXME this dependence between tags and metadata is bad; don't know how to fix it right now
+        if tag == 'numerical-binsensitive':
+            return 1
+        else:
+            return self.positive_class_val
 
     def get_sensitive_attributes(self):
         """
@@ -50,13 +54,17 @@ class Data():
         """
         self.sensitive_attrs.append(attr)
 
-    def get_privileged_class_names(self):
+    def get_privileged_class_names(self, tag):
         """
         Returns a list in the same order as the sensitive attributes list above of the
         privileged class name (exactly as it appears in the data) of the associated sensitive
         attribute.
         """
-        return self.privileged_class_names
+        # FIXME this dependence between tags and privileged class names is bad; don't know how to fix it right now
+        if tag == 'numerical-binsensitive':
+            return [1 for x in self.get_sensitive_attributes()]
+        else:
+            return self.privileged_class_names
 
     def get_categorical_features(self):
         """

@@ -37,39 +37,11 @@ class Algorithm():
         """
         return {}
 
-    def supported_data_types(self):
+    def get_supported_data_types(self):
         """
         Returns a set of datatypes which this algorithm can process.
         """
-        raise NotImplementedError("supported_data_types() in Algorithm is not implemented")
-
-    # def numerical_data_only(self):
-    #     """
-    #     Returns True if this algorithm can only handle numerical data as input.
-    #     """
-    #     return False
-
-    # def categorical_data_only(self):
-    #     """
-    #     Returns True if this algorithm can only handle categorical data as input.
-    #     """
-    #     return False
-
-    # def handles_multiple_sensitive_attrs(self):
-    #     """
-    #     Returns True if this algorithm can handle multiple sensitive attributes - i.e., can repair
-    #     for both race and sex at the same time.  All algorithms will be tested using the joint
-    #     distribution of multiple sensitive attributes as if they were a single attribute -
-    #     algorithms should only return True here if they have a unique solution beyond this for
-    #     handling multiple sensitive attributes.
-    #     """
-    #     return False
-
-    # def binary_sensitive_attrs_only(self):
-    #     """
-    #     Returns True if this algorithm can only handle sensitive attributes that are binary.
-    #     """
-    #     return False
+        raise NotImplementedError("get_supported_data_types() in Algorithm is not implemented")
 
     def get_name(self):
         """
