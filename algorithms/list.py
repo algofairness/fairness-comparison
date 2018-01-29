@@ -1,4 +1,5 @@
 from algorithms.kamishima.KamishimaAlgorithm import KamishimaAlgorithm
+from algorithms.kamishima.CaldersAlgorithm import CaldersAlgorithm
 from algorithms.feldman.FeldmanAlgorithm import FeldmanAlgorithm
 from algorithms.baseline.SVM import SVM
 from algorithms.baseline.DecisionTree import DecisionTree
@@ -12,6 +13,7 @@ from metrics.MCC import MCC
 
 ALGORITHMS = [ SVM(), GaussianNB(), LogisticRegression(), DecisionTree(),     # baseline
                KamishimaAlgorithm(),                                          # Kamishima
+               CaldersAlgorithm(),                                            # Kamishima
                ParamGridSearch(KamishimaAlgorithm(), Accuracy()),             # Kamishima params
                ParamGridSearch(KamishimaAlgorithm(), DisparateImpact()),
                FeldmanAlgorithm(SVM()), FeldmanAlgorithm(GaussianNB()),       # Feldman

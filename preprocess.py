@@ -61,8 +61,8 @@ def preprocess(dataset, data_frame):
                              processed_data[sensitive_attrs].apply('-'.join, axis=1))
         processed_data = processed_data.rename(columns = {'temp_name' : new_attr_name})
         dataset.append_sensitive_attribute(new_attr_name)
-        privileged_joint_vals = '-'.join(dataset.get_privileged_class_names())
-        dataset.get_privileged_class_names().append(privileged_joint_vals)
+        privileged_joint_vals = '-'.join(dataset.get_privileged_class_names(""))
+        dataset.get_privileged_class_names("").append(privileged_joint_vals)
 
     # Create a one-hot encoding of the categorical variables.
     processed_numerical = pd.get_dummies(processed_data,
@@ -70,20 +70,21 @@ def preprocess(dataset, data_frame):
 
     # Create a version of the numerical data for which the sensitive attribute is binary.
     processed_binsensitive = make_sensitive_attrs_binary(processed_numerical, sensitive_attrs,
-                                                         dataset.get_privileged_class_names())
+                                                         dataset.get_privileged_class_names("")) ## FIXME
 
-    # # Create a version of the categorical data for which the sensitive attributes is binary.
-    # processed_categorical_binsensitive = make_sensitive_attrs_binary(processed_data, sensitive_attrs,
-    #                                                                  dataset.get_privileged_class_names())
+    # Create a version of the categorical data for which the sensitive attributes is binary.
+    processed_categorical_binsensitive = make_sensitive_attrs_binary(processed_data, sensitive_attrs,
+                                                                     dataset.get_privileged_class_names("")) ## FIXME
 
     # Make the class attribute numerical if it wasn't already (just for the bin_sensitive version).
     class_attr = dataset.get_class_attribute()
-    pos_val = dataset.get_positive_class_val()
+    pos_val = dataset.get_positive_class_val("") ## FIXME
     processed_binsensitive = make_class_attr_num(processed_binsensitive, class_attr, pos_val)
 
     return { "original": processed_data,
              "numerical": processed_numerical,
-             "numerical-binsensitive": processed_binsensitive }
+             "numerical-binsensitive": processed_binsensitive,
+             "categorical-binsensitive": processed_categorical_binsensitive }
 
 def make_sensitive_attrs_binary(dataframe, sensitive_attrs, privileged_vals):
     newframe = dataframe.copy()
