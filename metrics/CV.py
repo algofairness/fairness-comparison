@@ -20,8 +20,8 @@ class CV(Metric):
         predicted_protected   = predicted[protected_subset]
         predicted_unprotected = predicted[unprotected_subset]
 
-        v1 = (predicted_unprotected == positive_pred).sum() / len(predicted_unprotected)
-        v2 = (predicted_protected == positive_pred).sum() / len(predicted_protected)
+        v1 = numpy.equal(predicted_unprotected, numpy.full(positive_pred, predicted_unprotected.shape)).sum() / len(predicted_unprotected)
+        v2 = numpy.equal(predicted_protected,   numpy.full(positive_pred, predicted_protected.shape)).sum() / len(predicted_protected)
 
         CV = v1 - v2
         return (1 - CV/2)

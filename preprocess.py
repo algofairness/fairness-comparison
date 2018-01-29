@@ -15,11 +15,10 @@ def prepare_data(dataset_names = get_dataset_names()):
                                  na_values=dataset.get_missing_val_indicators(),
                                  encoding = 'ISO-8859-1')
 
-        processed_data, processed_numerical, processed_binsensitive = preprocess(dataset, data_frame)
-
-        write_to_file(dataset.get_processed_filename(), processed_data)
-        write_to_file(dataset.get_processed_numerical_filename(), processed_numerical)
-        write_to_file(dataset.get_processed_binsensitive_filename(), processed_binsensitive)
+        d = preprocess(dataset, data_frame)
+        
+        for k, v in d.items():
+            write_to_file(dataset.get_filename(k), v)
 
 def write_to_file(filename, dataframe):
     print("Writing data to: " + filename)
@@ -73,12 +72,18 @@ def preprocess(dataset, data_frame):
     processed_binsensitive = make_sensitive_attrs_binary(processed_numerical, sensitive_attrs,
                                                          dataset.get_privileged_class_names())
 
+    # # Create a version of the categorical data for which the sensitive attributes is binary.
+    # processed_categorical_binsensitive = make_sensitive_attrs_binary(processed_data, sensitive_attrs,
+    #                                                                  dataset.get_privileged_class_names())
+
     # Make the class attribute numerical if it wasn't already (just for the bin_sensitive version).
     class_attr = dataset.get_class_attribute()
     pos_val = dataset.get_positive_class_val()
     processed_binsensitive = make_class_attr_num(processed_binsensitive, class_attr, pos_val)
 
-    return processed_data, processed_numerical, processed_binsensitive
+    return { "original": processed_data,
+             "numerical": processed_numerical,
+             "numerical-binsensitive": processed_binsensitive }
 
 def make_sensitive_attrs_binary(dataframe, sensitive_attrs, privileged_vals):
     newframe = dataframe.copy()

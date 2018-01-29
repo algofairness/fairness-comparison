@@ -8,7 +8,7 @@ class Ricci(Data):
         self.dataset_name = 'ricci'
         # Class attribute will not be created until data_specific_processing is run.
         self.class_attr = 'Class'
-        self.positive_class_val = '1' 
+        self.positive_class_val = 1
         self.sensitive_attrs = ['Race'] 
         self.privileged_class_names = ['W']
         self.categorical_features = [ 'Position' ]

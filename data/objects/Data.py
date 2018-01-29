@@ -4,10 +4,11 @@ RESULT_DIR = "results/"
 ANALYSIS_DIR = "analysis/"
 
 PROCESSED_ALL_STUB = "_processed.csv"
-RESULTS_ALL_STUB = "_results.csv"
-ANALYSIS_ALL_STUB = "_analysis.csv"
 NUM_STUB = "_numerical.csv"
 BINSENS_STUB = "_numerical_binsensitive.csv"
+
+RESULTS_ALL_STUB = "_results.csv"
+ANALYSIS_ALL_STUB = "_analysis.csv"
 
 class Data():
     def __init__(self):
@@ -74,37 +75,14 @@ class Data():
     def get_raw_filename(self):
         return RAW_DATA_DIR + self.get_dataset_name() + '.csv'
 
-    def get_processed_filename(self):
-        return PROCESSED_DATA_DIR + self.get_dataset_name() + PROCESSED_ALL_STUB
+    def get_filename(self, tag):
+        return PROCESSED_DATA_DIR + self.get_dataset_name() + "_" + tag + '.csv'
 
-    def get_processed_numerical_filename(self):
-        return PROCESSED_DATA_DIR + self.get_dataset_name() + NUM_STUB
+    def get_results_filename(self, sensitive_attr, tag):
+        return RESULT_DIR + self.get_dataset_name() + "_" + sensitive_attr + "_" + tag + '.csv'
 
-    def get_processed_binsensitive_filename(self):
-        """
-        Returns the filename for a processed version of this dataset that is all numerical with a
-        binary (numerical) sensitive attribute.  All privileged values will be replaced by 1 and
-        all other sensitive values by 0.
-        """
-        return PROCESSED_DATA_DIR + self.get_dataset_name() + BINSENS_STUB
-
-    def get_results_filename(self, sensitive_attr):
-        return RESULT_DIR + self.get_dataset_name() + "_" + sensitive_attr + RESULTS_ALL_STUB
-
-    def get_results_numerical_filename(self, sensitive_attr):
-        return RESULT_DIR + self.get_dataset_name() + "_" + sensitive_attr + NUM_STUB
-
-    def get_results_numerical_binsensitive_filename(self, sensitive_attr):
-        return RESULT_DIR + self.get_dataset_name() + "_" + sensitive_attr + BINSENS_STUB
-
-    def get_analysis_filename(self, sensitive_attr):
-        return ANALYSIS_DIR + self.get_dataset_name() + "_" + sensitive_attr + ANALYSIS_ALL_STUB
-
-    def get_analysis_numerical_filename(self, sensitive_attr):
-        return ANALYSIS_DIR + self.get_dataset_name() + "_" + sensitive_attr + NUM_STUB
-
-    def get_analysis_numerical_binsensitive_filename(self, sensitive_attr):
-        return ANALYSIS_DIR + self.get_dataset_name() + "_" + sensitive_attr + BINSENS_STUB
+    def get_analysis_filename(self, sensitive_attr, tag):
+        return ANALYSIS_DIR + self.get_dataset_name() + "_" + sensitive_attr + "_" + tag + '.csv'
 
     def data_specific_processing(self, dataframe):
         """
