@@ -12,11 +12,7 @@ def run(dataset = get_dataset_names()):
         if not dataset_obj.get_dataset_name() in dataset:
             continue
 
-        all_sensitive_attributes = dataset_obj.get_sensitive_attributes()
-        if len(all_sensitive_attributes) > 1:
-            # add the joint sensitive attribute (e.g., race-sex) to the list
-            all_sensitive_attributes += [ dataset_obj.get_combined_sensitive_attr_name() ]
-
+        all_sensitive_attributes = dataset_obj.get_sensitive_attributes_with_joint()
         for sensitive in all_sensitive_attributes:
 
             # Write summary files per dataset
