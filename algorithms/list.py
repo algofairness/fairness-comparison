@@ -14,10 +14,22 @@ ALGORITHMS = [ SVM(), GaussianNB(), LogisticRegression(), DecisionTree(),     # 
                KamishimaAlgorithm(),                                          # Kamishima
                ParamGridSearch(KamishimaAlgorithm(), Accuracy()),             # Kamishima params
                ParamGridSearch(KamishimaAlgorithm(), DisparateImpact()),
+               ParamGridSearch(KamishimaAlgorithm(), EqOppo_fp_diff()),
+               ParamGridSearch(KamishimaAlgorithm(), EqOppo_fn_diff()),
+               ParamGridSearch(KamishimaAlgorithm(), EqOppo_fp_ratio()),
+               ParamGridSearch(KamishimaAlgorithm(), EqOppo_fp_ratio()), 
                FeldmanAlgorithm(SVM()), FeldmanAlgorithm(GaussianNB()),       # Feldman
                FeldmanAlgorithm(LogisticRegression()), FeldmanAlgorithm(DecisionTree()),
                ParamGridSearch(FeldmanAlgorithm(SVM()), DisparateImpact()),   # Feldman params
                ParamGridSearch(FeldmanAlgorithm(SVM()), Accuracy()),
+               ParamGridSearch(FeldmanAlgorithm(SVM()), EqOppo_fp_diff()),
+               ParamGridSearch(FeldmanAlgorithm(SVM()), EqOppo_fn_diff()),
+               ParamGridSearch(FeldmanAlgorithm(SVM()), EqOppo_fp_ratio()),
+               ParamGridSearch(FeldmanAlgorithm(SVM()), EqOppo_fn_ratio()),
                ParamGridSearch(FeldmanAlgorithm(GaussianNB()), DisparateImpact()),
-               ParamGridSearch(FeldmanAlgorithm(GaussianNB()), Accuracy())
+               ParamGridSearch(FeldmanAlgorithm(GaussianNB()), Accuracy()),
+               ParamGridSearch(FeldmanAlgorithm(GaussianNB()), EqOppo_fp_diff()),
+               ParamGridSearch(FeldmanAlgorithm(GaussianNB()), EqOppo_fn_diff()),
+               ParamGridSearch(FeldmanAlgorithm(GaussianNB()), EqOppo_fp_ratio()),
+               ParamGridSearch(FeldmanAlgorithm(GaussianNB()), EqOppo_fn_ratio())
              ]
