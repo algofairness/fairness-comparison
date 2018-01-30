@@ -119,7 +119,7 @@ def run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_se
     params = algorithm.get_default_params()
 
     # get the actual classifications and sensitive attributes
-    actual = test[class_attr]
+    actual = test[class_attr].values.tolist()
     sensitive = test[single_sensitive].values.tolist()
 
     # Note: the training and test set here still include the sensitive attributes because
