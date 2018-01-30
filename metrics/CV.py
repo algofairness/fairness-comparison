@@ -1,6 +1,9 @@
-from metrics.Metric import Metric
 import sys
 import numpy
+import math
+
+from metrics.utils import calc_pos_protected_percents
+from metrics.Metric import Metric
 
 class CV(Metric):
     def __init__(self):
@@ -8,20 +11,7 @@ class CV(Metric):
         self.name = 'CV'
 
     def calc(self, actual, predicted, sensitive, unprotected_vals, positive_pred):
-        predicted = numpy.array(predicted)
-        sensitive = numpy.array(sensitive)
-        
-        unprotected_subset = numpy.full(sensitive.shape, False)
-        for unprotected_val in unprotected_vals:
-            a = (sensitive == unprotected_val)
-            unprotected_subset = numpy.logical_or(unprotected_subset, a)
-        protected_subset = numpy.logical_not(unprotected_subset)
-
-        predicted_protected   = predicted[protected_subset]
-        predicted_unprotected = predicted[unprotected_subset]
-
-        v1 = numpy.equal(predicted_unprotected, numpy.full(positive_pred, predicted_unprotected.shape)).sum() / len(predicted_unprotected)
-        v2 = numpy.equal(predicted_protected,   numpy.full(positive_pred, predicted_protected.shape)).sum() / len(predicted_protected)
-
-        CV = v1 - v2
-        return (1 - CV/2)
+        unprotected_pos_percent, protected_pos_percent = \
+            calc_pos_protected_percents(predicted, sensitive, unprotected_vals, positive_pred)
+        CV = math.fabs(unprotected_pos_percent - protected_pos_percent)
+        return 1.0 - CV
