@@ -33,3 +33,32 @@ def calc_pos_protected_percents(predicted, sensitive, unprotected_vals, positive
 
     return unprotected_pos_percent, protected_pos_percent
 
+def calc_fp_fn(actual, predicted, sensitive, unprotected_vals, positive_pred):
+    
+    unprotected_negative = 0.0
+    protected_positive = 0.0
+    protected_negative = 0.0
+    fp_protected = 0.0
+    fp_unprotected = 0.0
+    fn_protected=0.0
+    fn_unprotected=0.0
+    fp_diff =0.0
+    for i in range(0, len(predicted)):
+        protected_val = sensitive[i]
+        predicted_val = predicted[i]
+        actual_val= actual[i]
+        if protected_val in unprotected_vals:
+            if (str(predicted_val)==str(positive_pred))&(str(actual_val)!=str(predicted_val)):
+                fp_unprotected+=1
+            elif(str(predicted_val)!=str(positive_pred))&(str(actual_val)==str(predicted_val)):
+                fn_unprotected+=1
+        else:
+            if (str(predicted_val)==str(positive_pred))&(str(actual_val)!=str(predicted_val)):
+                    fp_protected+=1
+            elif(str(predicted_val)!=str(positive_pred))&(str(actual_val)==str(predicted_val)):
+                    fn_protected+=1
+    return fp_unprotected,fp_protected, fn_protected, fn_unprotected
+
+
+
+        
