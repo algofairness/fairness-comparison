@@ -1,6 +1,6 @@
 import numpy as np
 from random import seed, shuffle
-from . import loss_funcs as lf # our implementation of loss funcs
+import loss_funcs as lf # our implementation of loss funcs
 from scipy.optimize import minimize # for loss func minimization
 from multiprocessing import Pool, Process, Queue
 from collections import defaultdict
@@ -118,6 +118,7 @@ def train_model(x, y, x_control, loss_function, apply_fairness_constraints, appl
             cross_cov = (x_control_in_arr - np.mean(x_control_in_arr)) * np.dot(weight_vec, x_in.T)
             return float(abs(sum(cross_cov))) / float(x_in.shape[0])
 
+
         w = minimize(fun = cross_cov_abs_optm_func,
             x0 = old_w,
             args = (x, x_control[sensitive_attrs[0]]),
@@ -129,9 +130,9 @@ def train_model(x, y, x_control, loss_function, apply_fairness_constraints, appl
     try:
         assert(w.success == True)
     except:
-        print("Optimization problem did not converge.. Check the solution returned by the optimizer.")
-        print("Returned solution is:")
-        print(w)
+        print "Optimization problem did not converge.. Check the solution returned by the optimizer."
+        print "Returned solution is:"
+        print w
 
 
 
@@ -155,12 +156,12 @@ def compute_cross_validation_error(x_all, y_all, x_control_all, num_folds, loss_
 
     # split the data into folds for cross-validation
     for i in range(0,num_folds):
-        perm = list(range(0,n_samples)) # shuffle the data before creating each fold
+        perm = range(0,n_samples) # shuffle the data before creating each fold
         shuffle(perm)
         x_all_perm = x_all[perm]
         y_all_perm = y_all[perm]
         x_control_all_perm = {}
-        for k in list(x_control_all.keys()):
+        for k in x_control_all.keys():
             x_control_all_perm[k] = np.array(x_control_all[k])[perm]
 
 
@@ -229,9 +230,6 @@ def compute_cross_validation_error(x_all, y_all, x_control_all, num_folds, loss_
     return test_acc_arr, train_acc_arr, correlation_dict_test_arr, correlation_dict_train_arr, cov_dict_test_arr, cov_dict_train_arr
 
 
-def DBC(cov_dict_arr, s_attr_name):
-    DBC = (np.mean([v[s_attr_name] for v in cov_dict_arr]))
-    return DBC
 
 def print_classifier_fairness_stats(acc_arr, correlation_dict_arr, cov_dict_arr, s_attr_name):
     
@@ -240,12 +238,11 @@ def print_classifier_fairness_stats(acc_arr, correlation_dict_arr, cov_dict_arr,
     prot_pos = correlation_dict[s_attr_name][0][1]
     p_rule = (prot_pos / non_prot_pos) * 100.0
     
-    print("Accuracy: %0.2f" % (np.mean(acc_arr)))
-    print("Protected/non-protected in +ve class: %0.0f%% / %0.0f%%" % (prot_pos, non_prot_pos))
-    print("P-rule achieved: %0.0f%%" % (p_rule))
-    DBC = (np.mean([v[s_attr_name] for v in cov_dict_arr]))
-    print("Covariance between sensitive feature and decision from distance boundary : %0.3f" % DBC)
-    print()
+    print "Accuracy: %0.2f" % (np.mean(acc_arr))
+    print "Protected/non-protected in +ve class: %0.0f%% / %0.0f%%" % (prot_pos, non_prot_pos)
+    print "P-rule achieved: %0.0f%%" % (p_rule)
+    print "Covariance between sensitive feature and decision from distance boundary : %0.3f" % (np.mean([v[s_attr_name] for v in cov_dict_arr]))
+    print
     return p_rule
 
 def compute_p_rule(x_control, class_labels):
@@ -259,13 +256,13 @@ def compute_p_rule(x_control, class_labels):
     frac_non_prot_pos = float(non_prot_pos) / float(non_prot_all)
     frac_prot_pos = float(prot_pos) / float(prot_all)
     p_rule = (frac_prot_pos / frac_non_prot_pos) * 100.0
-    print()
-    print("Total data points: %d" % (len(x_control)))
-    print("# non-protected examples: %d" % (non_prot_all))
-    print("# protected examples: %d" % (prot_all))
-    print("Non-protected in positive class: %d (%0.0f%%)" % (non_prot_pos, non_prot_pos * 100.0 / non_prot_all))
-    print("Protected in positive class: %d (%0.0f%%)" % (prot_pos, prot_pos * 100.0 / prot_all))
-    print("P-rule is: %0.0f%%" % ( p_rule ))
+    print
+    print "Total data points: %d" % (len(x_control))
+    print "# non-protected examples: %d" % (non_prot_all)
+    print "# protected examples: %d" % (prot_all)
+    print "Non-protected in positive class: %d (%0.0f%%)" % (non_prot_pos, non_prot_pos * 100.0 / non_prot_all)
+    print "Protected in positive class: %d (%0.0f%%)" % (prot_pos, prot_pos * 100.0 / prot_all)
+    print "P-rule is: %0.0f%%" % ( p_rule )
     return p_rule
 
 
@@ -295,8 +292,8 @@ def get_one_hot_encoding(in_arr):
 
     for k in in_arr:
         if str(type(k)) != "<type 'numpy.float64'>" and type(k) != int and type(k) != np.int64:
-            print(str(type(k)))
-            print("************* ERROR: Input arr does not have integer types")
+            print str(type(k))
+            print "************* ERROR: Input arr does not have integer types"
             return None
         
     in_arr = np.array(in_arr, dtype=int)
@@ -331,7 +328,7 @@ def check_accuracy(model, x_train, y_train, x_test, y_test, y_train_predicted, y
     else we pass y_predicted
     """
     if model is not None and y_test_predicted is not None:
-        print("Either the model (w) or the predicted labels should be None")
+        print "Either the model (w) or the predicted labels should be None"
         raise Exception("Either the model (w) or the predicted labels should be None")
 
     if model is not None:
@@ -385,9 +382,9 @@ def test_sensitive_attr_constraint_cov(model, x_arr, y_arr_dist_boundary, x_cont
     ans = thresh - abs(cov) # will be <0 if the covariance is greater than thresh -- that is, the condition is not satisfied
     # ans = thresh - cov # will be <0 if the covariance is greater than thresh -- that is, the condition is not satisfied
     if verbose is True:
-        print("Covariance is", cov)
-        print("Diff is:", ans)
-        print()
+        print "Covariance is", cov
+        print "Diff is:", ans
+        print
     return ans
 
 def print_covariance_sensitive_attrs(model, x_arr, y_arr_dist_boundary, x_control, sensitive_attrs):
@@ -423,7 +420,7 @@ def print_covariance_sensitive_attrs(model, x_arr, y_arr_dist_boundary, x_contro
             
             cov_arr = []
             sensitive_attrs_to_cov_original[attr] = {}
-            for attr_val, ind in list(index_dict.items()):
+            for attr_val, ind in index_dict.items():
                 t = attr_arr_transformed[:,ind]
                 cov = thresh - test_sensitive_attr_constraint_cov(None, x_arr, arr, t, thresh, False)
                 sensitive_attrs_to_cov_original[attr][attr_val] = cov
@@ -436,6 +433,7 @@ def print_covariance_sensitive_attrs(model, x_arr, y_arr_dist_boundary, x_contro
 
 def get_correlations(model, x_test, y_predicted, x_control_test, sensitive_attrs):
     
+
     """
     returns the fraction in positive class for sensitive feature values
     """
@@ -467,7 +465,7 @@ def get_correlations(model, x_test, y_predicted, x_control_test, sensitive_attrs
         class_labels = set(y_predicted.tolist())
 
         local_dict_1 = {}
-        for k1,v1 in list(attr_to_class_labels_dict.items()):
+        for k1,v1 in attr_to_class_labels_dict.items():
             total_this_val = total_per_val[k1]
 
             local_dict_2 = {}
@@ -495,6 +493,8 @@ def get_constraint_list_cov(x_train, y_train, x_control_train, sensitive_attrs, 
 
 
     for attr in sensitive_attrs:
+
+
         attr_arr = x_control_train[attr]
         attr_arr_transformed, index_dict = get_one_hot_encoding(attr_arr)
                 
@@ -505,7 +505,7 @@ def get_constraint_list_cov(x_train, y_train, x_control_train, sensitive_attrs, 
         else: # otherwise, its a categorical attribute, so we need to set the cov thresh for each value separately
 
 
-            for attr_val, ind in list(index_dict.items()):
+            for attr_val, ind in index_dict.items():
                 attr_name = attr_val                
                 thresh = sensitive_attrs_to_cov_thresh[attr][attr_name]
                 
@@ -527,7 +527,7 @@ def split_into_train_test(x_all, y_all, x_control_all, train_fold_size):
     y_all_test = y_all[split_point:]
     x_control_all_train = {}
     x_control_all_test = {}
-    for k in list(x_control_all.keys()):
+    for k in x_control_all.keys():
         x_control_all_train[k] = x_control_all[k][:split_point]
         x_control_all_test[k] = x_control_all[k][split_point:]
 
@@ -538,24 +538,24 @@ def get_avg_correlation_dict(correlation_dict_arr):
     # make the structure for the correlation dict
     correlation_dict_avg = {}
     # print correlation_dict_arr
-    for k,v in list(correlation_dict_arr[0].items()):
+    for k,v in correlation_dict_arr[0].items():
         correlation_dict_avg[k] = {}
-        for feature_val, feature_dict in list(v.items()):
+        for feature_val, feature_dict in v.items():
             correlation_dict_avg[k][feature_val] = {}
-            for class_label, frac_class in list(feature_dict.items()):
+            for class_label, frac_class in feature_dict.items():
                 correlation_dict_avg[k][feature_val][class_label] = []
 
     # populate the correlation dict
     for correlation_dict in correlation_dict_arr:
-        for k,v in list(correlation_dict.items()):
-            for feature_val, feature_dict in list(v.items()):
-                for class_label, frac_class in list(feature_dict.items()):
+        for k,v in correlation_dict.items():
+            for feature_val, feature_dict in v.items():
+                for class_label, frac_class in feature_dict.items():
                     correlation_dict_avg[k][feature_val][class_label].append(frac_class)
 
     # now take the averages
-    for k,v in list(correlation_dict_avg.items()):
-        for feature_val, feature_dict in list(v.items()):
-            for class_label, frac_class_arr in list(feature_dict.items()):
+    for k,v in correlation_dict_avg.items():
+        for feature_val, feature_dict in v.items():
+            for class_label, frac_class_arr in feature_dict.items():
                 correlation_dict_avg[k][feature_val][class_label] = np.mean(frac_class_arr)
 
     return correlation_dict_avg
@@ -585,14 +585,14 @@ def plot_cov_thresh_vs_acc_pos_ratio(x_all, y_all, x_control_all, num_folds, los
     test_acc_arr, train_acc_arr, correlation_dict_test_arr, correlation_dict_train_arr, cov_dict_test_arr, cov_dict_train_arr = compute_cross_validation_error(x_all, y_all, x_control_all, num_folds, loss_function, 0, apply_accuracy_constraint, sep_constraint, sensitive_attrs, [{} for i in range(0,num_folds)], 0)
 
     for c in cov_range:
-        print("LOG: testing for multiplicative factor: %0.2f" % c)
+        print "LOG: testing for multiplicative factor: %0.2f" % c
         sensitive_attrs_to_cov_original_arr_multiplied = []
         for sensitive_attrs_to_cov_original in cov_dict_train_arr:
             sensitive_attrs_to_cov_thresh = deepcopy(sensitive_attrs_to_cov_original)
-            for k in list(sensitive_attrs_to_cov_thresh.keys()):
+            for k in sensitive_attrs_to_cov_thresh.keys():
                 v = sensitive_attrs_to_cov_thresh[k]
                 if type(v) == type({}):
-                    for k1 in list(v.keys()):
+                    for k1 in v.keys():
                         v[k1] = v[k1] * c
                 else:
                     sensitive_attrs_to_cov_thresh[k] = v * c
@@ -609,7 +609,7 @@ def plot_cov_thresh_vs_acc_pos_ratio(x_all, y_all, x_control_all, num_folds, los
         # just plot the correlations for the first sensitive attr, the plotting can be extended for the other values, but as a proof of concept, we will jsut show for one
         s = sensitive_attrs[0]    
         
-        for k,v in list(correlation_dict_test[s].items()):
+        for k,v in correlation_dict_test[s].items():
             if v.get(positive_class_label) is None:
                 positive_per_category[k].append(0.0)
             else:

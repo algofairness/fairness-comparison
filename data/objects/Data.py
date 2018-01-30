@@ -39,15 +39,14 @@ class Data():
         """
         return self.sensitive_attrs
 
-    def get_combined_sensitive_attr_name(self):
-        return '-'.join(self.get_sensitive_attributes())
-
-    def append_sensitive_attribute(self, attr):
+    def get_sensitive_attributes_with_joint(self):
         """
-        Adds a new sensitive attribute to the end of the list of sensitive attributes.  Used to
-        create a new sensitive attribute that combines all the other ones.
+        Same as get_sensitive_attributes, but also includes the joint sensitive attribute if there
+        is more than one sensitive attribute.
         """
-        self.sensitive_attrs.append(attr)
+        if len(self.get_sensitive_attributes()) > 1:
+            return self.get_sensitive_attributes() + ['-'.join(self.get_sensitive_attributes())]
+        return self.get_sensitive_attributes()
 
     def get_privileged_class_names(self):
         """
@@ -56,6 +55,15 @@ class Data():
         attribute.
         """
         return self.privileged_class_names
+
+    def get_privileged_class_names_with_joint(self):
+        """
+        Same as get_privileged_class_names, but also includes the joint sensitive attribute if there
+        is more than one sensitive attribute.
+        """
+        if len(self.get_privileged_class_names()) > 1:
+            return self.get_privileged_class_names() + ['-'.join(self.get_privileged_class_names())]
+        return self.get_privileged_class_names()
 
     def get_categorical_features(self):
         """

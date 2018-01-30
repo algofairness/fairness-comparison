@@ -57,21 +57,20 @@ def preprocess(dataset, data_frame):
     sensitive_attrs = dataset.get_sensitive_attributes()
     if len(sensitive_attrs) > 1:
         new_attr_name = '-'.join(sensitive_attrs)
-        ## TODO: the below will currently fail for non-string attributes
+        ## TODO: the below may fail for non-string attributes
         processed_data = processed_data.assign(temp_name =
                              processed_data[sensitive_attrs].apply('-'.join, axis=1))
         processed_data = processed_data.rename(columns = {'temp_name' : new_attr_name})
-        dataset.append_sensitive_attribute(new_attr_name)
-        privileged_joint_vals = '-'.join(dataset.get_privileged_class_names())
-        dataset.get_privileged_class_names().append(privileged_joint_vals)
 
     # Create a one-hot encoding of the categorical variables.
     processed_numerical = pd.get_dummies(processed_data,
                                          columns = dataset.get_categorical_features())
 
     # Create a version of the numerical data for which the sensitive attribute is binary.
+    sensitive_attrs = dataset.get_sensitive_attributes_with_joint()
+    privileged_vals = dataset.get_privileged_class_names_with_joint()
     processed_binsensitive = make_sensitive_attrs_binary(processed_numerical, sensitive_attrs,
-                                                         dataset.get_privileged_class_names())
+                                                         privileged_vals)
 
     # Make the class attribute numerical if it wasn't already (just for the bin_sensitive version).
     class_attr = dataset.get_class_attribute()
