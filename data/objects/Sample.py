@@ -17,4 +17,5 @@ class Sample(Data):
         self.num_to_sample = num
 
     def data_specific_processing(self, dataframe):
+        dataframe = self.data.data_specific_processing(dataframe)
         return dataframe.sample(n = self.num_to_sample, replace=True)
