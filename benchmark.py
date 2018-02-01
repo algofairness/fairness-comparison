@@ -5,7 +5,7 @@ import statistics
 from data.objects.list import DATASETS, get_dataset_names
 from data.objects.ProcessedData import ProcessedData
 from algorithms.list import ALGORITHMS
-from metrics.list import METRICS
+from metrics.list import get_metrics
 
 NUM_TRIALS_DEFAULT = 10
 
@@ -15,7 +15,6 @@ def get_algorithm_names():
 def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
         algorithm = get_algorithm_names()):
     algorithms_to_run = algorithm
-    metrics_list = get_metrics_list()
 
     print("Datasets: '%s'" % dataset)
     for dataset_obj in DATASETS:
@@ -33,8 +32,9 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
 
             print("Sensitive attribute:" + sensitive)
 
-            detailed_files = dict(
-                (k, create_detailed_file(dataset_obj.get_results_filename(sensitive, k)))
+            detailed_files = dict((k, create_detailed_file(
+                                          dataset_obj.get_results_filename(sensitive, k),
+                                          dataset_obj))
                 for k in train_test_splits.keys())
 
             for algorithm in ALGORITHMS:
@@ -45,7 +45,6 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
                 print("       supported types: %s" % algorithm.get_supported_data_types())
                 for i in range(0, num_trials):
                     for supported_tag in algorithm.get_supported_data_types():
-                        print("      running %s" % supported_tag)
                         train, test = train_test_splits[supported_tag][i]
                         params, results = run_eval_alg(algorithm, train, test, dataset_obj,
                                                        all_sensitive_attributes, sensitive, supported_tag)
@@ -82,7 +81,7 @@ def run_eval_alg(algorithm, train, test, dataset, all_sensitive_attributes, sing
                 privileged_vals, positive_val)
 
     one_run_results = []
-    for metric in METRICS:
+    for metric in get_metrics(dataset):
         result = metric.calc(actual, predicted, sensitive, privileged_vals, positive_val)
         one_run_results.append(result)
 
@@ -105,15 +104,15 @@ def run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_se
 
     return actual, predictions, sensitive, params
 
-def get_metrics_list():
-    return [metric.get_name() for metric in METRICS]
+def get_metrics_list(dataset):
+    return [metric.get_name() for metric in get_metrics(dataset)]
 
-def get_detailed_metrics_header():
-    return ','.join(['algorithm', 'params'] + get_metrics_list())
+def get_detailed_metrics_header(dataset):
+    return ','.join(['algorithm', 'params'] + get_metrics_list(dataset))
 
-def create_detailed_file(filename):
+def create_detailed_file(filename, dataset):
     f = open(filename, 'w')
-    f.write(get_detailed_metrics_header() + '\n')
+    f.write(get_detailed_metrics_header(dataset) + '\n')
     return f
 
 def main():

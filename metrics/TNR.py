@@ -21,5 +21,8 @@ class TNR(Metric):
                 predval = classes[j]
                 if trueval == predval:
                     TN += matrix[i][j]
-        x = TN/allN
+
+        if allN == 0.0:
+            return 1.0
+
         return TN / allN

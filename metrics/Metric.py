@@ -1,6 +1,17 @@
 class Metric:
     def __init__(self):
         self.name = 'Name not implemented'  ## This should be replaced in implemented metrics.
+        self.iter_counter = 0
+
+    def __iter__(self):
+        self.iter_counter = 0
+        return self
+
+    def __next__(self):
+        self.iter_counter += 1
+        if self.iter_counter > 1:
+            raise StopIteration
+        return self
 
     def calc(self, actual, predicted, sensitive, unprotected_vals, positive_pred):
         """
@@ -24,3 +35,10 @@ class Metric:
         val1 is better than val2, false otherwise.
         """
         return val1 > val2
+
+    def expand_per_dataset(self, dataset):
+        """
+        Optionally allows the expansion of the metric into a returned list of metrics based on the
+        dataset, e.g., where there is one metric per sensitive attribute given.
+        """
+        return self
