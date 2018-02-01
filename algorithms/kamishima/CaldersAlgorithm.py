@@ -30,20 +30,25 @@ class CaldersAlgorithm(Algorithm):
         else:
             class_type = type(value_0.item()) # this should be numpy.int64 or numpy.int32,
 
-        def create_file_in_kamishima_format(df):
+        def create_file_in_calders_format(df, dicts):
             y = df[class_attr]
             s = df[single_sensitive]
 
             x = []
+            
             for col in df:
+                col_dict = dicts.setdefault(col, {})
                 if col == class_attr:
                     continue
                 if col in sensitive_attrs:
                     continue
-                x.append(numpy.array(df[col].values, dtype=numpy.float64))
+                values = []
+                for val in df[col].values:
+                    values.append(col_dict.setdefault(val, len(col_dict)))
+                x.append(numpy.array(values, dtype=numpy.int32))
 
-            x.append(numpy.array(s, dtype=numpy.float64))
-            x.append(numpy.array(df[class_attr], dtype=numpy.float64))
+            x.append(numpy.array(s, dtype=numpy.int32))
+            x.append(numpy.array(df[class_attr], dtype=numpy.int32))
 
             result = numpy.array(x).T
             fd, name = tempfile.mkstemp()
@@ -61,8 +66,9 @@ class CaldersAlgorithm(Algorithm):
         os.close(fd)
         fd, output_name = tempfile.mkstemp()
         os.close(fd)
-        train_name = create_file_in_kamishima_format(train_df)
-        test_name = create_file_in_kamishima_format(test_df)
+        dicts = {}
+        train_name = create_file_in_calders_format(train_df, dicts)
+        test_name = create_file_in_calders_format(test_df, dicts)
         beta_val = params['beta']
         subprocess.run(['python3', './algorithms/kamishima/kamfadm-2012ecmlpkdd/train_cv2nb.py',
                         '-b', str(beta_val),

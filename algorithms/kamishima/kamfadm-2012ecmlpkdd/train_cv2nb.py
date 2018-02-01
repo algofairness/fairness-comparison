@@ -112,8 +112,6 @@ def main(opt):
     y = D[:, -1]
     X = D[:, :-1]
     nf = X.shape[1] - N_NS
-    print("NFV: ", opt.nfv)
-    print("NF: ", nf)
     nfv = decode_nfv(opt.nfv, nf)
 
     ### main process
@@ -156,7 +154,7 @@ def main(opt):
     # write file
     pickle.dump(clr, opt.outfile)
     info = {}
-    for key, key_val in vars(opt).iteritems():
+    for key, key_val in vars(opt).items():
         info[key] = str(key_val)
     pickle.dump(info, opt.outfile)
 
@@ -205,7 +203,7 @@ if __name__ == '__main__':
     ap.add_argument('infilep', nargs='?', metavar='INFILE',
                     default=sys.stdin, type=argparse.FileType('r'))
     ap.add_argument('-o', '--out', dest='outfile',
-                    default=None, type=argparse.FileType('w'))
+                    default=None, type=argparse.FileType('wb'))
     ap.add_argument('outfilep', nargs='?', metavar='OUTFILE',
                     default=sys.stdout, type=argparse.FileType('w'))
 
