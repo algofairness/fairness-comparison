@@ -10,6 +10,8 @@ DATASETS = [ Ricci(), Adult(), German(), PropublicaRecidivism(), PropublicaViole
 # For testing, you can just use a sample of the data.  E.g.:
 # DATASETS = [ Sample(Adult(), 500) ]
 
+DATASETS = [Sample(d, 500) for d in DATASETS]
+
 def get_dataset_names():
     names = []
     for dataset in DATASETS:

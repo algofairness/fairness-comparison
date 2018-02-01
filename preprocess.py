@@ -70,7 +70,7 @@ def preprocess(dataset, data_frame):
 
     # Create a version of the numerical data for which the sensitive attribute is binary.
     sensitive_attrs = dataset.get_sensitive_attributes_with_joint()
-    privileged_vals = dataset.get_privileged_class_names_with_joint()
+    privileged_vals = dataset.get_privileged_class_names_with_joint("")
     processed_binsensitive = make_sensitive_attrs_binary(processed_numerical, sensitive_attrs,
                                                          dataset.get_privileged_class_names("")) ## FIXME
 
@@ -98,6 +98,8 @@ def make_sensitive_attrs_binary(dataframe, sensitive_attrs, privileged_vals):
 
 def make_class_attr_num(dataframe, class_attr, positive_val):
     # don't change the class attribute unless its a string (pandas type: object)
+    print(dataframe)
+    print(class_attr)
     if (dataframe[class_attr].dtypes == 'object'):
         dataframe[class_attr] = dataframe[class_attr].replace({ positive_val : 1 })
         dataframe[class_attr] = dataframe[class_attr].replace("[^1]", 0, regex = True)
