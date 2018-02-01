@@ -60,9 +60,9 @@ def preprocess(dataset, data_frame):
         processed_data = processed_data.assign(temp_name =
                              processed_data[sensitive_attrs].apply('-'.join, axis=1))
         processed_data = processed_data.rename(columns = {'temp_name' : new_attr_name})
-        dataset.append_sensitive_attribute(new_attr_name)
-        privileged_joint_vals = '-'.join(dataset.get_privileged_class_names(""))
-        dataset.get_privileged_class_names("").append(privileged_joint_vals)
+        # dataset.append_sensitive_attribute(new_attr_name)
+        # privileged_joint_vals = '-'.join(dataset.get_privileged_class_names(""))
+        # dataset.get_privileged_class_names("").append(privileged_joint_vals)
 
     # Create a one-hot encoding of the categorical variables.
     processed_numerical = pd.get_dummies(processed_data,

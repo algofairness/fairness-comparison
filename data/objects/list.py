@@ -8,7 +8,7 @@ from data.objects.PropublicaViolentRecidivism import PropublicaViolentRecidivism
 DATASETS = [ Ricci(), Adult(), German(), PropublicaRecidivism(), PropublicaViolentRecidivism() ]
 
 # For testing, you can just use a sample of the data.  E.g.:
-# DATASETS = [ Sample(Adult(), 500) ]
+# DATASETS = [ Sample(Adult(), 50) ]
 
 # DATASETS = [Sample(d, 500) for d in DATASETS]
 
