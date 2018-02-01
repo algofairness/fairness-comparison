@@ -280,7 +280,7 @@ class GaussianNaiveBayes(BaseNaiveBayes):
         log_proba = np.repeat(\
             self._predict_class_log_proba_upto_const()[np.newaxis, :],
             X.shape[0], axis=0)
-        for i in xrange(X.shape[0]):
+        for i in range(X.shape[0]):
             log_proba[i, :] += \
                 self._predict_Gaussian_log_proba_upto_const(X[i, :])
 
@@ -397,7 +397,7 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
         self.beta = beta
 
         self.pf_ = []
-        for i in xrange(self.n_mfeatures):
+        for i in range(self.n_mfeatures):
             self.pf_.append(np.repeat(self.beta / np.float(self.nfv[i]),
                                       self.n_classes * self.nfv[i]).\
                                       reshape((self.n_classes, self.nfv[i])))
@@ -413,7 +413,7 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
             class
         """
 
-        for fi in xrange(self.n_mfeatures):
+        for fi in range(self.n_mfeatures):
             self.pf_[fi] += np.histogram2d(y, X[:, fi],
                                            bins=(self.n_classes, self.nfv[fi]),
                                            range=((0, self.n_classes),
@@ -473,7 +473,7 @@ class MultinomialNaiveBayes(BaseNaiveBayes):
             self._predict_class_log_proba_upto_const()[np.newaxis, :],
             X.shape[0], axis=0)
 
-        for i in xrange(X.shape[0]):
+        for i in range(X.shape[0]):
             log_proba[i, :] = \
                 self._predict_multinomial_log_proba_upto_const(X[i, :])
 
@@ -626,13 +626,13 @@ class CompositeNaiveBayes(MultinomialNaiveBayes, GaussianNaiveBayes):
         if self.n_gfeatures > 0:
             if not self.is_valid_params_:
                 self._update_mean_var()
-            for i in xrange(X.shape[0]):
+            for i in range(X.shape[0]):
                 log_proba[i, :] += \
                     self._predict_Gaussian_log_proba_upto_const(X[i, self.gfeatures])
 
         # multinomial probabiliteis
         if self.n_mfeatures > 0:
-            for i in xrange(X.shape[0]):
+            for i in range(X.shape[0]):
                 log_proba[i, :] += \
                     self._predict_multinomial_log_proba_upto_const(X[i, self.mfeatures])
 

@@ -112,6 +112,8 @@ def main(opt):
     y = D[:, -1]
     X = D[:, :-1]
     nf = X.shape[1] - N_NS
+    print("NFV: ", opt.nfv)
+    print("NF: ", nf)
     nfv = decode_nfv(opt.nfv, nf)
 
     ### main process

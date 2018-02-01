@@ -24,7 +24,11 @@ class CaldersAlgorithm(Algorithm):
         if not 'beta' in params:
             params = self.get_default_params()
 
-        class_type = type(train_df[class_attr].values[0].item())
+        value_0 = train_df[class_attr].values[0]
+        if type(value_0) == str:
+            class_type = str
+        else:
+            class_type = type(value_0.item()) # this should be numpy.int64 or numpy.int32,
 
         def create_file_in_kamishima_format(df):
             y = df[class_attr]
@@ -46,10 +50,12 @@ class CaldersAlgorithm(Algorithm):
             os.close(fd)
             numpy.savetxt(name, result)
             return name
-
-        col_sets = list(set(list(col)) for col in df)
-        print(col_sets)
-        exit(1)
+        
+        train_col_sets = list(set(train_df[col]) for col in train_df
+                              if col not in sensitive_attrs + [class_attr])
+        test_col_sets = list(set(test_df[col]) for col in test_df
+                             if col not in sensitive_attrs + [class_attr])
+        nfv = ":".join(str(len(a.union(b))) for (a,b) in zip(train_col_sets, test_col_sets))
 
         fd, model_name = tempfile.mkstemp()
         os.close(fd)
@@ -60,7 +66,7 @@ class CaldersAlgorithm(Algorithm):
         beta_val = params['beta']
         subprocess.run(['python3', './algorithms/kamishima/kamfadm-2012ecmlpkdd/train_cv2nb.py',
                         '-b', str(beta_val),
-                        '-nfv', nfv,
+                        '-f', nfv,
                         '-i', train_name,
                         '-o', model_name,
                         '--quiet'])
@@ -82,7 +88,7 @@ class CaldersAlgorithm(Algorithm):
         return predictions_correct
 
     def get_supported_data_types(self):
-        return set(["categorical-binsensitive"])
+        return set(["numerical-binsensitive"])
 
     def get_default_params(self):
         """
