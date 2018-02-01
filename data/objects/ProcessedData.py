@@ -3,7 +3,7 @@ import pandas as pd
 TRAINING_PERCENT = 2.0 / 3.0
 
 # FIXME the set of available tags should exist somewhere so this isn't hard-coded
-TAGS = ["original", "numerical", "numerical-binsensitive"]
+TAGS = ["original", "numerical", "numerical-binsensitive", "categorical-binsensitive"]
 
 class ProcessedData():
     def __init__(self, data_obj):
