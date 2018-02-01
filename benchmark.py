@@ -25,8 +25,7 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
         print("\nEvaluating dataset:" + dataset_obj.get_dataset_name())
 
         processed_dataset = ProcessedData(dataset_obj)
-        processed_splits, numerical_splits, binsensitive_splits =  \
-            processed_dataset.create_train_test_splits(num_trials)
+        train_test_splits = processed_dataset.create_train_test_splits(num_trials)
 
         all_sensitive_attributes = dataset_obj.get_sensitive_attributes_with_joint()
         print(all_sensitive_attributes)
@@ -34,52 +33,32 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
 
             print("Sensitive attribute:" + sensitive)
 
-            f_bin = create_detailed_file(
-                        dataset_obj.get_results_numerical_binsensitive_filename(sensitive))
-            f_num = create_detailed_file(
-                        dataset_obj.get_results_numerical_filename(sensitive))
-            f_all = create_detailed_file(
-                        dataset_obj.get_results_filename(sensitive))
+            detailed_files = dict(
+                (k, create_detailed_file(dataset_obj.get_results_filename(sensitive, k)))
+                for k in train_test_splits.keys())
 
             for algorithm in ALGORITHMS:
                 if not algorithm.get_name() in algorithms_to_run:
                     continue
 
-                print("    Algorithm:" + algorithm.get_name())
-
+                print("    Algorithm: %s" % algorithm.get_name())
+                print("       supported types: %s" % algorithm.get_supported_data_types())
                 for i in range(0, num_trials):
-
-                    # Run on data that is all numerical, binary sensitive attributes, numerical
-                    # class data.  We assume all algorithms can handle this type of data.
-                    train, test = binsensitive_splits[i]
-                    params, results = run_eval_alg(algorithm, train, test, dataset_obj,
-                                                   all_sensitive_attributes, sensitive, True)
-                    write_alg_results(f_bin, algorithm.get_name(), params, results)
-
-                    if not algorithm.binary_sensitive_attrs_only():
-                        # Run on data that is all numerical except for the sensitive attributes
-                        # and class attribute.
-                        train, test = numerical_splits[i]
+                    for supported_tag in algorithm.get_supported_data_types():
+                        print("      running %s" % supported_tag)
+                        train, test = train_test_splits[supported_tag][i]
                         params, results = run_eval_alg(algorithm, train, test, dataset_obj,
-                                                       all_sensitive_attributes, sensitive, False)
-                        write_alg_results(f_num, algorithm.get_name(), params, results)
+                                                       all_sensitive_attributes, sensitive, supported_tag)
+                        write_alg_results(detailed_files[supported_tag],
+                                          algorithm.get_name(), params, results)
 
-                        if not algorithm.numerical_data_only():
-                            # Run on data that may be numerical or categorical.
-                            train, test = processed_splits[i]
-                            params, results = run_eval_alg(algorithm, train, test, dataset_obj,
-                                                           all_sensitive_attributes, sensitive,
-                                                           False)
-                            write_alg_results(f_all, algorithm.get_name(), params, results)
+            print("Results written to:")
+            print(algorithm)
+            for supported_tag in algorithm.get_supported_data_types():
+                print("    " + dataset_obj.get_results_filename(sensitive, supported_tag))
 
-        print("Results written to:")
-        print("    " + dataset_obj.get_results_filename(sensitive))
-        print("    " + dataset_obj.get_results_numerical_filename(sensitive))
-        print("    " + dataset_obj.get_results_numerical_binsensitive_filename(sensitive))
-
-        f_bin.close()
-        f_num.close()
-        f_all.close()
+            for detailed_file in detailed_files.values():
+                detailed_file.close()
 
 def write_alg_results(file_handle, alg_name, params, results_list):
     line = alg_name + ','
@@ -91,16 +70,12 @@ def write_alg_results(file_handle, alg_name, params, results_list):
     os.fsync(file_handle.fileno())
 
 def run_eval_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_sensitive,
-                 bin_sensitive):
+                 tag):
     """
     Runs the algorithm and gets the resulting metric evaluations.
     """
-    privileged_vals = dataset.get_privileged_class_names_with_joint()
-    positive_val = dataset.get_positive_class_val()
-    if bin_sensitive:
-        # in this case, the real data has been overwritten with 0/1
-        privileged_vals = [1 for x in all_sensitive_attributes]
-        positive_val = 1
+    privileged_vals = dataset.get_privileged_class_names_with_joint(tag)
+    positive_val = dataset.get_positive_class_val(tag)
 
     actual, predicted, sensitive, params =  \
         run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_sensitive,

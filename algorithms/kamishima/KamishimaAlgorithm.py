@@ -102,11 +102,8 @@ class KamishimaAlgorithm(Algorithm):
 
         return predictions_correct
 
-    def numerical_data_only(self):
-        return True
-
-    def binary_sensitive_attrs_only(self):
-        return True
+    def get_supported_data_types(self):
+        return set(["numerical-binsensitive"])
 
     def get_default_params(self):
         """

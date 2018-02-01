@@ -23,11 +23,8 @@ class Generic(Algorithm):
 
         return predictions
 
-    def numerical_data_only(self):
-        """
-        Returns True if this algorithm can only handle numerical data as input.
-        """
-        return True
+    def get_supported_data_types(self):
+        return set(["numerical"])
 
     def get_classifier(self):
         """

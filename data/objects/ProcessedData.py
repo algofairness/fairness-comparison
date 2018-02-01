@@ -2,41 +2,32 @@ import pandas as pd
 
 TRAINING_PERCENT = 2.0 / 3.0
 
+# FIXME the set of available tags should exist somewhere so this isn't hard-coded
+TAGS = ["original", "numerical", "numerical-binsensitive"]
+
 class ProcessedData():
     def __init__(self, data_obj):
         self.data = data_obj
-        self.processed_df = pd.read_csv(self.data.get_processed_filename())
-        self.numerical_df = pd.read_csv(self.data.get_processed_numerical_filename())
-        self.binsensitive_df = pd.read_csv(self.data.get_processed_binsensitive_filename())
-        self.processed_splits = []
-        self.numerical_splits = []
-        self.binsensitive_splits = []
+        self.dfs = dict((k, pd.read_csv(self.data.get_filename(k)))
+                        for k in TAGS)
+        self.splits = dict((k, []) for k in TAGS)
+        self.has_splits = False
 
-    def get_processed_filename(self):
-        return self.data.get_processed_filename()
+    def get_processed_filename(self, tag):
+        return self.data.get_filename(tag)
 
-    def get_processed_numerical_filename(self):
-        return self.data.get_processed_numerical_filename()
-
-    def get_processed_dataframe(self):
-        return self.processed_df
-
-    def get_processed_numerical_dataframe(self):
-        return self.numerical_df
+    def get_dataframe(self, tag):
+        return self.dfs[tag]
 
     def create_train_test_splits(self, num):
-        if len(self.processed_splits) > 0:
-            return self.processed_splits, self.numerical_splits
+        if self.has_splits:
+            return self.splits
 
         for i in range(0, num):
-            train = self.processed_df.sample(frac = TRAINING_PERCENT)
-            test = self.processed_df.drop(train.index)
-            self.processed_splits.append((train, test))
-            train = self.numerical_df.sample(frac = TRAINING_PERCENT)
-            test = self.numerical_df.drop(train.index)
-            self.numerical_splits.append((train, test))
-            train = self.binsensitive_df.sample(frac = TRAINING_PERCENT)
-            test = self.binsensitive_df.drop(train.index)
-            self.binsensitive_splits.append((train, test))
+            for (k, v) in self.dfs.items():
+                train = self.dfs[k].sample(frac = TRAINING_PERCENT)
+                test = self.dfs[k].drop(train.index)
+                self.splits[k].append((train, test))
 
-        return self.processed_splits, self.numerical_splits, self.binsensitive_splits
+        self.has_splits = True
+        return self.splits

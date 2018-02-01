@@ -58,11 +58,8 @@ class ParamGridSearch(Algorithm):
             del param_dict[old_name]
         param_dict[param_name] = param_val
 
-    def numerical_data_only(self):
-        return self.algorithm.numerical_data_only()
-
-    def binary_sensitive_attrs_only(self):
-        return self.algorithm.binary_sensitive_attrs_only()
+    def get_supported_data_types(self):
+        return self.algorithm.get_supported_data_types()
 
     def handles_multiple_sensitive_attrs(self):
         """
