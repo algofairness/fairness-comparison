@@ -28,7 +28,6 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
         train_test_splits = processed_dataset.create_train_test_splits(num_trials)
 
         all_sensitive_attributes = dataset_obj.get_sensitive_attributes_with_joint()
-        print(all_sensitive_attributes)
         for sensitive in all_sensitive_attributes:
 
             print("Sensitive attribute:" + sensitive)

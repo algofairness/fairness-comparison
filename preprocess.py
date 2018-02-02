@@ -70,9 +70,9 @@ def preprocess(dataset, data_frame):
 
     # Create a version of the numerical data for which the sensitive attribute is binary.
     sensitive_attrs = dataset.get_sensitive_attributes_with_joint()
-    privileged_vals = dataset.get_privileged_class_names_with_joint("")
-    processed_binsensitive = make_sensitive_attrs_binary(processed_numerical, sensitive_attrs,
-                                                         dataset.get_privileged_class_names("")) ## FIXME
+    privileged_vals = dataset.get_privileged_class_names_with_joint("numerical-binsensitive")
+    processed_binsensitive = make_sensitive_attrs_binary(
+        processed_numerical, sensitive_attrs, privileged_vals)
 
     # Create a version of the categorical data for which the sensitive attributes is binary.
     processed_categorical_binsensitive = make_sensitive_attrs_binary(processed_data, sensitive_attrs,
