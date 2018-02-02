@@ -7,12 +7,12 @@ from data.objects.PropublicaViolentRecidivism import PropublicaViolentRecidivism
 from data.objects.TwoGaussians import TwoGaussians
 
 DATASETS = [
+    TwoGaussians(),
     Ricci(),
     Adult(),
     German(),
     PropublicaRecidivism(),
-    PropublicaViolentRecidivism(),
-    TwoGaussians()
+    PropublicaViolentRecidivism()
     ]
 
 # For testing, you can just use a sample of the data.  E.g.:

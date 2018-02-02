@@ -2,6 +2,8 @@ from data.objects.Data import Data
 import numpy as np
 import pandas as pd
 
+##############################################################################
+
 class TwoGaussians(Data):
 
     def __init__(self):

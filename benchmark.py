@@ -10,7 +10,11 @@ from metrics.list import get_metrics
 NUM_TRIALS_DEFAULT = 10
 
 def get_algorithm_names():
-    return [algorithm.get_name() for algorithm in ALGORITHMS]
+    result = [algorithm.get_name() for algorithm in ALGORITHMS]
+    print("Available algorithms:")
+    for a in result:
+        print("  %s" % a)
+    return result
 
 def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
         algorithm = get_algorithm_names()):
