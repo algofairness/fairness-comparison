@@ -96,7 +96,7 @@ class CaldersVerwerTwoNaiveBayes(BaseEstimator,
 
         self.pys_ = np.zeros((self.N_CLASSES, self.N_S_VALUES))
         self.clr_ = np.empty(2, dtype=np.object_)
-        for i in xrange(self.N_S_VALUES):
+        for i in range(self.N_S_VALUES):
             self.clr_[i] = CompositeNaiveBayes(self.N_CLASSES,
                                                self.n_features,
                                                self.nfv,
@@ -129,7 +129,7 @@ class CaldersVerwerTwoNaiveBayes(BaseEstimator,
 
         # main learning stage
         self.pys_ = np.histogram2d(y, s, [2, 2], [[0, 2], [0, 2]])[0]
-        for i in xrange(self.N_S_VALUES):
+        for i in range(self.N_S_VALUES):
             self.clr_[i].fit(XX[s == i, :], y[s == i])
 
         # modify joint statistics of y and s

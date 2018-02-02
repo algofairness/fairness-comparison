@@ -13,7 +13,7 @@ from metrics.MCC import MCC
 
 ALGORITHMS = [ SVM(), GaussianNB(), LogisticRegression(), DecisionTree(),     # baseline
                KamishimaAlgorithm(),                                          # Kamishima
-               # CaldersAlgorithm(),                                            # Kamishima
+               CaldersAlgorithm(),                                            # Kamishima
                ParamGridSearch(KamishimaAlgorithm(), Accuracy()),             # Kamishima params
                ParamGridSearch(KamishimaAlgorithm(), DisparateImpact()),
                FeldmanAlgorithm(SVM()), FeldmanAlgorithm(GaussianNB()),       # Feldman
