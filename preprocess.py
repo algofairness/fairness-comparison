@@ -10,11 +10,7 @@ def prepare_data(dataset_names = get_dataset_names()):
         if not dataset.get_dataset_name() in dataset_names:
             continue
         print("--- Processing dataset:" + dataset.get_dataset_name() + " ---")
-        data_path = dataset.get_raw_filename()
-        data_frame = pd.read_csv(data_path, error_bad_lines=False,
-                                 na_values=dataset.get_missing_val_indicators(),
-                                 encoding = 'ISO-8859-1')
-
+        data_frame = dataset.load_raw_dataset()
         d = preprocess(dataset, data_frame)
         
         for k, v in d.items():

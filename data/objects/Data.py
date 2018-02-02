@@ -1,3 +1,5 @@
+import pandas as pd
+
 RAW_DATA_DIR = 'data/raw/'
 PROCESSED_DATA_DIR = 'data/preprocessed/'
 RESULT_DIR = "results/"
@@ -88,6 +90,13 @@ class Data():
 
     def get_missing_val_indicators(self):
         return self.missing_val_indicators
+
+    def load_raw_dataset(self):
+        data_path = self.get_raw_filename()
+        data_frame = pd.read_csv(data_path, error_bad_lines=False,
+                                 na_values=self.get_missing_val_indicators(),
+                                 encoding = 'ISO-8859-1')
+        return data_frame
 
     def get_raw_filename(self):
         return RAW_DATA_DIR + self.get_dataset_name() + '.csv'
