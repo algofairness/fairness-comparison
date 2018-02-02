@@ -38,14 +38,16 @@ class ParamGridSearch(Algorithm):
     def find_best(self, all_predictions, train_df, test_df, class_attr, positive_class_val,
                   sensitive_attrs, single_sensitive, privileged_vals, params):
         actual = test_df[class_attr]
-        sensitive = test_df[single_sensitive].values.tolist()
+        dict_sensitive = {}
+        for sens in sensitive_attrs:
+             dict_sensitive[sens] = test_df[sens].values.tolist()
 
         best_val = None
         best = None
         best_name = None
         for param_name, param_val, predictions in all_predictions:
-             val = self.metric.calc(actual, predictions, sensitive, privileged_vals,
-                                    positive_class_val)
+             val = self.metric.calc(actual, predictions, dict_sensitive, single_sensitive,
+                                    privileged_vals, positive_class_val)
              if best_val == None or self.metric.is_better_than(val, best_val):
                   best = predictions
                   best_name = param_name

@@ -16,8 +16,10 @@ class BCRSensitive(Metric):
           Metric.__init__(self)
           self.name = 'BCR'  # This will be modified per sensitive attribute considered.
 
-     def calc(self, actual, predicted, sensitive, unprotected_vals, positive_pred):
+     def calc(self, actual, predicted, dict_of_sensitive_lists, single_sensitive_name,
+              unprotected_vals, positive_pred):
           total = 0.0
+          sensitive = dict_of_sensitive_lists[self.sensitive_for_metric]
           sensitive_values = list(set(sensitive))
           for sens_val in sensitive_values:
               actual_sens = \
@@ -27,8 +29,8 @@ class BCRSensitive(Metric):
               sensitive_sens = \
                   [sens for sens in sensitive if sens_val == sens]
               acc = Accuracy()
-              acc_sens = acc.calc(actual_sens, predicted_sens, sensitive_sens, unprotected_vals,
-                                  positive_pred)
+              acc_sens = acc.calc(actual_sens, predicted_sens, dict_of_sensitive_lists,
+                                  single_sensitive_name, unprotected_vals, positive_pred)
               total += acc_sens
           return total / len(sensitive_values)
 
@@ -38,11 +40,18 @@ class BCRSensitive(Metric):
                objects_list += make_metric_object(sensitive)
           return objects_list
 
-     def add_to_name(self, sensitive_name):
+     def set_sensitive_for_metric(self, sensitive_name):
+          """
+          Sets the specific sensitive attr that this metric will be calculated with respect to,
+          i.e., the sensitive values that it will take the average over.  Note that this may be
+          different than the sensitive value that the algorithm being analyzed is attempting to be
+          fair in terms of.
+          """
           self.name += "-" + sensitive_name
+          self.sensitive_for_metric = sensitive_name
 
 def make_metric_object(sensitive_name):
      obj = BCRSensitive()
-     obj.add_to_name(sensitive_name)
+     obj.set_sensitive_for_metric(sensitive_name)
      return obj
 

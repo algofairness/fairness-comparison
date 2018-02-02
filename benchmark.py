@@ -76,13 +76,22 @@ def run_eval_alg(algorithm, train, test, dataset, all_sensitive_attributes, sing
     privileged_vals = dataset.get_privileged_class_names_with_joint(tag)
     positive_val = dataset.get_positive_class_val(tag)
 
-    actual, predicted, sensitive, params =  \
-        run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_sensitive,
-                privileged_vals, positive_val)
+    # get the actual classifications and sensitive attributes
+    actual = test[dataset.get_class_attribute()].values.tolist()
+    sensitive = test[single_sensitive].values.tolist()
+
+    predicted, params =  run_alg(algorithm, train, test, dataset, all_sensitive_attributes,
+                                 single_sensitive, privileged_vals, positive_val)
+
+    # make dictionary mapping sensitive names to sensitive attr test data lists
+    dict_sensitive_lists = {}
+    for sens in all_sensitive_attributes:
+        dict_sensitive_lists[sens] = test[sens].values.tolist()
 
     one_run_results = []
     for metric in get_metrics(dataset):
-        result = metric.calc(actual, predicted, sensitive, privileged_vals, positive_val)
+        result = metric.calc(actual, predicted, dict_sensitive_lists, single_sensitive,
+                             privileged_vals, positive_val)
         one_run_results.append(result)
 
     return params, one_run_results
@@ -92,17 +101,13 @@ def run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_se
     class_attr = dataset.get_class_attribute()
     params = algorithm.get_default_params()
 
-    # get the actual classifications and sensitive attributes
-    actual = test[class_attr].values.tolist()
-    sensitive = test[single_sensitive].values.tolist()
-
     # Note: the training and test set here still include the sensitive attributes because
     # some fairness aware algorithms may need those in the dataset.  They should be removed
     # before any model training is done.
     predictions = algorithm.run(train, test, class_attr, positive_val, all_sensitive_attributes,
                                 single_sensitive, privileged_vals, params)
 
-    return actual, predictions, sensitive, params
+    return predictions, params
 
 def get_metrics_list(dataset):
     return [metric.get_name() for metric in get_metrics(dataset)]

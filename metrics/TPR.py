@@ -10,6 +10,7 @@ class TPR(Metric):
         Metric.__init__(self)
         self.name = 'TPR'
 
-    def calc(self, actual, predicted, sensitive, unprotected_vals, positive_pred):
+    def calc(self, actual, predicted, dict_of_sensitive_lists, single_sensitive_name,
+             unprotected_vals, positive_pred):
         return recall_score(actual, predicted, pos_label=positive_pred, average='binary')
 
