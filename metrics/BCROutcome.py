@@ -9,10 +9,13 @@ class BCROutcome(Metric):
         Metric.__init__(self)
         self.name = 'BCR-outcome'
 
-    def calc(self, actual, predicted, sensitive, unprotected_vals, positive_pred):
+    def calc(self, actual, predicted, dict_of_sensitive_lists, single_sensitive_name,
+             unprotected_vals, positive_pred):
         tnr = TNR()
-        tnr_val = tnr.calc(actual, predicted, sensitive, unprotected_vals, positive_pred)
+        tnr_val = tnr.calc(actual, predicted, dict_of_sensitive_lists, single_sensitive_name,
+                           unprotected_vals, positive_pred)
         tpr = TPR()
-        tpr_val = tpr.calc(actual, predicted, sensitive, unprotected_vals, positive_pred)
+        tpr_val = tpr.calc(actual, predicted, dict_of_sensitive_lists, single_sensitive_name,
+                           unprotected_vals, positive_pred)
         bcr = (tpr_val + tnr_val) / 2.0
         return bcr

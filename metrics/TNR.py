@@ -6,7 +6,8 @@ class TNR(Metric):
         Metric.__init__(self)
         self.name = 'TNR'
 
-    def calc(self, actual, predicted, sensitive, unprotected_vals, positive_pred):
+    def calc(self, actual, predicted, dict_of_sensitive_lists, single_sensitive_name,
+             unprotected_vals, positive_pred):
         classes = list(set(actual))
         matrix = confusion_matrix(actual, predicted, labels=classes)
         # matrix[i][j] is the number of observations with actual class i that were predicted as j
@@ -21,5 +22,8 @@ class TNR(Metric):
                 predval = classes[j]
                 if trueval == predval:
                     TN += matrix[i][j]
-        x = TN/allN
+
+        if allN == 0.0:
+            return 1.0
+
         return TN / allN
