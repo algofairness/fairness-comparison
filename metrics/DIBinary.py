@@ -3,17 +3,18 @@ import math
 from metrics.utils import calc_pos_protected_percents
 from metrics.Metric import Metric
 
-class DisparateImpact(Metric):
+class DIBinary(Metric):
     """
     This metric calculates disparate imapct in the sense of the 80% rule before the 80%
     threshold is applied.  This is described as DI in: https://arxiv.org/abs/1412.3756
     If there are no positive protected classifications, 0.0 is returned.
 
-    Multiple protected classes are treated as one large group.
+    Multiple protected classes are treated as one large group, so that this compares the privileged
+    class to all non-privileged classes as a group.
     """
     def __init__(self):
         Metric.__init__(self)
-        self.name = 'DisparateImpact'
+        self.name = 'DI-binary'
 
     def calc(self, actual, predicted, dict_of_sensitive_lists, single_sensitive_name,
              unprotected_vals, positive_pred):

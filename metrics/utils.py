@@ -33,3 +33,18 @@ def calc_pos_protected_percents(predicted, sensitive, unprotected_vals, positive
 
     return unprotected_pos_percent, protected_pos_percent
 
+def calc_prob_class_given_sensitive(predicted, sensitive, predicted_goal, sensitive_goal):
+    """
+    Returns P(predicted = predicted_goal | sensitive = sensitive_goal).  Assumes that predicted
+    and sensitive have the same length.  If there are no attributes matching the given
+    sensitive_goal, this will error.
+    """
+    match_count = 0.0
+    total = 0.0
+    for sens, pred in zip(sensitive, predicted):
+        if str(sens) == str(sensitive_goal):
+            total += 1
+            if str(pred) == str(predicted_goal):
+                match_count += 1
+
+    return match_count / total

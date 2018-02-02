@@ -52,7 +52,6 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
                                           algorithm.get_name(), params, results)
 
             print("Results written to:")
-            print(algorithm)
             for supported_tag in algorithm.get_supported_data_types():
                 print("    " + dataset_obj.get_results_filename(sensitive, supported_tag))
 

@@ -17,3 +17,8 @@ class CV(Metric):
             calc_pos_protected_percents(predicted, sensitive, unprotected_vals, positive_pred)
         CV = unprotected_pos_percent - protected_pos_percent
         return 1.0 - CV
+
+    def is_better_than(self, val1, val2):
+        dist1 = math.fabs(1.0 - val1)
+        dist2 = math.fabs(1.0 - val2)
+        return dist1 <= dist2

@@ -7,7 +7,7 @@ from algorithms.baseline.GaussianNB import GaussianNB
 from algorithms.baseline.LogisticRegression import LogisticRegression
 from algorithms.ParamGridSearch import ParamGridSearch
 
-from metrics.DisparateImpact import DisparateImpact
+from metrics.DIAvgAll import DIAvgAll
 from metrics.Accuracy import Accuracy
 from metrics.MCC import MCC
 
@@ -15,11 +15,11 @@ ALGORITHMS = [ SVM(), GaussianNB(), LogisticRegression(), DecisionTree(),     # 
                KamishimaAlgorithm(),                                          # Kamishima
                CaldersAlgorithm(),                                            # Kamishima
                ParamGridSearch(KamishimaAlgorithm(), Accuracy()),             # Kamishima params
-               ParamGridSearch(KamishimaAlgorithm(), DisparateImpact()),
+               ParamGridSearch(KamishimaAlgorithm(), DIAvgAll()),
                FeldmanAlgorithm(SVM()), FeldmanAlgorithm(GaussianNB()),       # Feldman
                FeldmanAlgorithm(LogisticRegression()), FeldmanAlgorithm(DecisionTree()),
-               ParamGridSearch(FeldmanAlgorithm(SVM()), DisparateImpact()),   # Feldman params
+               ParamGridSearch(FeldmanAlgorithm(SVM()), DIAvgAll()),   # Feldman params
                ParamGridSearch(FeldmanAlgorithm(SVM()), Accuracy()),
-               ParamGridSearch(FeldmanAlgorithm(GaussianNB()), DisparateImpact()),
+               ParamGridSearch(FeldmanAlgorithm(GaussianNB()), DIAvgAll()),
                ParamGridSearch(FeldmanAlgorithm(GaussianNB()), Accuracy())
              ]
