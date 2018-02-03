@@ -50,9 +50,9 @@ def calc_prob_class_given_sensitive(predicted, sensitive, predicted_goal, sensit
     return match_count / total
 
 def calc_fp_fn(actual, predicted, sensitive, unprotected_vals, positive_pred):
-"""
-    Returns False positive and false negative for protected and unprotected group. """
-    
+    """
+    Returns False positive and false negative for protected and unprotected group.
+    """
     unprotected_negative = 0.0
     protected_positive = 0.0
     protected_negative = 0.0
