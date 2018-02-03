@@ -5,13 +5,6 @@ PROCESSED_DATA_DIR = 'data/preprocessed/'
 RESULT_DIR = "results/"
 ANALYSIS_DIR = "analysis/"
 
-PROCESSED_ALL_STUB = "_processed.csv"
-NUM_STUB = "_numerical.csv"
-BINSENS_STUB = "_numerical_binsensitive.csv"
-
-RESULTS_ALL_STUB = "_results.csv"
-ANALYSIS_ALL_STUB = "_analysis.csv"
-
 class Data():
     def __init__(self):
         pass
@@ -61,7 +54,8 @@ class Data():
         privileged class name (exactly as it appears in the data) of the associated sensitive
         attribute.
         """
-        # FIXME this dependence between tags and privileged class names is bad; don't know how to fix it right now
+        # FIXME this dependence between tags and privileged class names is bad; don't know how to
+        # fix it right now
         if tag == 'numerical-binsensitive':
             return [1 for x in self.get_sensitive_attributes()]
         else:

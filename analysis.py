@@ -5,7 +5,8 @@ import seaborn as sns
 import pandas as pd
 
 from data.objects.list import DATASETS, get_dataset_names
-from metrics.list import METRICS
+from data.objects.ProcessedData import TAGS
+from metrics.list import get_metrics
 
 def run(dataset = get_dataset_names()):
     for dataset_obj in DATASETS:
@@ -15,34 +16,22 @@ def run(dataset = get_dataset_names()):
         all_sensitive_attributes = dataset_obj.get_sensitive_attributes_with_joint()
         for sensitive in all_sensitive_attributes:
 
-            # Write summary files per dataset
-            write_summary_file(dataset_obj.get_results_numerical_binsensitive_filename(sensitive),
-                               dataset_obj.get_analysis_numerical_binsensitive_filename(sensitive))
-            write_summary_file(dataset_obj.get_results_numerical_filename(sensitive),
-                               dataset_obj.get_analysis_numerical_filename(sensitive))
-            write_summary_file(dataset_obj.get_results_filename(sensitive),
-                               dataset_obj.get_analysis_filename(sensitive))
+            # Write summary files and graphs per dataset
+            for tag in TAGS:
+                write_summary_file(dataset_obj.get_results_filename(sensitive, tag),
+                                   dataset_obj.get_analysis_filename(sensitive, tag), dataset_obj)
+                make_graph(dataset_obj.get_dataset_name() + " dataset, " + sensitive + " - " + tag,
+                           dataset_obj.get_analysis_filename(sensitive, tag))
 
-            # Write graphs per dataset
-            make_graph(dataset_obj.get_dataset_name() + " dataset, " + sensitive + \
-                           " - numerical and binary sensitive",
-                       dataset_obj.get_analysis_numerical_binsensitive_filename(sensitive))
-            make_graph(dataset_obj.get_dataset_name() + " dataset, " + sensitive + \
-                           " - numerical",
-                       dataset_obj.get_analysis_numerical_filename(sensitive))
-            make_graph(dataset_obj.get_dataset_name() + " dataset, " + sensitive + \
-                           "- numerical and categorical",
-                       dataset_obj.get_analysis_filename(sensitive))
-
-def write_summary_file(infile, outfile):
+def write_summary_file(infile, outfile, dataset):
     outf = open(outfile, 'w')
-    outf.write(summary_file_header())
+    outf.write(summary_file_header(dataset))
     df = pd.read_csv(infile)
     algorithms = df.algorithm.unique()
     for alg in algorithms:
         line = alg
         alg_rows = df.loc[df['algorithm'] == alg]
-        for metric in METRICS:
+        for metric in get_metrics(dataset):
             metric_vals = alg_rows[metric.get_name()].values.tolist()
             line += ',' + str(statistics.mean(metric_vals)) + ',' + \
                     str(statistics.stdev(metric_vals))
@@ -52,15 +41,15 @@ def write_summary_file(infile, outfile):
 
 def make_graph(graph_title, summary_file):
     df = pd.read_csv(summary_file)
-    sns.lmplot(x='DisparateImpact', y='accuracy', data=df, fit_reg=False, hue='algorithm',
+    sns.lmplot(x='DIavgall', y='accuracy', data=df, fit_reg=False, hue='algorithm',
                scatter_kws={"s": 100}, legend=True, legend_out=False)
     ax = plt.gca()
     ax.set_title(graph_title)
     plt.axvline(x=1.0)
     plt.show()
 
-def summary_file_header():
-    line = "algorithm," + ",".join([x.get_name() + ",stdev" for x in METRICS]) + "\n"
+def summary_file_header(dataset):
+    line = "algorithm," + ",".join([x.get_name() + ",stdev" for x in get_metrics(dataset)]) + "\n"
     return line
 
 def main():
