@@ -1,1 +1,1 @@
-algorithm,params,accuracy,TPR,TNR,BCR-outcome,MCC,DisparateImpact,CV
+algorithm,params,accuracy,TPR,TNR,BCRoutcome,MCC,DIbinary,DIavgall,CV,BCRRace
