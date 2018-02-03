@@ -14,7 +14,7 @@ class DIBinary(Metric):
     """
     def __init__(self):
         Metric.__init__(self)
-        self.name = 'DI-binary'
+        self.name = 'DIbinary'
 
     def calc(self, actual, predicted, dict_of_sensitive_lists, single_sensitive_name,
              unprotected_vals, positive_pred):

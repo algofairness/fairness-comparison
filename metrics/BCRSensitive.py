@@ -47,7 +47,7 @@ class BCRSensitive(Metric):
           different than the sensitive value that the algorithm being analyzed is attempting to be
           fair in terms of.
           """
-          self.name += "-" + sensitive_name
+          self.name += sensitive_name
           self.sensitive_for_metric = sensitive_name
 
 def make_metric_object(sensitive_name):
