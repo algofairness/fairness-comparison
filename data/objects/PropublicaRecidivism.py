@@ -6,7 +6,7 @@ class PropublicaRecidivism(Data):
         Data.__init__(self)
         self.dataset_name = 'propublica-recidivism'
         self.class_attr = 'two_year_recid'
-        self.positive_class_val = '1'
+        self.positive_class_val = 1
         self.sensitive_attrs = ['sex', 'race']
         self.privileged_class_names = ['Male', 'Caucasian']
         self.categorical_features = ['age_cat', 'c_charge_degree', 'c_charge_desc', 'score_text']
