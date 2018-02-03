@@ -6,6 +6,10 @@ To run the benchmarks, clone the repository and run:
 
 This will write out metrics for each dataset to the results/ directory.
 
+To generate graphs and other analysis run:
+
+    $ python3 analysis.py
+
 If you do not yet have all the packages installed, you may need to run:
 
     $ pip install -r requirements.txt
