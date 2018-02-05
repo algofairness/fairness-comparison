@@ -29,3 +29,17 @@ class ProcessedData():
 
         self.has_splits = True
         return self.splits
+
+    def get_sensitive_values(self, tag):
+        """
+        Returns a dictionary mapping sensitive attributes in the data to a list of all possible
+        sensitive values that appear.
+        """
+        df = self.get_dataframe(tag)
+        all_sens = self.data.get_sensitive_attributes_with_joint()
+        sensdict = {}
+        for sens in all_sens:
+             sensdict[sens] = list(set(df[sens].values.tolist()))
+        print(sensdict)
+        return sensdict
+

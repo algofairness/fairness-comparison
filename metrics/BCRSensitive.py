@@ -34,7 +34,7 @@ class BCRSensitive(Metric):
               total += acc_sens
           return total / len(sensitive_values)
 
-     def expand_per_dataset(self, dataset):
+     def expand_per_dataset(self, dataset, sensitive_dict):
           objects_list = []
           for sensitive in dataset.get_sensitive_attributes_with_joint():
                objects_list += make_metric_object(sensitive)
