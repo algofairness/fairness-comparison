@@ -92,9 +92,9 @@ def train_model_disp_mist(x, y, x_control, loss_function, EPS, cons_params=None)
     # construct the cvxpy problem
     prob = Problem(Minimize(loss), constraints)
 
-    # print "\n\n"
-    # print "Problem is DCP (disciplined convex program):", prob.is_dcp()
-    # print "Problem is DCCP (disciplined convex-concave program):", is_dccp(prob)
+    # print("\n\n")
+    # print("Problem is DCP (disciplined convex program):", prob.is_dcp())
+    # print("Problem is DCCP (disciplined convex-concave program):", is_dccp(prob))
 
     try:
 
@@ -110,7 +110,7 @@ def train_model_disp_mist(x, y, x_control, loss_function, EPS, cons_params=None)
 
         
         assert(prob.status == "Converged" or prob.status == "optimal")
-        # print "Optimization done, problem status:", prob.status
+        # print("Optimization done, problem status:", prob.status)
 
     except:
         traceback.print_exc()
@@ -120,7 +120,7 @@ def train_model_disp_mist(x, y, x_control, loss_function, EPS, cons_params=None)
 
     # check that the fairness constraint is satisfied
     for f_c in constraints:
-        assert(f_c.value == True)
+        assert(f_c.value == True) # can comment this out if the solver fails too often, but make sure that the constraints are satisfied empirically. alternatively, consider increasing tau parameter
         pass
         
 
@@ -159,19 +159,19 @@ def get_clf_stats(w, x_train, y_train, x_control_train, x_test, y_test, x_contro
         print_stats = False # we arent printing the stats for the train set to avoid clutter
 
         # uncomment these lines to print stats for the train fold
-        # print "*** Train ***"
-        # print "Accuracy: %0.3f" % (train_score)
+        # print("*** Train ***")
+        # print("Accuracy: %0.3f" % (train_score))
         # print_stats = True
         s_attr_to_fp_fn_train = get_fpr_fnr_sensitive_features(y_train, all_class_labels_assigned_train, x_control_train, sensitive_attrs, print_stats)
         cov_all_train[s_attr] = get_sensitive_attr_constraint_fpr_fnr_cov(None, x_train, y_train, distances_boundary_train, x_control_train[s_attr]) 
         
 
-        print "\n"
-        print "Accuracy: %0.3f" % (test_score)
+        print("\n")
+        print("Accuracy: %0.3f" % (test_score))
         print_stats = True # only print stats for the test fold
         s_attr_to_fp_fn_test = get_fpr_fnr_sensitive_features(y_test, all_class_labels_assigned_test, x_control_test, sensitive_attrs, print_stats)
         cov_all_test[s_attr] = get_sensitive_attr_constraint_fpr_fnr_cov(None, x_test, y_test, distances_boundary_test, x_control_test[s_attr]) 
-        print "\n"
+        print("\n")
 
     return train_score, test_score, cov_all_train, cov_all_test, s_attr_to_fp_fn_train, s_attr_to_fp_fn_test
 
@@ -215,16 +215,19 @@ def get_constraint_list_cov(x_train, y_train, x_control_train, sensitive_attrs_t
                 
         if index_dict is None: # binary attribute, in this case, the attr_arr_transformed is the same as the attr_arr
 
-            s_val_to_total = {}
-            s_val_to_avg = {}
-            cons_sum_dict = {0:{}, 1:{}, 2:{}} # sum of entities (females and males) in constraints are stored here
+            s_val_to_total = {ct:{} for ct in [0,1,2]} # constrain type -> sens_attr_val -> total number
+            s_val_to_avg = {ct:{} for ct in [0,1,2]}
+            cons_sum_dict = {ct:{} for ct in [0,1,2]} # sum of entities (females and males) in constraints are stored here
 
             for v in set(attr_arr):
-                s_val_to_total[v] = sum(x_control_train[attr] == v)
+                s_val_to_total[0][v] = sum(x_control_train[attr] == v)
+                s_val_to_total[1][v] = sum(np.logical_and(x_control_train[attr] == v, y_train == -1)) # FPR constraint so we only consider the ground truth negative dataset for computing the covariance
+                s_val_to_total[2][v] = sum(np.logical_and(x_control_train[attr] == v, y_train == +1))
 
-            
-            s_val_to_avg[0] = s_val_to_total[1] / float(s_val_to_total[0] + s_val_to_total[1]) # A_0 in our formulation
-            s_val_to_avg[1] = 1.0 - (s_val_to_total[1] / float(s_val_to_total[0] + s_val_to_total[1])) # A_1 in our formulation
+
+            for ct in [0,1,2]:
+                s_val_to_avg[ct][0] = s_val_to_total[ct][1] / float(s_val_to_total[ct][0] + s_val_to_total[ct][1]) # N1/N in our formulation, differs from one constraint type to another
+                s_val_to_avg[ct][1] = 1.0 - s_val_to_avg[ct][0] # N0/N
 
             
             for v in set(attr_arr):
@@ -236,9 +239,9 @@ def get_constraint_list_cov(x_train, y_train, x_control_train, sensitive_attrs_t
                 # #DCCP constraints
                 dist_bound_prod = mul_elemwise(y_train[idx], x_train[idx] * w) # y.f(x)
                 
-                cons_sum_dict[0][v] = sum_entries( min_elemwise(0, dist_bound_prod) ) * (s_val_to_avg[v] / len(x_train))
-                cons_sum_dict[1][v] = sum_entries( min_elemwise(0, mul_elemwise( (1 - y_train[idx])/2.0, dist_bound_prod) ) ) * (s_val_to_avg[v] / len(x_train))
-                cons_sum_dict[2][v] = sum_entries( min_elemwise(0, mul_elemwise( (1 + y_train[idx])/2.0, dist_bound_prod) ) ) * (s_val_to_avg[v] / len(x_train))
+                cons_sum_dict[0][v] = sum_entries( min_elemwise(0, dist_bound_prod) ) * (s_val_to_avg[0][v] / len(x_train)) # avg misclassification distance from boundary
+                cons_sum_dict[1][v] = sum_entries( min_elemwise(0, mul_elemwise( (1 - y_train[idx])/2.0, dist_bound_prod) ) ) * (s_val_to_avg[1][v] / sum(y_train == -1)) # avg false positive distance from boundary (only operates on the ground truth neg dataset)
+                cons_sum_dict[2][v] = sum_entries( min_elemwise(0, mul_elemwise( (1 + y_train[idx])/2.0, dist_bound_prod) ) ) * (s_val_to_avg[2][v] / sum(y_train == +1)) # avg false negative distance from boundary
                 #################################################################
 
                 
@@ -284,7 +287,7 @@ def get_fpr_fnr_sensitive_features(y_true, y_pred, x_control, sensitive_attrs, v
         s_attr_to_fp_fn[s] = {}
         s_attr_vals = x_control_internal[s]
         if verbose == True:
-            print "||  s  || FPR. || FNR. ||"
+            print("||  s  || FPR. || FNR. ||")
         for s_val in sorted(list(set(s_attr_vals))):
             s_attr_to_fp_fn[s][s_val] = {}
             y_true_local = y_true[s_attr_vals==s_val]
@@ -317,7 +320,7 @@ def get_fpr_fnr_sensitive_features(y_true, y_pred, x_control, sensitive_attrs, v
             if verbose == True:
                 if isinstance(s_val, float): # print the int value of the sensitive attr val
                     s_val = int(s_val)
-                print "||  %s  || %0.2f || %0.2f ||" % (s_val, fpr, fnr)
+                print("||  %s  || %0.2f || %0.2f ||" % (s_val, fpr, fnr))
 
         
         return s_attr_to_fp_fn
@@ -360,24 +363,28 @@ def get_sensitive_attr_constraint_fpr_fnr_cov(model, x_arr, y_arr_true, y_arr_di
         arr = np.dot(model, x_arr.T) * y_arr_true # the product with the weight vector -- the sign of this is the output label
     arr = np.array(arr)
 
-    s_val_to_total = {}
-    s_val_to_avg = {}
-    cons_sum_dict = {0:{}, 1:{}, 2:{}} # sum of entities (females and males) in constraints are stored here
+    s_val_to_total = {ct:{} for ct in [0,1,2]}
+    s_val_to_avg = {ct:{} for ct in [0,1,2]}
+    cons_sum_dict = {ct:{} for ct in [0,1,2]} # sum of entities (females and males) in constraints are stored here
 
     for v in set(x_control_arr):
-        s_val_to_total[v] = sum(x_control_arr == v)
+        s_val_to_total[0][v] = sum(x_control_arr == v)
+        s_val_to_total[1][v] = sum(np.logical_and(x_control_arr == v, y_arr_true == -1))
+        s_val_to_total[2][v] = sum(np.logical_and(x_control_arr == v, y_arr_true == +1))
 
-    s_val_to_avg[0] = s_val_to_total[1] / float(s_val_to_total[0] + s_val_to_total[1]) # A_0 in our formulation
-    s_val_to_avg[1] = 1.0 - ( s_val_to_total[1] / float(s_val_to_total[0] + s_val_to_total[1]) ) # A_1 in our formulation
+
+    for ct in [0,1,2]:
+        s_val_to_avg[ct][0] = s_val_to_total[ct][1] / float(s_val_to_total[ct][0] + s_val_to_total[ct][1]) # N1 / N
+        s_val_to_avg[ct][1] = 1.0 - s_val_to_avg[ct][0] # N0 / N
 
     
     for v in set(x_control_arr):
         idx = x_control_arr == v
         dist_bound_prod = arr[idx]
 
-        cons_sum_dict[0][v] = sum( np.minimum(0, dist_bound_prod) ) * (s_val_to_avg[v] / len(x_arr))
-        cons_sum_dict[1][v] = sum( np.minimum(0, ( (1 - y_arr_true[idx]) / 2 ) * dist_bound_prod) ) * (s_val_to_avg[v] / len(x_arr))
-        cons_sum_dict[2][v] = sum( np.minimum(0, ( (1 + y_arr_true[idx]) / 2 ) * dist_bound_prod) ) * (s_val_to_avg[v] / len(x_arr))
+        cons_sum_dict[0][v] = sum( np.minimum(0, dist_bound_prod) ) * (s_val_to_avg[0][v] / len(x_arr))
+        cons_sum_dict[1][v] = sum( np.minimum(0, ( (1 - y_arr_true[idx]) / 2 ) * dist_bound_prod) ) * (s_val_to_avg[1][v] / sum(y_arr_true == -1))
+        cons_sum_dict[2][v] = sum( np.minimum(0, ( (1 + y_arr_true[idx]) / 2 ) * dist_bound_prod) ) * (s_val_to_avg[2][v] / sum(y_arr_true == +1))
         
 
     cons_type_to_name = {0:"ALL", 1:"FPR", 2:"FNR"}
@@ -385,7 +392,7 @@ def get_sensitive_attr_constraint_fpr_fnr_cov(model, x_arr, y_arr_true, y_arr_di
         cov_type_name = cons_type_to_name[cons_type]    
         cov = cons_sum_dict[cons_type][1] - cons_sum_dict[cons_type][0]
         if verbose == True:
-            print "Covariance for type '%s' is: %0.7f" %(cov_type_name, cov)
+            print("Covariance for type '%s' is: %0.7f" %(cov_type_name, cov))
         
     return cons_sum_dict
     
@@ -408,7 +415,7 @@ def plot_fairness_acc_tradeoff(x_all, y_all, x_control_all, loss_function, cons_
     test_acc_arr, train_acc_arr, correlation_dict_test_arr, correlation_dict_train_arr, cov_dict_test_arr, cov_dict_train_arr = compute_cross_validation_error(x_all, y_all, x_control_all, num_folds, loss_function, 0, apply_accuracy_constraint, sep_constraint, sensitive_attrs, [{} for i in range(0,num_folds)], 0)
 
     for c in cov_range:
-        print "LOG: testing for multiplicative factor: %0.2f" % c
+        print("LOG: testing for multiplicative factor: %0.2f" % c)
         sensitive_attrs_to_cov_original_arr_multiplied = []
         for sensitive_attrs_to_cov_original in cov_dict_train_arr:
             sensitive_attrs_to_cov_thresh = deepcopy(sensitive_attrs_to_cov_original)

@@ -1,3 +1,4 @@
+from algorithms.zafar.ZafarAlgorithm import ZafarAlgorithm
 from algorithms.kamishima.KamishimaAlgorithm import KamishimaAlgorithm
 from algorithms.kamishima.CaldersAlgorithm import CaldersAlgorithm
 from algorithms.feldman.FeldmanAlgorithm import FeldmanAlgorithm
@@ -11,15 +12,17 @@ from metrics.DIAvgAll import DIAvgAll
 from metrics.Accuracy import Accuracy
 from metrics.MCC import MCC
 
-ALGORITHMS = [ SVM(), GaussianNB(), LogisticRegression(), DecisionTree(),     # baseline
-               KamishimaAlgorithm(),                                          # Kamishima
-               CaldersAlgorithm(),                                            # Kamishima
-               ParamGridSearch(KamishimaAlgorithm(), Accuracy()),             # Kamishima params
-               ParamGridSearch(KamishimaAlgorithm(), DIAvgAll()),
-               FeldmanAlgorithm(SVM()), FeldmanAlgorithm(GaussianNB()),       # Feldman
-               FeldmanAlgorithm(LogisticRegression()), FeldmanAlgorithm(DecisionTree()),
-               ParamGridSearch(FeldmanAlgorithm(SVM()), DIAvgAll()),   # Feldman params
-               ParamGridSearch(FeldmanAlgorithm(SVM()), Accuracy()),
-               ParamGridSearch(FeldmanAlgorithm(GaussianNB()), DIAvgAll()),
-               ParamGridSearch(FeldmanAlgorithm(GaussianNB()), Accuracy())
-             ]
+ALGORITHMS = [
+    ZafarAlgorithm(),
+    SVM(), GaussianNB(), LogisticRegression(), DecisionTree(),     # baseline
+    KamishimaAlgorithm(),                                          # Kamishima
+    CaldersAlgorithm(),                                            # Kamishima
+    ParamGridSearch(KamishimaAlgorithm(), Accuracy()),             # Kamishima params
+    ParamGridSearch(KamishimaAlgorithm(), DIAvgAll()),
+    FeldmanAlgorithm(SVM()), FeldmanAlgorithm(GaussianNB()),       # Feldman
+    FeldmanAlgorithm(LogisticRegression()), FeldmanAlgorithm(DecisionTree()),
+    ParamGridSearch(FeldmanAlgorithm(SVM()), DIAvgAll()),   # Feldman params
+    ParamGridSearch(FeldmanAlgorithm(SVM()), Accuracy()),
+    ParamGridSearch(FeldmanAlgorithm(GaussianNB()), DIAvgAll()),
+    ParamGridSearch(FeldmanAlgorithm(GaussianNB()), Accuracy())
+    ]

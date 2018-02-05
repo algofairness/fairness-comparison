@@ -153,8 +153,8 @@ class LinearClf():
         
 
         prob = Problem(Minimize(obj), constraints)
-        # print "Problem is DCP (disciplined convex program):", prob.is_dcp()
-        # print "Problem is DCCP (disciplined convex-concave program):", is_dccp(prob)
+        # print("Problem is DCP (disciplined convex program):", prob.is_dcp())
+        # print("Problem is DCCP (disciplined convex-concave program):", is_dccp(prob))
 
 
         """
@@ -175,7 +175,7 @@ class LinearClf():
                 max_iters=max_iters, max_iter=max_iter_dccp)
 
             
-            # print "Optimization done, problem status:", prob.status
+            # print("Optimization done, problem status:", prob.status)
             assert(prob.status == "Converged" or prob.status == "optimal")
             
 
@@ -184,8 +184,8 @@ class LinearClf():
                 try:
                     assert(f_c.value == True)
                 except:
-                    print "Assertion failed. Fairness constraints not satisfied."
-                    print traceback.print_exc()
+                    print("Assertion failed. Fairness constraints not satisfied.")
+                    print(traceback.print_exc())
                     sys.stdout.flush()
                     return
                     # sys.exit(1)
