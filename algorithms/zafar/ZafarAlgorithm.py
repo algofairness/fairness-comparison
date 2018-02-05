@@ -45,7 +45,7 @@ class ZafarAlgorithm(Algorithm):
         # print("CURRENT DIR: %s" % os.getcwd())
         # print("SENSITIVE ATTR: %s" % single_sensitive)
 
-        subprocess.run(['python2.7', 'main.py',
+        subprocess.run(['python3', 'main.py',
                         train_name,
                         test_name,
                         predictions_name],

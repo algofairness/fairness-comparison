@@ -1,6 +1,5 @@
 import os,sys
 import numpy as np
-from prepare_adult_data import *
 sys.path.insert(0, '../../fair_classification/') # the code for fair classification is in this directory
 import utils as ut
 import loss_funcs as lf # loss funcs that can be optimized subject to various constraints
@@ -58,7 +57,7 @@ def load_json(filename):
     f = json.load(open(filename))
     x = np.array(f["x"])
     y = np.array(f["class"])
-    sensitive = dict((k, np.array(v)) for (k,v) in f["sensitive"].iteritems())
+    sensitive = dict((k, np.array(v)) for (k,v) in f["sensitive"].items())
     return x, y, sensitive
 
 def main(train_file, test_file, output_file):
@@ -74,15 +73,15 @@ def main(train_file, test_file, output_file):
     # print >> sys.stderr, "First row:"
     # print >> sys.stderr, x_train[0,:], y_train[0], x_control_train
 
-    print >> sys.stderr, "Will train classifier on %s %s-d points" % x_train.shape
-    print >> sys.stderr, "Sensitive attribute: %s" % (x_control_train.keys(),)
+    print("Will train classifier on %s %s-d points" % x_train.shape, file=sys.stderr)
+    print("Sensitive attribute: %s" % (x_control_train.keys(),), file=sys.stderr)
     sensitive_attrs = x_control_train.keys()
     w = train_classifier(x_train, y_train, x_control_train,
                          sensitive_attrs, "fairness",
                          # allow zero covariance between sensitive attr and decision
-                         dict((k, 0) for (k, v) in x_control_train.iteritems()))
+                         dict((k, 0) for (k, v) in x_control_train.items()))
                          
-    print >> sys.stderr, "Model trained successfully."
+    print("Model trained successfully.", file=sys.stderr)
 
     predictions = predict(w, x_test).tolist()
     output_file = open(output_file, "w")
@@ -94,6 +93,7 @@ def main(train_file, test_file, output_file):
 ##############################################################################
 # we prefer simple IO to efficient IO, so everything goes in json
 
+# from prepare_adult_data import *
 def write_adult_data_to_disk():
     X, y, x_control = load_adult_data() # set the argument to none, or no arguments if you want to test with the whole data -- we are subsampling for performance speedup
     x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, 0.7)
