@@ -5,7 +5,6 @@ from scipy.optimize import minimize # for loss func minimization
 from multiprocessing import Pool, Process, Queue
 from collections import defaultdict
 from copy import deepcopy
-import matplotlib.pyplot as plt # for plotting stuff
 import sys
 
 SEED = 1122334455
@@ -564,6 +563,8 @@ def get_avg_correlation_dict(correlation_dict_arr):
 
 def plot_cov_thresh_vs_acc_pos_ratio(x_all, y_all, x_control_all, num_folds, loss_function, apply_fairness_constraints, apply_accuracy_constraint, sep_constraint, sensitive_attrs):
 
+    # only import internally to avoid dependency where it's not strictly needed
+    import matplotlib.pyplot as plt # for plotting stuff
 
     # very the covariance threshold using a range of decreasing multiplicative factors and see the tradeoffs between accuracy and fairness
     it = 0.05

@@ -38,6 +38,9 @@ def get_accuracy(y, Y_predicted):
     accuracy = float(sum(correct_answers)) / float(len(correct_answers))
     return accuracy, sum(correct_answers)
 
+def predict(model, x):
+    return np.sign(np.dot(x, model))
+
 def check_accuracy(model, x, y):
     predicted = np.sign(np.dot(x, model))
     return get_accuracy(y, predicted)
@@ -58,7 +61,7 @@ def load_json(filename):
     sensitive = dict((k, np.array(v)) for (k,v) in f["sensitive"].iteritems())
     return x, y, sensitive
 
-def main(train_file, test_file):
+def main(train_file, test_file, output_file):
     x_train, y_train, x_control_train = load_json(train_file)
     x_test, y_test, x_control_test = load_json(test_file)
 
@@ -68,18 +71,25 @@ def main(train_file, test_file):
 
     # x_train, y_train, x_control_train, x_test, y_test, x_control_test = ut.split_into_train_test(X, y, x_control, 0.7)
 
+    # print >> sys.stderr, "First row:"
+    # print >> sys.stderr, x_train[0,:], y_train[0], x_control_train
+
     print >> sys.stderr, "Will train classifier on %s %s-d points" % x_train.shape
+    print >> sys.stderr, "Sensitive attribute: %s" % (x_control_train.keys(),)
+    sensitive_attrs = x_control_train.keys()
     w = train_classifier(x_train, y_train, x_control_train,
-                         ["sex"], "fairness",
-                         {"sex": 0} # allow zero covariance between sex and decision
-                         )
-    print "ok, ran."
+                         sensitive_attrs, "fairness",
+                         # allow zero covariance between sensitive attr and decision
+                         dict((k, 0) for (k, v) in x_control_train.iteritems()))
+                         
+    print >> sys.stderr, "Model trained successfully."
 
-    print "Train performance:"
-    print test_classifier(w, x_train, y_train, x_control_train, ["sex"])
+    predictions = predict(w, x_test).tolist()
+    output_file = open(output_file, "w")
+    json.dump(predictions, output_file)
+    output_file.close()
 
-    print "Test performance:"
-    print test_classifier(w, x_test, y_test, x_control_test, ["sex"])
+    
 
 ##############################################################################
 # we prefer simple IO to efficient IO, so everything goes in json
@@ -103,4 +113,5 @@ def write_adult_data_to_disk():
 
 if __name__ == '__main__':
     # write_adult_data_to_disk()
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2], sys.argv[3])
+    exit(0)
