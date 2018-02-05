@@ -1,13 +1,11 @@
-from sklearn.metrics import confusion_matrix
-
 from metrics.Metric import Metric
 from metrics.TNR import TNR
 from metrics.TPR import TPR
 
-class BCROutcome(Metric):
+class BCR(Metric):
     def __init__(self):
         Metric.__init__(self)
-        self.name = 'BCRoutcome'
+        self.name = 'BCR'
 
     def calc(self, actual, predicted, dict_of_sensitive_lists, single_sensitive_name,
              unprotected_vals, positive_pred):

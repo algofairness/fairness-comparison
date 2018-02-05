@@ -1,8 +1,7 @@
 import numpy
 
 from metrics.Accuracy import Accuracy
-from metrics.BCROutcome import BCROutcome
-from metrics.BCRSensitive import BCRSensitive
+from metrics.BCR import BCR
 from metrics.CV import CV
 from metrics.DIAvgAll import DIAvgAll
 from metrics.DIBinary import DIBinary
@@ -15,9 +14,8 @@ from metrics.SensitiveAccuracy import SensitiveAccuracy
 from metrics.TNR import TNR
 from metrics.TPR import TPR
 
-METRICS = [ Accuracy(), TPR(), TNR(), BCROutcome(), MCC(),      # accuracy metrics
-            DIBinary(), DIAvgAll(), CV(), BCRSensitive(),       # fairness metrics
-            SensitiveAccuracy() ]
+METRICS = [ Accuracy(), TPR(), TNR(), BCR(), MCC(),        # accuracy metrics
+            DIBinary(), DIAvgAll(), CV(), SensitiveAccuracy() ]   # fairness metrics
 #            EqOppo_fn_diff(), EqOppo_fp_diff(), EqOppo_fn_ratio(), EqOppo_fp_ratio() ]
 
 def get_metrics(dataset, sensitive_dict):

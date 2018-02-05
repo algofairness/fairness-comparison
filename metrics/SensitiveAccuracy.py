@@ -28,7 +28,7 @@ class SensitiveAccuracy(Metric):
      def expand_per_dataset(self, dataset, sensitive_dict):
           objects_list = []
           for sensitive in dataset.get_sensitive_attributes_with_joint():
-               objects_list += make_metric_objects(sensitive, sensitive_dict)
+               objects_list += make_metric_objects(sensitive, sensitive_dict, SensitiveAccuracy)
           return objects_list
 
      def set_sensitive_to_filter(self, sensitive_name, sensitive_val):
@@ -39,11 +39,11 @@ class SensitiveAccuracy(Metric):
           self.sensitive_val = sensitive_val
           self.name = str(sensitive_val) + "-" + self.name
 
-def make_metric_objects(sensitive_name, sensitive_values):
+def make_metric_objects(sensitive_name, sensitive_values, metric_class):
      objs_list = []
      for val in sensitive_values[sensitive_name]:
          obj = SensitiveAccuracy()
          obj.set_sensitive_to_filter(sensitive_name, val)
          objs_list.append(obj)
-     avg = Average(objs_list, sensitive_name + '-' + SensitiveAccuracy().get_name())
+     avg = Average(objs_list, sensitive_name + '-' + metric_class().get_name())
      return objs_list + [avg]

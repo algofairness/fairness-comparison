@@ -40,6 +40,5 @@ class ProcessedData():
         sensdict = {}
         for sens in all_sens:
              sensdict[sens] = list(set(df[sens].values.tolist()))
-        print(sensdict)
         return sensdict
 
