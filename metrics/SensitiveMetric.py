@@ -1,4 +1,5 @@
 from metrics.Average import Average
+from metrics.Diff import Diff
 from metrics.FilterSensitive import FilterSensitive
 from metrics.Metric import Metric
 from metrics.Ratio import Ratio
@@ -31,6 +32,7 @@ class SensitiveMetric(Metric):
 
           objs_list = []
           ratios_list = []
+          diff_list = []
           for val in sensitive_values[sensitive_name]:
               # adding sensitive variants of the given metric to the objects list
               objs_list.append(self.make_sensitive_obj(sensitive_name, val))
@@ -38,10 +40,14 @@ class SensitiveMetric(Metric):
               # adding ratio of sensitive variants of the given metric to the ratios list
               if val != privileged_val:
                   ratios_list.append(self.make_ratio_obj(sensitive_name, val, privileged_val))
+
+              # adding diff of sensitive variants of given metric to the diff list
+              if val != privileged_val:
+                  diff_list.append(self.make_diff_obj(sensitive_name, val, privileged_val))
           avg = Average(objs_list, sensitive_name + '-' + self.metric().get_name())
-          ratio_avg = Average(ratios_list,
-                              sensitive_name + '-' + self.metric().get_name() + 'Ratio')
-          return objs_list + [avg] + ratios_list + [ratio_avg]
+          ratio_avg = Average(ratios_list, sensitive_name + '-' + self.metric().get_name() + 'Ratio')
+          diff_avg = Average(diff_list, sensitive_name + '-' + self.metric().get_name() + 'Diff')
+          return objs_list + [avg] + ratios_list + [ratio_avg] + diff_list + [diff_avg]
 
      def make_sensitive_obj(self, sensitive_attr, sensitive_val):
           obj = self.__class__(self.metric)
@@ -52,6 +58,11 @@ class SensitiveMetric(Metric):
           privileged_metric = self.make_sensitive_obj(sensitive_attr, privileged)
           unprivileged_metric = self.make_sensitive_obj(sensitive_attr, sensitive_val)
           return Ratio(unprivileged_metric, privileged_metric)
+
+     def make_diff_obj(self, sensitive_attr, sensitive_val, privileged):
+          privileged_metric = self.make_sensitive_obj(sensitive_attr, privileged)
+          unprivileged_metric = self.make_sensitive_obj(sensitive_attr, sensitive_val)
+          return Diff(privileged_metric, unprivileged_metric)
 
      def get_privileged_for_attr(self, sensitive_attr, dataset, tag):
           sensitive_attributes = dataset.get_sensitive_attributes_with_joint()
