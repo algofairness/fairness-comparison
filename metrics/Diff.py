@@ -5,7 +5,7 @@ class Diff(Metric):
           Metric.__init__(self)
           self.metric1 = metric1
           self.metric2 = metric2
-          self.name = "diff:" + self.metric1.get_name() + ' , ' + self.metric2.get_name()
+          self.name = "diff:" + self.metric1.get_name() + 'to' + self.metric2.get_name()
 
      def calc(self, actual, predicted, dict_of_sensitive_lists, single_sensitive_name,
               unprotected_vals, positive_pred):
