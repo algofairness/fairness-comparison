@@ -45,24 +45,28 @@ class ZafarAlgorithm(Algorithm):
         # print("CURRENT DIR: %s" % os.getcwd())
         # print("SENSITIVE ATTR: %s" % single_sensitive)
 
-        subprocess.run(['python3', 'main.py',
-                        train_name,
-                        test_name,
-                        predictions_name],
-                       cwd='./algorithms/zafar/fair-classification-master/disparate_impact/run-classifier/')
+        result = subprocess.run(['python3', 'main.py',
+                                 train_name,
+                                 test_name,
+                                 predictions_name],
+                                cwd='./algorithms/zafar/fair-classification-master/disparate_impact/run-classifier/')
         os.unlink(train_name)
         os.unlink(test_name)
-        predictions = open(predictions_name).read()
-        predictions = json.loads(predictions)
-        os.unlink(predictions_name)
-        # m = numpy.loadtxt(output_name)
-        # os.unlink(output_name)
+        if result.returncode != 0:
+            os.unlink(predictions_name)
+            raise Exception("Algorithm did not execute succesfully")
+        else:
+            predictions = open(predictions_name).read()
+            predictions = json.loads(predictions)
+            os.unlink(predictions_name)
+            # m = numpy.loadtxt(output_name)
+            # os.unlink(output_name)
 
-        # predictions = m[:,1]
-        predictions_correct = [0 if class_type(x) == -1 else 1 for x in predictions]
+            # predictions = m[:,1]
+            predictions_correct = [0 if class_type(x) == -1 else 1 for x in predictions]
 
-        # print("Predictions:  %s" % predictions_correct)
-        # print("ground truth: %s" % test_df[class_attr].as_matrix().tolist())
-        return predictions_correct
+            # print("Predictions:  %s" % predictions_correct)
+            # print("ground truth: %s" % test_df[class_attr].as_matrix().tolist())
+            return predictions_correct
 
 
