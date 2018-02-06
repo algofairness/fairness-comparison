@@ -38,7 +38,7 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
             detailed_files = dict((k, create_detailed_file(
                                           dataset_obj.get_results_filename(sensitive, k),
                                           dataset_obj,
-                                          processed_dataset.get_sensitive_values(k)))
+                                          processed_dataset.get_sensitive_values(k), k))
                 for k in train_test_splits.keys())
 
             for algorithm in ALGORITHMS:
@@ -94,7 +94,7 @@ def run_eval_alg(algorithm, train, test, dataset, processed_data, all_sensitive_
 
     sensitive_dict = processed_data.get_sensitive_values(tag)
     one_run_results = []
-    for metric in get_metrics(dataset, sensitive_dict):
+    for metric in get_metrics(dataset, sensitive_dict, tag):
         result = metric.calc(actual, predicted, dict_sensitive_lists, single_sensitive,
                              privileged_vals, positive_val)
         one_run_results.append(result)
@@ -114,11 +114,11 @@ def run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_se
 
     return predictions, params
 
-def get_metrics_list(dataset, sensitive_dict):
-    return [metric.get_name() for metric in get_metrics(dataset, sensitive_dict)]
+def get_metrics_list(dataset, sensitive_dict, tag):
+    return [metric.get_name() for metric in get_metrics(dataset, sensitive_dict, tag)]
 
-def get_detailed_metrics_header(dataset, sensitive_dict):
-    return ','.join(['algorithm', 'params'] + get_metrics_list(dataset, sensitive_dict))
+def get_detailed_metrics_header(dataset, sensitive_dict, tag):
+    return ','.join(['algorithm', 'params'] + get_metrics_list(dataset, sensitive_dict, tag))
 
 def get_dict_sensitive_vals(dict_sensitive_lists):
     """
@@ -131,9 +131,9 @@ def get_dict_sensitive_vals(dict_sensitive_lists):
          newdict[sens] = list(set(sensitive))
     return newdict
 
-def create_detailed_file(filename, dataset, sensitive_dict):
+def create_detailed_file(filename, dataset, sensitive_dict, tag):
     f = open(filename, 'w')
-    f.write(get_detailed_metrics_header(dataset, sensitive_dict) + '\n')
+    f.write(get_detailed_metrics_header(dataset, sensitive_dict, tag) + '\n')
     return f
 
 def main():

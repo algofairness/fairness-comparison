@@ -45,7 +45,7 @@ class Metric:
         """
         return val1 > val2
 
-    def expand_per_dataset(self, dataset, sensitive_dict):
+    def expand_per_dataset(self, dataset, sensitive_dict, tag):
         """
         Optionally allows the expansion of the metric into a returned list of metrics based on the
         dataset, e.g., where there is one metric per sensitive attribute given, and a dictionary

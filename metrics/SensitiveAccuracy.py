@@ -25,7 +25,7 @@ class SensitiveAccuracy(Metric):
           return sfilter.calc(actual, predicted, dict_of_sensitive_lists, single_sensitive_name,
                               unprotected_vals, positive_pred)
 
-     def expand_per_dataset(self, dataset, sensitive_dict):
+     def expand_per_dataset(self, dataset, sensitive_dict, tag):
           objects_list = []
           for sensitive in dataset.get_sensitive_attributes_with_joint():
                objects_list += make_metric_objects(sensitive, sensitive_dict, SensitiveAccuracy)
