@@ -1,6 +1,7 @@
 import fire
 import os
 import statistics
+import sys
 
 from data.objects.list import DATASETS, get_dataset_names
 from data.objects.ProcessedData import ProcessedData
@@ -50,11 +51,15 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
                 for i in range(0, num_trials):
                     for supported_tag in algorithm.get_supported_data_types():
                         train, test = train_test_splits[supported_tag][i]
-                        params, results = run_eval_alg(algorithm, train, test, dataset_obj,
-                                                       processed_dataset, all_sensitive_attributes,
-                                                       sensitive, supported_tag)
-                        write_alg_results(detailed_files[supported_tag],
-                                          algorithm.get_name(), params, results)
+                        try:
+                            params, results = run_eval_alg(algorithm, train, test, dataset_obj,
+                                                           processed_dataset, all_sensitive_attributes,
+                                                           sensitive, supported_tag)
+                        except Exception as e:
+                            print("Failed: %s" % e, file=sys.stderr)
+                        else:
+                            write_alg_results(detailed_files[supported_tag],
+                                              algorithm.get_name(), params, results)
 
             print("Results written to:")
             for supported_tag in algorithm.get_supported_data_types():
@@ -65,7 +70,8 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
 
 def write_alg_results(file_handle, alg_name, params, results_list):
     line = alg_name + ','
-    line += str(params) + ','  ## TODO: do something more parseable with multiple params here
+    params = ";".join("%s=%s" % (k, v) for (k, v) in params.items())
+    line += params + ','
     line += ','.join(str(x) for x in results_list) + '\n'
     file_handle.write(line)
     # Make sure the file is written to disk line-by-line:

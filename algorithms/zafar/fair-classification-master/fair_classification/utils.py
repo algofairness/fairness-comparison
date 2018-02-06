@@ -132,6 +132,7 @@ def train_model(x, y, x_control, loss_function, apply_fairness_constraints, appl
         print("Optimization problem did not converge.. Check the solution returned by the optimizer.")
         print("Returned solution is:")
         print(w)
+        raise
 
 
 
