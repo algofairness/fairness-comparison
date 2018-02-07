@@ -28,6 +28,9 @@ class Metric:
 
         The actual and predicted results and the sensitive attribute lists in the dict should have
         the same length (the length of the test set).
+
+        If there is an error and the metric can not be calculated (e.g., no data is passed in), the
+        metric returns None.
         """
         raise NotImplementedError("calc() in Metric is not implemented")
 

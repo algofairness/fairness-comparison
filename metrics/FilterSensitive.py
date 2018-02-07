@@ -24,6 +24,9 @@ class FilterSensitive(Metric):
                   [s for s, sens in zip(other_sensitive, sensitive) if sens == self.sensitive_filter]
               filtered_dict[sens_val] = filtered
 
+          if len(actual_sens) < 1:
+              return None
+
           return self.metric.calc(actual_sens, predicted_sens, filtered_dict, single_sensitive_name,
                                   unprotected_vals, positive_pred)
 

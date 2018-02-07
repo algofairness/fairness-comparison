@@ -13,6 +13,10 @@ class Diff(Metric):
                                  unprotected_vals, positive_pred)
           m2 = self.metric2.calc(actual, predicted, dict_of_sensitive_lists,
                                  single_sensitive_name, unprotected_vals, positive_pred)
+
+          if m1 is None or m2 is None:
+               return None
+
           diff = m1 - m2
           return 1.0 - diff
 

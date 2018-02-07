@@ -13,6 +13,10 @@ class Ratio(Metric):
                                     unprotected_vals, positive_pred)
           den = self.denominator.calc(actual, predicted, dict_of_sensitive_lists,
                                       single_sensitive_name, unprotected_vals, positive_pred)
+
+          if num is None or den is None:
+               return None
+
           if num == 0.0 and den == 0.0:
                return 1.0
           if den == 0.0:

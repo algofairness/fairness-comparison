@@ -17,7 +17,8 @@ class Average(Metric):
           for metric in self.metrics:
                result = metric.calc(actual, predicted, dict_of_sensitive_lists,
                                     single_sensitive_name, unprotected_vals, positive_pred)
-               total += result
+               if result != None:
+                   total += result
 
           if total == 0.0:
                return 1.0
