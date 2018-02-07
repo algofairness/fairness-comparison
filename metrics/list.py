@@ -2,6 +2,8 @@ import numpy
 
 from metrics.Accuracy import Accuracy
 from metrics.BCR import BCR
+from metrics.CalibrationNeg import CalibrationNeg
+from metrics.CalibrationPos import CalibrationPos
 from metrics.CV import CV
 from metrics.DIAvgAll import DIAvgAll
 from metrics.DIBinary import DIBinary
@@ -9,15 +11,18 @@ from metrics.EqOppo_fn_diff import EqOppo_fn_diff
 from metrics.EqOppo_fn_ratio import EqOppo_fn_ratio
 from metrics.EqOppo_fp_diff import EqOppo_fp_diff
 from metrics.EqOppo_fp_ratio import EqOppo_fp_ratio
+from metrics.FNR import FNR
+from metrics.FPR import FPR
 from metrics.MCC import MCC
-from metrics.SensitiveAccuracy import SensitiveAccuracy
 from metrics.SensitiveMetric import SensitiveMetric
 from metrics.TNR import TNR
 from metrics.TPR import TPR
 
 METRICS = [ Accuracy(), TPR(), TNR(), BCR(), MCC(),        # accuracy metrics
-            DIBinary(), DIAvgAll(), CV(), SensitiveAccuracy(),    # fairness metrics
-            SensitiveMetric(Accuracy) ]
+            DIBinary(), DIAvgAll(), CV(),                  # fairness metrics
+            SensitiveMetric(Accuracy), SensitiveMetric(TPR), SensitiveMetric(TNR),
+            SensitiveMetric(FPR), SensitiveMetric(FNR),
+            SensitiveMetric(CalibrationPos), SensitiveMetric(CalibrationNeg) ]
 #            EqOppo_fn_diff(), EqOppo_fp_diff(), EqOppo_fn_ratio(), EqOppo_fp_ratio() ]
 
 def get_metrics(dataset, sensitive_dict, tag):

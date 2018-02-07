@@ -5,7 +5,7 @@ class Ratio(Metric):
           Metric.__init__(self)
           self.numerator = metric_numerator
           self.denominator = metric_denominator
-          self.name = self.numerator.get_name() + ' / ' + self.denominator.get_name()
+          self.name = self.numerator.get_name() + '/' + self.denominator.get_name()
 
      def calc(self, actual, predicted, dict_of_sensitive_lists, single_sensitive_name,
               unprotected_vals, positive_pred):
@@ -13,6 +13,10 @@ class Ratio(Metric):
                                     unprotected_vals, positive_pred)
           den = self.denominator.calc(actual, predicted, dict_of_sensitive_lists,
                                       single_sensitive_name, unprotected_vals, positive_pred)
+          if num == 0.0 and den == 0.0:
+               return 1.0
+          if den == 0.0:
+               return 0.0
           return num / den
 
      def is_better_than(self, val1, val2):
