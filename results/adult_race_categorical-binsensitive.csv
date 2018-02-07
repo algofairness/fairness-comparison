@@ -1,1 +1,1 @@
-algorithm,params,accuracy,MCC,DisparateImpact,CV
+algorithm,params,accuracy,TPR,TNR,BCR,MCC,DIbinary,DIavgall,CV,0-Accuracy,1-Accuracy,race-Accuracy,0-Accuracy,1-Accuracy,sex-Accuracy,White-Female-Accuracy,Asian-Pac-Islander-Male-Accuracy,Other-Female-Accuracy,Black-Male-Accuracy,Black-Female-Accuracy,Amer-Indian-Eskimo-Male-Accuracy,Other-Male-Accuracy,Asian-Pac-Islander-Female-Accuracy,Amer-Indian-Eskimo-Female-Accuracy,White-Male-Accuracy,race-sex-Accuracy

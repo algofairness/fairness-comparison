@@ -1,14 +1,1 @@
-algorithm,params,accuracy,MCC,DisparateImpact,CV
-<<<<<<< Updated upstream
-=======
-SVM,{},0.5294117647058824,0.0,1.0,nan
-SVM,{},0.7058823529411765,0.0,1.0,1.0
-SVM,{},0.5882352941176471,0.0,1.0,1.0
-SVM,{},0.8823529411764706,0.5400617248673217,0.0,0.9666666666666667
-SVM,{},0.7058823529411765,0.3385016001931649,0.0,nan
-SVM,{},0.5294117647058824,0.0,1.0,1.0
-SVM,{},0.7058823529411765,0.0,1.0,1.0
-SVM,{},0.7058823529411765,-0.16903085094570333,0.0,0.90625
-SVM,{},0.8235294117647058,0.4506939094329986,0.0,0.9666666666666667
-SVM,{},0.7647058823529411,0.38729833462074165,0.0,0.96875
->>>>>>> Stashed changes
+algorithm,params,accuracy,TPR,TNR,BCR,MCC,DIbinary,DIavgall,CV,Black-Accuracy,Asian-Pac-Islander-Accuracy,Amer-Indian-Eskimo-Accuracy,Other-Accuracy,White-Accuracy,race-Accuracy,Male-Accuracy,Female-Accuracy,sex-Accuracy,White-Female-Accuracy,Asian-Pac-Islander-Male-Accuracy,Other-Female-Accuracy,Black-Male-Accuracy,Black-Female-Accuracy,Amer-Indian-Eskimo-Male-Accuracy,Other-Male-Accuracy,Asian-Pac-Islander-Female-Accuracy,Amer-Indian-Eskimo-Female-Accuracy,White-Male-Accuracy,race-sex-Accuracy

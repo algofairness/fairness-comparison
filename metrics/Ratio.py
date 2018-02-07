@@ -5,7 +5,7 @@ class Ratio(Metric):
           Metric.__init__(self)
           self.numerator = metric_numerator
           self.denominator = metric_denominator
-          self.name = self.numerator.get_name() + '/' + self.denominator.get_name()
+          self.name = self.numerator.get_name() + '_over_' + self.denominator.get_name()
 
      def calc(self, actual, predicted, dict_of_sensitive_lists, single_sensitive_name,
               unprotected_vals, positive_pred):

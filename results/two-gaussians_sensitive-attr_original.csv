@@ -1,1 +1,1 @@
-algorithm,params,accuracy,TPR,TNR,BCRoutcome,MCC,DIbinary,DIavgall,CV,BCRsensitive-attr
+algorithm,params,accuracy,TPR,TNR,BCR,MCC,DIbinary,DIavgall,CV,non-privileged-accuracy,privileged-accuracy,sensitive-attr-accuracy,non-privileged-accuracy_over_privileged-accuracy,sensitive-attr-accuracyRatio,diff:privileged-accuracytonon-privileged-accuracy,sensitive-attr-accuracyDiff

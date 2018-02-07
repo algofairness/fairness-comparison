@@ -23,7 +23,6 @@ METRICS = [ Accuracy(), TPR(), TNR(), BCR(), MCC(),        # accuracy metrics
             SensitiveMetric(Accuracy), SensitiveMetric(TPR), SensitiveMetric(TNR),
             SensitiveMetric(FPR), SensitiveMetric(FNR),
             SensitiveMetric(CalibrationPos), SensitiveMetric(CalibrationNeg) ]
-#            EqOppo_fn_diff(), EqOppo_fp_diff(), EqOppo_fn_ratio(), EqOppo_fp_ratio() ]
 
 def get_metrics(dataset, sensitive_dict, tag):
     """
