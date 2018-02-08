@@ -111,14 +111,13 @@ class CaldersAlgorithm(Algorithm):
             predictions = m[:,1]
             predictions_correct = [class_type(inv_class_dict[x]) for x in predictions]
 
-            return predictions_correct
+            return predictions_correct, []
         finally:
             pass
             # os.unlink(train_name)
             # os.unlink(model_name)
             # os.unlink(test_name)
             # os.unlink(output_name)
-            
 
     def get_supported_data_types(self):
         return set(["numerical-binsensitive"])

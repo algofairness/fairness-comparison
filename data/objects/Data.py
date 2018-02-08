@@ -101,6 +101,10 @@ class Data():
     def get_results_filename(self, sensitive_attr, tag):
         return RESULT_DIR + self.get_dataset_name() + "_" + sensitive_attr + "_" + tag + '.csv'
 
+    def get_param_results_filename(self, sensitive_attr, tag, algname):
+        return RESULT_DIR + algname + '_' + self.get_dataset_name() + "_" + sensitive_attr + \
+               "_" + tag + '.csv'
+
     def get_analysis_filename(self, sensitive_attr, tag):
         return ANALYSIS_DIR + self.get_dataset_name() + "_" + sensitive_attr + "_" + tag + '.csv'
 

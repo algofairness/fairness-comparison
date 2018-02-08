@@ -100,7 +100,7 @@ class KamishimaAlgorithm(Algorithm):
         predictions = m[:,1]
         predictions_correct = [class_type(x) for x in predictions]
 
-        return predictions_correct
+        return predictions_correct, []
 
     def get_supported_data_types(self):
         return set(["numerical-binsensitive"])

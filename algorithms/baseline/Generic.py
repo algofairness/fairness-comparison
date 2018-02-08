@@ -21,7 +21,7 @@ class Generic(Algorithm):
         X_test = test_df_nosensitive.drop(class_attr, axis=1)
         predictions = classifier.predict(X_test)
 
-        return predictions
+        return predictions, []
 
     def get_supported_data_types(self):
         return set(["numerical", "numerical-binsensitive"])
