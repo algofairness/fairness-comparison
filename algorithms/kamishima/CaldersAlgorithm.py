@@ -37,7 +37,12 @@ class CaldersAlgorithm(Algorithm):
             x = []
             
             for col in df:
-                col_dict = dicts.setdefault(col, {})
+                if col not in dicts:
+                    col_dict = {}
+                    dicts[col] = col_dict
+                else:
+                    col_dict = dicts[col]
+                # col_dict = dicts.setdefault(col, {})
                 if col == class_attr:
                     continue
                 if col in sensitive_attrs:
@@ -47,13 +52,21 @@ class CaldersAlgorithm(Algorithm):
                     values.append(col_dict.setdefault(val, len(col_dict)))
                 x.append(numpy.array(values, dtype=numpy.int32))
 
-            x.append(numpy.array(s, dtype=numpy.int32))
-            x.append(numpy.array(df[class_attr], dtype=numpy.int32))
+            for col in [single_sensitive, class_attr]:
+                if col not in dicts:
+                    col_dict = {}
+                    dicts[col] = col_dict
+                else:
+                    col_dict = dicts[col]
+                values = []
+                for val in df[col].values:
+                    values.append(col_dict.setdefault(val, len(col_dict)))
+                x.append(numpy.array(values, dtype=numpy.int32))
 
             result = numpy.array(x).T
             fd, name = tempfile.mkstemp()
             os.close(fd)
-            numpy.savetxt(name, result)
+            numpy.savetxt(name, result, fmt='%d')
             return name
         
         train_col_sets = list(set(train_df[col]) for col in train_df
@@ -62,36 +75,50 @@ class CaldersAlgorithm(Algorithm):
                              if col not in sensitive_attrs + [class_attr])
         nfv = ":".join(str(len(a.union(b))) for (a,b) in zip(train_col_sets, test_col_sets))
 
-        fd, model_name = tempfile.mkstemp()
-        os.close(fd)
-        fd, output_name = tempfile.mkstemp()
-        os.close(fd)
-        dicts = {}
-        train_name = create_file_in_calders_format(train_df, dicts)
-        test_name = create_file_in_calders_format(test_df, dicts)
-        beta_val = params['beta']
-        subprocess.run(['python3', './algorithms/kamishima/kamfadm-2012ecmlpkdd/train_cv2nb.py',
-                        '-b', str(beta_val),
-                        '-f', nfv,
-                        '-i', train_name,
-                        '-o', model_name,
-                        '--quiet'])
-        subprocess.run(['python3', './algorithms/kamishima/kamfadm-2012ecmlpkdd/predict_nb.py',
-                        '-i', test_name,
-                        '-m', model_name,
-                        '-o', output_name,
-                        '--quiet'])
-        os.unlink(train_name)
-        os.unlink(model_name)
-        os.unlink(test_name)
+        try:
+            fd, model_name = tempfile.mkstemp()
+            os.close(fd)
+            fd, output_name = tempfile.mkstemp()
+            os.close(fd)
+            dicts = {}
+            train_name = create_file_in_calders_format(train_df, dicts)
+            print(dicts[class_attr])
+            test_name = create_file_in_calders_format(test_df, dicts)
+            print(dicts[class_attr])
+            beta_val = params['beta']
+            cmdline = ['python3', './algorithms/kamishima/kamfadm-2012ecmlpkdd/train_cv2nb.py',
+                            '-b', str(beta_val),
+                            '-f', nfv,
+                            '-i', train_name,
+                            '-o', model_name,
+                            '--quiet']
+            print("WILL RUN: %s" % cmdline)
+            result1 = subprocess.run(cmdline)
+            if result1.returncode != 0:
+                raise Exception("Training procedure failed")
+            result2 = subprocess.run(['python3', './algorithms/kamishima/kamfadm-2012ecmlpkdd/predict_nb.py',
+                            '-i', test_name,
+                            '-m', model_name,
+                            '-o', output_name,
+                            '--quiet'])
+            if result2.returncode != 0:
+                raise Exception("prediction procedure failed")
 
-        m = numpy.loadtxt(output_name)
-        os.unlink(output_name)
+            m = numpy.loadtxt(output_name)
 
-        predictions = m[:,1]
-        predictions_correct = [class_type(x) for x in predictions]
+            inv_class_dict = dict((v,k) for (k,v) in dicts[class_attr].items())
 
-        return predictions_correct
+            predictions = m[:,1]
+            predictions_correct = [class_type(inv_class_dict[x]) for x in predictions]
+
+            return predictions_correct
+        finally:
+            pass
+            # os.unlink(train_name)
+            # os.unlink(model_name)
+            # os.unlink(test_name)
+            # os.unlink(output_name)
+            
 
     def get_supported_data_types(self):
         return set(["numerical-binsensitive"])

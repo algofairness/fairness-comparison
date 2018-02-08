@@ -56,6 +56,8 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
                                                            processed_dataset, all_sensitive_attributes,
                                                            sensitive, supported_tag)
                         except Exception as e:
+                            import traceback
+                            traceback.print_exc(file=sys.stderr)
                             print("Failed: %s" % e, file=sys.stderr)
                         else:
                             write_alg_results(detailed_files[supported_tag],
