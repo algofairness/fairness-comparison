@@ -77,6 +77,7 @@ def main():
                                                "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"])
             p = (ggplot(f, aes(x=m1, y=m2, colour='algorithm')) +
                  geom_point(size=50) + scale)
+            print(m1, m2)
             p.save('results/analysis/%s/%s-%s.png' % (o, m1, m2),
                    width=8,
                    height=6)
