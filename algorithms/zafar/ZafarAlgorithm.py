@@ -67,6 +67,6 @@ class ZafarAlgorithm(Algorithm):
 
             # print("Predictions:  %s" % predictions_correct)
             # print("ground truth: %s" % test_df[class_attr].as_matrix().tolist())
-            return predictions_correct
+            return predictions_correct, []
 
 

@@ -26,22 +26,23 @@ class ParamGridSearch(Algorithm):
              for param_val in search_space[param_name]:
                   trial_params = { param_name : param_val }
                   try:
-                      predictions = self.algorithm.run(train_df, test_df, class_attr,
-                                                       positive_class_val, sensitive_attrs,
-                                                       single_sensitive,
-                                                       privileged_vals, trial_params)
+                      predictions, trash = \
+                          self.algorithm.run(train_df, test_df, class_attr, positive_class_val,
+                                             sensitive_attrs, single_sensitive, privileged_vals,
+                                             trial_params)
                       all_predictions.append( (param_name, param_val, predictions) )
                   except Exception as e:
                       print("run for parameters %s failed: %s" % (params, e))
         best_predictions = self.find_best(all_predictions, train_df, test_df, class_attr,
                                           positive_class_val, sensitive_attrs, single_sensitive,
                                           privileged_vals, params)
-        return best_predictions
+        return best_predictions, all_predictions
 
     def find_best(self, all_predictions, train_df, test_df, class_attr, positive_class_val,
                   sensitive_attrs, single_sensitive, privileged_vals, params):
         if len(all_predictions) == 0:
-            raise Exception("No run in the parameter grid search succeeded - failing run of algorithm")
+            raise Exception(
+                "No run in the parameter grid search succeeded - failing run of algorithm")
         actual = test_df[class_attr]
         dict_sensitive = {}
         for sens in sensitive_attrs:

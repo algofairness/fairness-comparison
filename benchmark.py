@@ -8,6 +8,8 @@ from data.objects.ProcessedData import ProcessedData
 from algorithms.list import ALGORITHMS
 from metrics.list import get_metrics
 
+from algorithms.ParamGridSearch import ParamGridSearch
+
 NUM_TRIALS_DEFAULT = 10
 
 def get_algorithm_names():
@@ -48,18 +50,30 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
 
                 print("    Algorithm: %s" % algorithm.get_name())
                 print("       supported types: %s" % algorithm.get_supported_data_types())
+                if algorithm.__class__ is ParamGridSearch:
+                    param_files =  \
+                        dict((k, create_detailed_file(
+                                     dataset_obj.get_param_results_filename(sensitive, k,
+                                                                            algorithm.get_name()),
+                                     dataset_obj, processed_dataset.get_sensitive_values(k), k))
+                          for k in train_test_splits.keys())
                 for i in range(0, num_trials):
                     for supported_tag in algorithm.get_supported_data_types():
                         train, test = train_test_splits[supported_tag][i]
                         try:
-                            params, results = run_eval_alg(algorithm, train, test, dataset_obj,
-                                                           processed_dataset, all_sensitive_attributes,
-                                                           sensitive, supported_tag)
+                            params, results, param_results =  \
+                                run_eval_alg(algorithm, train, test, dataset_obj, processed_dataset,
+                                             all_sensitive_attributes, sensitive, supported_tag)
                         except Exception as e:
                             print("Failed: %s" % e, file=sys.stderr)
                         else:
                             write_alg_results(detailed_files[supported_tag],
                                               algorithm.get_name(), params, results)
+                            if algorithm.__class__ is ParamGridSearch:
+                                print("About to write params results to file")
+                                for params, results in param_results:
+                                    write_alg_results(param_files[supported_tag],
+                                                      algorithm.get_name(), params, results)
 
             print("Results written to:")
             for supported_tag in algorithm.get_supported_data_types():
@@ -90,8 +104,11 @@ def run_eval_alg(algorithm, train, test, dataset, processed_data, all_sensitive_
     actual = test[dataset.get_class_attribute()].values.tolist()
     sensitive = test[single_sensitive].values.tolist()
 
-    predicted, params =  run_alg(algorithm, train, test, dataset, all_sensitive_attributes,
-                                 single_sensitive, privileged_vals, positive_val)
+    print("About to run alg")
+    predicted, params, predictions_list =  \
+        run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_sensitive,
+                privileged_vals, positive_val)
+    print("Done running alg")
 
     # make dictionary mapping sensitive names to sensitive attr test data lists
     dict_sensitive_lists = {}
@@ -105,7 +122,21 @@ def run_eval_alg(algorithm, train, test, dataset, processed_data, all_sensitive_
                              privileged_vals, positive_val)
         one_run_results.append(result)
 
-    return params, one_run_results
+    print("About to handle params")
+    # handling the set of predictions returned by ParamGridSearch
+    results_lol = []
+    if len(predictions_list) > 0:
+        for param_name, param_val, predictions in predictions_list:
+            params = { param_name : param_val }
+            results = []
+            for metric in get_metrics(dataset, sensitive_dict, tag):
+                result = metric.calc(actual, predictions, dict_sensitive_lists, single_sensitive,
+                                     privileged_vals, positive_val)
+                results.append(result)
+            results_lol.append( (params, results) )
+
+    print("Done with run eval alg")
+    return params, one_run_results, results_lol
 
 def run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_sensitive,
             privileged_vals, positive_val):
@@ -115,10 +146,11 @@ def run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_se
     # Note: the training and test set here still include the sensitive attributes because
     # some fairness aware algorithms may need those in the dataset.  They should be removed
     # before any model training is done.
-    predictions = algorithm.run(train, test, class_attr, positive_val, all_sensitive_attributes,
-                                single_sensitive, privileged_vals, params)
+    predictions, predictions_list =  \
+        algorithm.run(train, test, class_attr, positive_val, all_sensitive_attributes,
+                      single_sensitive, privileged_vals, params)
 
-    return predictions, params
+    return predictions, params, predictions_list
 
 def get_metrics_list(dataset, sensitive_dict, tag):
     return [metric.get_name() for metric in get_metrics(dataset, sensitive_dict, tag)]
