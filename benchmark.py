@@ -70,7 +70,6 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
                             write_alg_results(detailed_files[supported_tag],
                                               algorithm.get_name(), params, results)
                             if algorithm.__class__ is ParamGridSearch:
-                                print("About to write params results to file")
                                 for params, results in param_results:
                                     write_alg_results(param_files[supported_tag],
                                                       algorithm.get_name(), params, results)
@@ -104,11 +103,9 @@ def run_eval_alg(algorithm, train, test, dataset, processed_data, all_sensitive_
     actual = test[dataset.get_class_attribute()].values.tolist()
     sensitive = test[single_sensitive].values.tolist()
 
-    print("About to run alg")
     predicted, params, predictions_list =  \
         run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_sensitive,
                 privileged_vals, positive_val)
-    print("Done running alg")
 
     # make dictionary mapping sensitive names to sensitive attr test data lists
     dict_sensitive_lists = {}
@@ -122,7 +119,6 @@ def run_eval_alg(algorithm, train, test, dataset, processed_data, all_sensitive_
                              privileged_vals, positive_val)
         one_run_results.append(result)
 
-    print("About to handle params")
     # handling the set of predictions returned by ParamGridSearch
     results_lol = []
     if len(predictions_list) > 0:
@@ -135,7 +131,6 @@ def run_eval_alg(algorithm, train, test, dataset, processed_data, all_sensitive_
                 results.append(result)
             results_lol.append( (params, results) )
 
-    print("Done with run eval alg")
     return params, one_run_results, results_lol
 
 def run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_sensitive,
