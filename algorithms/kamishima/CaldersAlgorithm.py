@@ -93,9 +93,12 @@ class CaldersAlgorithm(Algorithm):
                             '-o', model_name,
                             '--quiet']
             print("WILL RUN: %s" % cmdline)
-            result1 = subprocess.run(cmdline)
-            if result1.returncode != 0:
-                raise Exception("Training procedure failed")
+            try:
+                result1 = subprocess.run(cmdline, timeout=600)
+                if result1.returncode != 0:
+                    raise Exception("Training procedure failed")
+            except subprocess.TimeoutExpired:
+                raise Exception("Training procedure timeout")
             result2 = subprocess.run(['python3', './algorithms/kamishima/kamfadm-2012ecmlpkdd/predict_nb.py',
                             '-i', test_name,
                             '-m', model_name,
