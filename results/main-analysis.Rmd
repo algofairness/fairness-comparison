@@ -1,0 +1,116 @@
+---
+title: "KDD 2017 analysis"
+author: "cscheid"
+date: "2/9/2018"
+output: html_document
+---
+
+# Function definitions
+
+```{r}
+library(stringr)
+library(ggplot2)
+library(dplyr)
+
+catscale = scale_colour_manual(values=c(
+  "#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a", "#d62728", "#ff9896",
+  "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7",
+  "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"))
+catscale2 = scale_fill_manual(values=c(
+  "#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a", "#d62728", "#ff9896",
+  "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7",
+  "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"))
+
+create_sensitivity_summary = function(df, x_var, y_var) {
+  quo_x_var = enquo(x_var)
+  quo_y_var = enquo(y_var)
+  #x_mean_name = paste0("mean_", quo_name(quo_x_var))
+  #y_mean_name = paste0("mean_", quo_name(quo_y_var))
+  #x_sd_name = paste0("sd_", quo_name(quo_x_var))
+  #y_sd_name = paste0("sd_", quo_name(quo_y_var))
+
+  sensitivity_summary = 
+    df %>% 
+    group_by(algorithm) %>% 
+    summarise(x_sd=sd(!!quo_x_var), x_mean=mean(!!quo_x_var), 
+              y_sd=sd(!!quo_y_var), y_mean=mean(!!quo_y_var))
+  sensitivity_summary
+}
+
+basic_sensitivity_plot = function(sensitivity_summary, x_var, y_var) {
+  ggplot(sensitivity_summary, aes(x=x_mean, y=y_mean, colour=algorithm)) + catscale + catscale2 +
+    xlab(quo_name(enquo(x_var))) + ylab(quo_name(enquo(y_var)))
+}
+
+plot_lines_sensitity_summary = function(basic_plot) {
+  basic_plot + 
+    geom_segment(aes(x=x_mean - x_sd, xend = x_mean + x_sd,
+                     y=y_mean, yend = y_mean,
+                     colour=algorithm)) + 
+    geom_segment(aes(x=x_mean, xend = x_mean,
+                     y=y_mean - y_sd, yend = y_mean + y_sd,
+                     colour=algorithm))
+}
+
+plot_ellipses_sensitity_summary = function(basic_plot) {
+  basic_plot + stat_ellipse(level=0.5, geom="polygon", aes(fill=algorithm), alpha=0.2) + stat_ellipse(level=0.5, fill=NA)
+}
+
+plot_rects_sensitivity_summary = function(basic_plot) {
+  aesthetics1 = aes(xmin = x_mean - 0.5 * x_sd,   
+                   xmax = x_mean + 0.5 * x_sd,
+                   ymin = y_mean - 0.5 * y_sd, 
+                   ymax = y_mean + 0.5 * y_sd,
+                   fill=algorithm)
+  aesthetics2 = aes(xmin = x_mean - 0.5 * x_sd,   
+                   xmax = x_mean + 0.5 * x_sd,
+                   ymin = y_mean - 0.5 * y_sd, 
+                   ymax = y_mean + 0.5 * y_sd,
+                   colour=algorithm)
+  basic_plot +
+    geom_rect(aesthetics1, alpha=0.15) +
+    geom_rect(aesthetics2, fill=NA)
+}
+
+do_it_all = function(name, var1, var2) {
+  df = read.csv(str_c(name, ".csv"), check.names=FALSE)
+  x_var = as.name(var1)
+  y_var = as.name(var2)
+
+  sensitivity_summary = create_sensitivity_summary(df, !!x_var, !!y_var)
+
+  basic_plot = basic_sensitivity_plot(sensitivity_summary, !!x_var, !!y_var) + ggtitle(name)
+  
+  plot_rects_sensitivity_summary(basic_plot)
+}
+```
+
+# Preliminaries
+
+You can vary the dataset/algorithm by changing the variable "dataset".
+
+```{r}
+dataset <- "ricci_Race_numerical-binsensitive"
+```
+
+# Some tradeoff plots
+
+Algorithms that tend to do well on accuracy (measured here by BCR) tend to do worse on disparate impact:
+
+```{r}
+do_it_all(dataset, "DIbinary", "BCR")
+```
+
+# Some calibration plots
+
+```{r}
+do_it_all(dataset, "TPR", "Race-calibration+")
+```
+
+```{r}
+do_it_all(dataset, "TPR", "Race-calibration-")
+```
+
+```{r}
+do_it_all(dataset, "TNR", "TPR")
+```
