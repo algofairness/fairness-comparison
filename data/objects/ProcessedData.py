@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy
+import numpy.random
 
 TAGS = ["original", "numerical", "numerical-binsensitive", "categorical-binsensitive"]
 TRAINING_PERCENT = 2.0 / 3.0
@@ -22,9 +24,20 @@ class ProcessedData():
             return self.splits
 
         for i in range(0, num):
+            # we first shuffle a list of indices so that each subprocessed data
+            # is split consistently
+            n = len(list(self.dfs.values())[0])
+
+            a = numpy.arange(n)
+            numpy.random.shuffle(a)
+
+            split_ix = int(n * TRAINING_PERCENT)
+            train_fraction = a[:split_ix]
+            test_fraction = a[:split_ix]
+            
             for (k, v) in self.dfs.items():
-                train = self.dfs[k].sample(frac = TRAINING_PERCENT)
-                test = self.dfs[k].drop(train.index)
+                train = self.dfs[k].iloc[train_fraction]
+                test = self.dfs[k].iloc[test_fraction]
                 self.splits[k].append((train, test))
 
         self.has_splits = True
