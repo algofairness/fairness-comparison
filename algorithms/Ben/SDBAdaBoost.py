@@ -15,11 +15,10 @@ from algorithms.Ben import utils
 from algorithms.Ben.margin import *
 from algorithms.Algorithm import Algorithm
 
-class SDBSVM(Algorithm):
-   def __init__(self, algorithm):
-      Algorithm.__init__(self)
-      self.model = algorithm
-      self.name = 'SDB-' + self.model.get_name()
+class SDBAdaBoost(Algorithm):
+   def __init__(self):
+        Algorithm.__init__(self)
+        self.name = "SDB-AdaBoost"
 
    def get_supported_data_types(self):
         return set(["numerical-binsensitive"])
@@ -79,21 +78,20 @@ class SDBSVM(Algorithm):
       return self.runAll(train,test, protectedIndex, protectedValue)
       #return self.model(train, protectedIndex, protectedValue)
 
-   def svmLearner(self, train, protectedIndex, protectedValue):
-     # print("in svm learner--------")
-      marginAnalyzer = svmRBFMarginAnalyzer(train, protectedIndex, protectedValue)
+   def lrLearner(self, train, protectedIndex, protectedValue):
+      marginAnalyzer = lrSKLMarginAnalyzer(train, protectedIndex, protectedValue)
       shift = marginAnalyzer.optimalShift()
       print('best shift is: %r' % (shift,))
       return marginAnalyzer.conditionalShiftClassifier(shift)
 
 
-   def svmLinearLearner(self, train, protectedIndex, protectedValue):
-      marginAnalyzer = svmLinearMarginAnalyzer(train, protectedIndex, protectedValue)
+   def boostingLearner(self, train, protectedIndex, protectedValue):
+      marginAnalyzer = boostingMarginAnalyzer(train, protectedIndex, protectedValue)
       shift = marginAnalyzer.optimalShift()
       print('best shift is: %r' % (shift,))
       return marginAnalyzer.conditionalShiftClassifier(shift)
 
-   @errorBars(10)
+   #@errorBars(10)
    def indFairnessStats(self, train, learner):
       #print("Computing UBIF")
       ubif = individualFairness(train, learner, flipProportion=0.2, passProtected=True)
@@ -103,11 +101,4 @@ class SDBSVM(Algorithm):
    def runAll(self, test, train, protectedIndex, protectedValue):
       print("Shifted Decision Boundary Relabeling")
       dataset = test+train
-      experiments = [
-      ('SVM', self.svmLearner),
-      ('SVMlinear', self.svmLinearLearner)
-         ]
-
-      for (learnerName, learner) in experiments:
-         print("%s" % (learnerName), flush=True)
-         experimentCrossValidate(train,test, learner, 3, self.statistics, protectedIndex, protectedValue)
+      experimentCrossValidate(train,test, self.boostingLearner, 3, self.statistics, protectedIndex, protectedValue)

@@ -5,7 +5,7 @@ import random
 from algorithms.Ben import utils
 #from utils import sign
 
-DEFAULT_NUM_ROUNDS = 10
+DEFAULT_NUM_ROUNDS = 5
 DEFAULT_LAMBDA = 1.0
 DEFAULT_GAMMA = 0.1
 
@@ -16,16 +16,14 @@ def hyperplaneToHypothesis(w):
 
 # use scikit-learn to do the svm for us
 def svmDetailedSKL(data, gamma=DEFAULT_GAMMA, verbose=False, kernel='rbf'):
-   #if verbose:
-   #  print("Loading scikit-learn")
-
+   if verbose:
+     print("Loading scikit-learn")
    from sklearn import svm
-   #print("data type-----------------------------------",data[:3])
    points, labels = zip(*data)
    clf = svm.SVC(kernel=kernel, gamma=gamma)
 
-  # if verbose:
-      #print("Training classifier")
+   if verbose:
+      print("Training classifier")
 
    skClassifier = clf.fit(points, labels)
    hypothesis = lambda x: skClassifier.predict([x])[0]
@@ -39,8 +37,8 @@ def svmDetailedSKL(data, gamma=DEFAULT_GAMMA, verbose=False, kernel='rbf'):
    margin = lambda y: skClassifier.decision_function([y])[0]
    bulkMargin = lambda pts: skClassifier.decision_function(pts)
 
-   #if verbose:
-     # print("Done")
+   if verbose:
+      print("Done")
 
    return (hypothesis, bulkHypothesis, skClassifier, error, alphas, intercept,
             gamma, supportVectors, bulkMargin, margin)

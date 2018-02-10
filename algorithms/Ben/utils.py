@@ -113,11 +113,6 @@ def sigmoid(z):
    return 1.0 / (1 + numpy.exp(-z))
  
 def experimentCrossValidate(Train, Test, learner, times, statistics, protectedIndex, protectedValue, massage=False):
-   """PI = dataModule.protectedIndex
-   PV = dataModule.protectedValue
-   originalTrain, originalTest = dataModule.load()
-   allData = originalTrain + originalTest """
-   #print("learner-------------",learner)
    PI = protectedIndex
    PV = protectedValue
    originalTrain = Train
@@ -128,19 +123,14 @@ def experimentCrossValidate(Train, Test, learner, times, statistics, protectedIn
    mins = [float('inf'), float('inf'), float('inf')]
    maxes = [-float('inf'), -float('inf'), -float('inf')]
    avgs = [0, 0, 0]
-   #print("type-----------------------------",type(allData))
    
    for time in range(times):
-     #print("-----------------------------time--------------------------------",time)
      random.shuffle(allData)
      train = allData[:len(originalTrain)]
-     #print("Train----------------------------------------",train)
      test = allData[len(originalTrain):]
      if not massage:
-       #print("not massage:------------")
        output = statistics(train, test, PI, PV, learner)
      else:
-       #print("else : massage is true----------------")
        from massaging import randomOneSideMassageData
        output = statistics(randomOneSideMassageData, train, test, PI, PV, learner)
      print("\tavg, min, max, variance")

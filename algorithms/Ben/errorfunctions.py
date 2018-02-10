@@ -33,8 +33,7 @@ def labelError(data, h):
 def precomputedLabelStatisticalParity(data, labels, protectedIndex, protectedValue, weights=None):
    if weights == None:
       weights = [1]*len(data)
-      #print("----------------------PI--------------PV------------------------",protectedIndex, float(protectedValue))
-      #print("data in errorfunction------------------------------------",data)
+      
    protectedClass = [(x,wt,l) for (x,wt,l) in zip(data, weights, labels)
                         if x[protectedIndex] == protectedValue]
    elseClass  = [(x,wt,l) for (x,wt,l) in zip(data, weights, labels)
@@ -58,16 +57,13 @@ def signedStatisticalParity(data, protectedIndex, protectedValue, h=None, weight
    #print("in SP--------------------------",type(data[0]),len(data[0]))
    if len(data[0]) == 2: # should do better type checking here...
       pts, labels = zip(*data)
-      #print("data----------",data)
-      #print("labels--------",labels)
+     
    else:
       pts = data
       labels = None
 
    if h is not None:
-      #print("-------------------------if h is not none----------------------------",pts)
       labels = [h(x) for x in pts]
-      #print("-------------------------if h is not none----------------------------",labels)
 
    if labels is None:
       raise Exception("Must provide either labels or a hypothesis to signedStatisticalParity")
@@ -86,19 +82,12 @@ def individualFairness(data, learner, flipProportion=0.2, passProtected=False):
    protectedIndex = 0
    protectedValue = 0
    data=tuple(data)
-   #print("data------------------------------------------------------",type(data), data[0])
-   """for item in data:
-      item=list(item)
-      item[0]=tuple(item[0])
-      #item=tuple(item)
-      #list(item[0])=tuple(item[0])"""
-   #print("data-----------------------------", data)
+  
    unbiasedData = [((random.choice([0,1]),) + x[0], x[1]) for x in data]
 
    indicesOfProtected = [i for i,x in enumerate(unbiasedData)
                            if x[0][protectedIndex] == 0 and x[1] == 1]
    m = len(indicesOfProtected)
-
    indicesOfFlippedData = set(random.sample(indicesOfProtected, int(flipProportion * m)))
    biasedData = [(x[0], (-1 if i in indicesOfFlippedData else x[1])) for i,x in enumerate(unbiasedData)]
 
@@ -108,5 +97,7 @@ def individualFairness(data, learner, flipProportion=0.2, passProtected=False):
       h = learner(biasedData)
 
    flippedPts = [x for i,x in enumerate(biasedData) if i in indicesOfFlippedData]
+   if (len(flippedPts)==0):
+      raise Exception("zero length array")
    error = sum(h(x) != y for (x,y) in flippedPts) / len(flippedPts)
    return error
