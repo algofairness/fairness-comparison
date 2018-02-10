@@ -5,23 +5,8 @@ import utils as ut
 import loss_funcs as lf # loss funcs that can be optimized subject to various constraints
 import json
 
-mode_settings = {
-    # this means regular logistic regression
-    'unconstrained': {},
-    # this means optimize for accuracy while constrained to perfect fairness
-    'fairness': {"fairness": 1},
-    # this means optimize for fairness subject to a given loss in accuracy
-    'accuracy': {"accuracy": 1,
-                 "gamma": 0.5},
-    # this means 'constraint to no positive misclassifications'
-    'constraint': {"accuracy": 1,
-                   "separation": 1,
-                   "gamma": 1000}
-    }
-
-def train_classifier(x, y, control, sensitive_attrs, mode, sensitive_attrs_to_cov_thresh={}):
+def train_classifier(x, y, control, sensitive_attrs, mode, sensitive_attrs_to_cov_thresh):
     loss_function = lf._logistic_loss
-    mode = mode_settings[mode]
     w = ut.train_model(
         x, y, control, loss_function,
         mode.get('fairness', 0),
@@ -60,7 +45,7 @@ def load_json(filename):
     sensitive = dict((k, np.array(v)) for (k,v) in f["sensitive"].items())
     return x, y, sensitive
 
-def main(train_file, test_file, output_file):
+def main(train_file, test_file, output_file, setting, value):
     x_train, y_train, x_control_train = load_json(train_file)
     x_test, y_test, x_control_test = load_json(test_file)
 
@@ -73,15 +58,28 @@ def main(train_file, test_file, output_file):
     # print >> sys.stderr, "First row:"
     # print >> sys.stderr, x_train[0,:], y_train[0], x_control_train
 
-    print("Will train classifier on %s %s-d points" % x_train.shape, file=sys.stderr)
-    print("Sensitive attribute: %s" % (x_control_train.keys(),), file=sys.stderr)
-    sensitive_attrs = x_control_train.keys()
+    if setting == 'gamma':
+        mode = {"accuracy": 1, "gamma": float(value)}
+    elif setting == 'c':
+        mode = {"fairness": 1}
+    elif setting == 'baseline':
+        mode = {}
+    else:
+        raise Exception("Don't know how to handle setting %s" % setting)
+
+    thresh = {}
+    if setting == 'c':
+        thresh = dict((k, float(value)) for (k, v) in x_control_train.items())
+        # print("Covariance threshold: %s" % thresh)
+
+    # print("Will train classifier on %s %s-d points" % x_train.shape, file=sys.stderr)
+    # print("Sensitive attribute: %s" % (x_control_train.keys(),), file=sys.stderr)
+    sensitive_attrs = list(x_control_train.keys())
     w = train_classifier(x_train, y_train, x_control_train,
-                         sensitive_attrs, "fairness",
-                         # allow zero covariance between sensitive attr and decision
-                         dict((k, 0) for (k, v) in x_control_train.items()))
+                         sensitive_attrs, mode,
+                         thresh)
                          
-    print("Model trained successfully.", file=sys.stderr)
+    # print("Model trained successfully.", file=sys.stderr)
 
     predictions = predict(w, x_test).tolist()
     output_file = open(output_file, "w")
@@ -112,6 +110,5 @@ def write_adult_data_to_disk():
     test_out.close()
 
 if __name__ == '__main__':
-    # write_adult_data_to_disk()
-    main(sys.argv[1], sys.argv[2], sys.argv[3])
+    main(*sys.argv[1:])
     exit(0)
