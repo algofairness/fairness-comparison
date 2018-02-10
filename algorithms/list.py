@@ -1,4 +1,4 @@
-from algorithms.zafar.ZafarAlgorithm import ZafarAlgorithm
+from algorithms.zafar.ZafarAlgorithm import ZafarAlgorithmBaseline, ZafarAlgorithmAccuracy, ZafarAlgorithmFairness
 from algorithms.kamishima.KamishimaAlgorithm import KamishimaAlgorithm
 from algorithms.kamishima.CaldersAlgorithm import CaldersAlgorithm
 from algorithms.feldman.FeldmanAlgorithm import FeldmanAlgorithm
@@ -13,16 +13,18 @@ from metrics.Accuracy import Accuracy
 from metrics.MCC import MCC
 
 ALGORITHMS = [
-#    ZafarAlgorithm(),
-#    SVM(), GaussianNB(), LogisticRegression(), DecisionTree(),     # baseline
+   ZafarAlgorithmBaseline(),
+   ZafarAlgorithmFairness(),
+   ZafarAlgorithmAccuracy(),
+   SVM(), GaussianNB(), LogisticRegression(), DecisionTree(),     # baseline
 #    KamishimaAlgorithm(),                                          # Kamishima
 #    CaldersAlgorithm(),                                            # Kamishima
 #    ParamGridSearch(KamishimaAlgorithm(), Accuracy()),             # Kamishima params
 #    ParamGridSearch(KamishimaAlgorithm(), DIAvgAll()),
 #    FeldmanAlgorithm(SVM()), FeldmanAlgorithm(GaussianNB()),       # Feldman
 #    FeldmanAlgorithm(LogisticRegression()), FeldmanAlgorithm(DecisionTree()),
-    ParamGridSearch(FeldmanAlgorithm(SVM()), DIAvgAll()),   # Feldman params
-    ParamGridSearch(FeldmanAlgorithm(SVM()), Accuracy()),
-    ParamGridSearch(FeldmanAlgorithm(GaussianNB()), DIAvgAll()),
-    ParamGridSearch(FeldmanAlgorithm(GaussianNB()), Accuracy())
+    # ParamGridSearch(FeldmanAlgorithm(SVM()), DIAvgAll()),   # Feldman params
+    # ParamGridSearch(FeldmanAlgorithm(SVM()), Accuracy()),
+    # ParamGridSearch(FeldmanAlgorithm(GaussianNB()), DIAvgAll()),
+    # ParamGridSearch(FeldmanAlgorithm(GaussianNB()), Accuracy())
     ]

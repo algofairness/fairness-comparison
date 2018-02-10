@@ -5,12 +5,12 @@ import os
 import subprocess
 import json
 import sys
+import numpy
 
-class ZafarAlgorithm(Algorithm):
+class ZafarAlgorithmBase(Algorithm):
 
     def __init__(self):
         Algorithm.__init__(self)
-        self.name = "Zafar"
 
     def get_supported_data_types(self):
         return set(["numerical-binsensitive"])
@@ -27,7 +27,7 @@ class ZafarAlgorithm(Algorithm):
         def create_file(df):
             out = {}
             out["x"] = df.drop(columns=[class_attr]).as_matrix().tolist()
-            out["class"] = df[class_attr].as_matrix().tolist()
+            out["class"] = (2 * df[class_attr] - 1).as_matrix().tolist()
             out["sensitive"] = {}
             out["sensitive"][single_sensitive] = df[single_sensitive].as_matrix().tolist()
             fd, name = tempfile.mkstemp()
@@ -41,15 +41,12 @@ class ZafarAlgorithm(Algorithm):
         test_name = create_file(test_df)
         fd, predictions_name = tempfile.mkstemp()
         os.close(fd)
-
         # print("CURRENT DIR: %s" % os.getcwd())
         # print("SENSITIVE ATTR: %s" % single_sensitive)
 
-        result = subprocess.run(['python3', 'main.py',
-                                 train_name,
-                                 test_name,
-                                 predictions_name],
-                                cwd='./algorithms/zafar/fair-classification-master/disparate_impact/run-classifier/')
+        cmd = self.create_command_line(train_name, test_name, predictions_name, params)
+        result = subprocess.run(cmd,
+            cwd='./algorithms/zafar/fair-classification-master/disparate_impact/run-classifier/')
         os.unlink(train_name)
         os.unlink(test_name)
         if result.returncode != 0:
@@ -69,4 +66,60 @@ class ZafarAlgorithm(Algorithm):
             # print("ground truth: %s" % test_df[class_attr].as_matrix().tolist())
             return predictions_correct, []
 
+##############################################################################
+
+class ZafarAlgorithmBaseline(ZafarAlgorithmBase):
+
+    def __init__(self):
+        ZafarAlgorithmBase.__init__(self)
+        self.name = "ZafarBaseline"
+
+    def create_command_line(self, train_name, test_name, predictions_name, params):
+        return ['python3', 'main.py',
+                train_name,
+                test_name,
+                predictions_name,
+                'baseline', '0']
+
+class ZafarAlgorithmAccuracy(ZafarAlgorithmBase):
+
+    def __init__(self):
+        ZafarAlgorithmBase.__init__(self)
+        self.name = "ZafarAccuracy"
+
+    # take 10 logarithmic steps for gamma between 0.1 and 1.0
+    def get_param_info(self):
+        return {'gamma': list(numpy.exp(numpy.linspace(numpy.log(0.1), numpy.log(1), 10)))}
+
+    def get_default_params(self):
+        return {'gamma': 0.5}
+
+    def create_command_line(self, train_name, test_name, predictions_name, params):
+        return ['python3', 'main.py',
+                train_name,
+                test_name,
+                predictions_name,
+                'gamma',
+                str(params['gamma'])]
+
+class ZafarAlgorithmFairness(ZafarAlgorithmBase):
+
+    def __init__(self):
+        ZafarAlgorithmBase.__init__(self)
+        self.name = "ZafarFairness"
+        
+    # take 10 logarithmic steps for gamma between 0.1 and 1.0
+    def get_param_info(self):
+        return {'c': list(numpy.exp(numpy.linspace(numpy.log(0.001), numpy.log(1), 10)))}
+
+    def get_default_params(self):
+        return {'c': 0.001}
+
+    def create_command_line(self, train_name, test_name, predictions_name, params):
+        return ['python3', 'main.py',
+                train_name,
+                test_name,
+                predictions_name,
+                'c',
+                str(params['c'])]
 
