@@ -11,6 +11,7 @@ output: html_document
 library(stringr)
 library(ggplot2)
 library(dplyr)
+library(magrittr)
 
 catscale = scale_colour_manual(values=c(
   "#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a", "#d62728", "#ff9896",
@@ -83,6 +84,19 @@ do_it_all = function(name, var1, var2) {
   
   plot_rects_sensitivity_summary(basic_plot)
 }
+
+nb_measure_comparison = function(name, measure) {
+  num <- read.csv(str_c(name, "_numerical.csv"), check.names=FALSE)
+  nbs <- read.csv(str_c(name, "_numerical-binsensitive.csv"), check.names=FALSE)
+  
+  var1 <- as.name(str_c(measure, "-numerical"))
+  var2 <- as.name(str_c(measure, "-binsensitive"))
+  
+  df <- inner_join(num, nbs, by=c("algorithm", "run-id"), suffix = c("-numerical", "-binsensitive"))
+  df$name = name
+  df
+  # return (df %>% select(!!var1, !!var2, "run-id", "algorithm", "name"))
+}
 ```
 
 # Preliminaries
@@ -115,15 +129,16 @@ do_it_all(dataset, "TPR", "Race-calibration-")
 do_it_all(dataset, "TNR", "TPR")
 ```
 
-
 # Paper figures
 
 ```{r}
-name = "two-gaussians_sensitive-attr"
-num <- read.csv(str_c(name, "_numerical.csv"), check.names=FALSE)
-nbs <- read.csv(str_c(name, "_numerical-binsensitive.csv"), check.names=FALSE)
+df1 = nb_measure_comparison("german_sex-age", measure)
+df2 = nb_measure_comparison("ricci_Race", measure)
 
-df <- inner_join(num, nbs, by=c("algorithm", "run-id"))
+measure = "accuracy"
+df = df1 # rbind(a,b)
 
-ggplot(df, aes(x=accuracy.x, y=accuracy.y, colour=algorithm)) + catscale + catscale2 + geom_point()
+var1 <- as.name(str_c(measure, "-numerical"))
+var2 <- as.name(str_c(measure, "-binsensitive"))
+ggplot(df, aes_q(x=var1, y=var2, colour=quote(algorithm))) + catscale + catscale2 + geom_point() + ggtitle(measure)
 ```
