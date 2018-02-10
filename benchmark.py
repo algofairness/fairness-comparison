@@ -125,13 +125,13 @@ def run_eval_alg(algorithm, train, test, dataset, processed_data, all_sensitive_
     results_lol = []
     if len(predictions_list) > 0:
         for param_name, param_val, predictions in predictions_list:
-            params = { param_name : param_val }
+            params_dict = { param_name : param_val }
             results = []
             for metric in get_metrics(dataset, sensitive_dict, tag):
                 result = metric.calc(actual, predictions, dict_sensitive_lists, single_sensitive,
                                      privileged_vals, positive_val)
                 results.append(result)
-            results_lol.append( (params, results) )
+            results_lol.append( (params_dict, results) )
 
     return params, one_run_results, results_lol
 
