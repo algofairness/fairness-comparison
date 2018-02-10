@@ -13,14 +13,14 @@ from metrics.Accuracy import Accuracy
 from metrics.MCC import MCC
 
 ALGORITHMS = [
-    ZafarAlgorithm(),
-    SVM(), GaussianNB(), LogisticRegression(), DecisionTree(),     # baseline
-    KamishimaAlgorithm(),                                          # Kamishima
-    CaldersAlgorithm(),                                            # Kamishima
-    ParamGridSearch(KamishimaAlgorithm(), Accuracy()),             # Kamishima params
-    ParamGridSearch(KamishimaAlgorithm(), DIAvgAll()),
-    FeldmanAlgorithm(SVM()), FeldmanAlgorithm(GaussianNB()),       # Feldman
-    FeldmanAlgorithm(LogisticRegression()), FeldmanAlgorithm(DecisionTree()),
+#    ZafarAlgorithm(),
+#    SVM(), GaussianNB(), LogisticRegression(), DecisionTree(),     # baseline
+#    KamishimaAlgorithm(),                                          # Kamishima
+#    CaldersAlgorithm(),                                            # Kamishima
+#    ParamGridSearch(KamishimaAlgorithm(), Accuracy()),             # Kamishima params
+#    ParamGridSearch(KamishimaAlgorithm(), DIAvgAll()),
+#    FeldmanAlgorithm(SVM()), FeldmanAlgorithm(GaussianNB()),       # Feldman
+#    FeldmanAlgorithm(LogisticRegression()), FeldmanAlgorithm(DecisionTree()),
     ParamGridSearch(FeldmanAlgorithm(SVM()), DIAvgAll()),   # Feldman params
     ParamGridSearch(FeldmanAlgorithm(SVM()), Accuracy()),
     ParamGridSearch(FeldmanAlgorithm(GaussianNB()), DIAvgAll()),

@@ -36,6 +36,7 @@ class ParamGridSearch(Algorithm):
         best_predictions = self.find_best(all_predictions, train_df, test_df, class_attr,
                                           positive_class_val, sensitive_attrs, single_sensitive,
                                           privileged_vals, params)
+        print(params)
         return best_predictions, all_predictions
 
     def find_best(self, all_predictions, train_df, test_df, class_attr, positive_class_val,
