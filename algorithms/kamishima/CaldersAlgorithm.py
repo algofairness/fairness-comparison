@@ -73,7 +73,8 @@ class CaldersAlgorithm(Algorithm):
                               if col not in sensitive_attrs + [class_attr])
         test_col_sets = list(set(test_df[col]) for col in test_df
                              if col not in sensitive_attrs + [class_attr])
-        nfv = ":".join(str(len(a.union(b))) for (a,b) in zip(train_col_sets, test_col_sets))
+        lengths = list(max(2, len(a.union(b))) for (a,b) in zip(train_col_sets, test_col_sets))
+        nfv = ":".join(str(l) for l in lengths)
 
         try:
             fd, model_name = tempfile.mkstemp()
