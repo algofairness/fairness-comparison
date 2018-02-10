@@ -119,8 +119,11 @@ do_it_all(dataset, "TNR", "TPR")
 # Paper figures
 
 ```{r}
-num <- read.csv("two-gaussians_sensitive-attr_numerical.csv", check.names=FALSE)
-nbs <- read.csv("two-gaussians_sensitive-attr_numerical-binsensitive.csv", check.names=FALSE)
+name = "two-gaussians_sensitive-attr"
+num <- read.csv(str_c(name, "_numerical.csv"), check.names=FALSE)
+nbs <- read.csv(str_c(name, "_numerical-binsensitive.csv"), check.names=FALSE)
 
 df <- inner_join(num, nbs, by=c("algorithm", "run-id"))
+
+ggplot(df, aes(x=accuracy.x, y=accuracy.y, colour=algorithm)) + catscale + catscale2 + geom_point()
 ```

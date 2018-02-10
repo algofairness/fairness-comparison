@@ -70,11 +70,11 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
                             print("Failed: %s" % e, file=sys.stderr)
                         else:
                             write_alg_results(detailed_files[supported_tag],
-                                              algorithm.get_name(), params, results)
+                                              algorithm.get_name(), params, i, results)
                             if algorithm.__class__ is ParamGridSearch:
                                 for params, results in param_results:
                                     write_alg_results(param_files[supported_tag],
-                                                      algorithm.get_name(), params, results)
+                                                      algorithm.get_name(), params, i, results)
 
             print("Results written to:")
             for supported_tag in algorithm.get_supported_data_types():
@@ -83,10 +83,10 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
             for detailed_file in detailed_files.values():
                 detailed_file.close()
 
-def write_alg_results(file_handle, alg_name, params, results_list):
+def write_alg_results(file_handle, alg_name, params, run_id, results_list):
     line = alg_name + ','
     params = ";".join("%s=%s" % (k, v) for (k, v) in params.items())
-    line += params + ','
+    line += params + (',%s,' % run_id)
     line += ','.join(str(x) for x in results_list) + '\n'
     file_handle.write(line)
     # Make sure the file is written to disk line-by-line:
@@ -153,7 +153,7 @@ def get_metrics_list(dataset, sensitive_dict, tag):
     return [metric.get_name() for metric in get_metrics(dataset, sensitive_dict, tag)]
 
 def get_detailed_metrics_header(dataset, sensitive_dict, tag):
-    return ','.join(['algorithm', 'params'] + get_metrics_list(dataset, sensitive_dict, tag))
+    return ','.join(['algorithm', 'params', 'run-id'] + get_metrics_list(dataset, sensitive_dict, tag))
 
 def get_dict_sensitive_vals(dict_sensitive_lists):
     """
