@@ -114,3 +114,13 @@ do_it_all(dataset, "TPR", "Race-calibration-")
 ```{r}
 do_it_all(dataset, "TNR", "TPR")
 ```
+
+
+# Paper figures
+
+```{r}
+num <- read.csv("two-gaussians_sensitive-attr_numerical.csv", check.names=FALSE)
+nbs <- read.csv("two-gaussians_sensitive-attr_numerical-binsensitive.csv", check.names=FALSE)
+
+df <- inner_join(num, nbs, by=c("algorithm", "run-id"))
+```
