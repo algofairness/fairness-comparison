@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import random
+from collections import OrderedDict
 from algorithms.Ben import boosting
 from algorithms.Ben import svm
 from algorithms.Ben import lr
@@ -35,7 +36,14 @@ class SDBSVM(Algorithm):
 
    def run(self, train_df, test_df, class_attr, positive_class_val, sensitive_attrs,
             single_sensitive, privileged_vals, params):
+      # shifted labels to last column 
+      label_index = train_df.columns.get_loc(class_attr)
+      cols=train_df.columns.tolist()
+      cols=cols[:int(label_index)]+cols[int(label_index+1):len(cols)]+[class_attr]
+      train_df=train_df[cols]
       train = train_df.values.tolist()
+      unique_labels= list(OrderedDict().fromkeys(i[-1] for i in train))
+      
       train_labels=[]
       train_data_points=[]
       test_labels=[]
@@ -56,10 +64,19 @@ class SDBSVM(Algorithm):
       test= list(zip(test_data_points,test_labels))
       protectedIndex = train_df.columns.get_loc(sensitive_attrs[0])
       protectedValue = privileged_vals[0]
-      print("test data ---------------------------", test[:6],"---------------------train-----------------",train[:8] )
+     
+      prediction_=self.runAll(train,test, protectedIndex, protectedValue)
+      prediction_labels = list(set(prediction_))
+      # change prediction back to original
+      prediction=[]
+      for item in prediction_:
+         if (item != 1):
+            if(unique_labels[0]!=1):
+               item = unique_labels[0]
+            else:
+               item = unique_labels[1]
+         prediction.append(item)
 
-      prediction=self.runAll(train,test, protectedIndex, protectedValue)
-      #print("prediction-----",len(prediction))
       return  prediction, []
    
 

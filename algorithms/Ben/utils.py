@@ -135,10 +135,6 @@ def experimentCrossValidate(Train, Test, learner, times, statistics, protectedIn
        from massaging import randomOneSideMassageData
        classifier_t = learner(train, protectedIndex, protectedValue)
        output = statistics(randomOneSideMassageData, train, test, PI, PV, learner)
-     print("\tavg, min, max, variance")
-     print("error: %r" % (output[0],))
-     print("bias: %r" % (output[1],))
-     print("ubif: %r" % (output[2],))
      
      for i in range(len(output)):
        avgs[i] += (output[i][0] - avgs[i]) / (time + 1)
@@ -149,17 +145,9 @@ def experimentCrossValidate(Train, Test, learner, times, statistics, protectedIn
    
    for i in range(len(variances)):
      variances[i] = variance(variances[i])
-
-   print("AGGREGATE STATISTICS:")
-   print("\tavg, min, max, variance")
-   print("error: %r" % ((avgs[0], mins[0], maxes[0], variances[0]),))
-   print("bias: %r" % ((avgs[1], mins[1], maxes[1], variances[1]),))
-   print("ubif: %r" % ((avgs[2], mins[2], maxes[2], variances[2]),))
+  #prediction on test data
    prediction=[]
    for datapoints in test:
-    #print("dtapoint length---------------",datapoints)
     y=classifier_t(datapoints[0])
-    #print("prediction--------------------",y)
     prediction.append(y)
-    #print ("prediction----------",prediction)
    return prediction

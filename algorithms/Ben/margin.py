@@ -1,8 +1,6 @@
 from algorithms.Ben.utils import *
 from algorithms.Ben.errorfunctions import *
 
-#from utils import sign, sigmoid
-#from errorfunctions import signedStatisticalParity, labelError, precomputedLabelError, precomputedLabelStatisticalParity, zeroOneSign
 from algorithms.Ben import svm
 import numpy
 from algorithms.Ben import lr
@@ -28,11 +26,9 @@ class marginAnalyzer(object):
          self.validationMargins = [self.margin(x[0]) for x in self.validationData]
          self.bulkMargin = None
       else:
-         print("Computing bulk margins...")
          self.trainingMargins = bulkMargin([x[0] for x in self.trainingData])
          self.validationMargins = bulkMargin([x[0] for x in self.validationData])
          self.bulkMargin = bulkMargin
-         print("Done")
 
       self.margins = numpy.concatenate([self.trainingMargins, self.validationMargins], axis=0)
       self.margins=self.margins.ravel()
@@ -66,7 +62,7 @@ class marginAnalyzer(object):
       return x[self.protectedIndex] == self.protectedValue
 
 
-   #returns a classifier which takes a data point as an input and returns 1 if margin is above threshold, -1 otherwise
+   #returns a classifier which takes a data point as an input and returns 1 if margin is above threshold, 0 otherwise
    def classifier(self, threshold=None):
       if threshold == None:
          threshold = lambda x: self.defaultThreshold
@@ -103,8 +99,7 @@ class marginAnalyzer(object):
 
       minGoalValue = goal(dataToUse, self.conditionalShiftClassifier(low, condition))
       maxGoalValue = goal(dataToUse, self.conditionalShiftClassifier(high, condition))
-      #print((low, minGoalValue))
-      #print((high, maxGoalValue))
+     
 
       if sign(minGoalValue) != sign(maxGoalValue):
          # a binary search for zero
@@ -131,7 +126,6 @@ class marginAnalyzer(object):
          return bestShift
 
    def optimalShiftClassifier(self, goal=None, condition=None, rounds=3):
-      #print("in optimal shift classifier function--------")
       if goal == None:
          goal = lambda d, h: signedStatisticalParity(d, self.protectedIndex, self.protectedValue, h)
       if condition == None:
