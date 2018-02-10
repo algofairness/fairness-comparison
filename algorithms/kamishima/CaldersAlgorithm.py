@@ -82,9 +82,7 @@ class CaldersAlgorithm(Algorithm):
             os.close(fd)
             dicts = {}
             train_name = create_file_in_calders_format(train_df, dicts)
-            print(dicts[class_attr])
             test_name = create_file_in_calders_format(test_df, dicts)
-            print(dicts[class_attr])
             beta_val = params['beta']
             cmdline = ['python3', './algorithms/kamishima/kamfadm-2012ecmlpkdd/train_cv2nb.py',
                             '-b', str(beta_val),
@@ -92,7 +90,7 @@ class CaldersAlgorithm(Algorithm):
                             '-i', train_name,
                             '-o', model_name,
                             '--quiet']
-            print("WILL RUN: %s" % cmdline)
+            # print("WILL RUN: %s" % cmdline)
             try:
                 result1 = subprocess.run(cmdline, timeout=600)
                 if result1.returncode != 0:
