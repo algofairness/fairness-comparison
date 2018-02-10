@@ -10,7 +10,7 @@ def lrDetailedSKL(data):
    clf = linear_model.LogisticRegression()
    lrClassifier = clf.fit(points, labels)
    #print("lrClassifier---------------", lrClassifier)
-   return lambda x: lrClassifier.predict_proba(x)[0][1], lambda x: 1 if lrClassifier.predict_proba(x)[0][1]>=0.5 else -1
+   return lambda x: lrClassifier.predict_proba(x)[0][1], lambda x: 1 if lrClassifier.predict_proba(x)[0][1]>=0.5 else 0
    
    
 def lrSKL(data):

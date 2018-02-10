@@ -25,7 +25,7 @@ def normalize(weights):
 
 
 def sign(x):
-   return 1 if x >= 0 else -1
+   return 1 if x >= 0 else 0
 
 
 def zeroOneSign(x):
@@ -129,9 +129,11 @@ def experimentCrossValidate(Train, Test, learner, times, statistics, protectedIn
      train = allData[:len(originalTrain)]
      test = allData[len(originalTrain):]
      if not massage:
+       classifier_t = learner(train, protectedIndex, protectedValue)
        output = statistics(train, test, PI, PV, learner)
      else:
        from massaging import randomOneSideMassageData
+       classifier_t = learner(train, protectedIndex, protectedValue)
        output = statistics(randomOneSideMassageData, train, test, PI, PV, learner)
      print("\tavg, min, max, variance")
      print("error: %r" % (output[0],))
@@ -153,3 +155,11 @@ def experimentCrossValidate(Train, Test, learner, times, statistics, protectedIn
    print("error: %r" % ((avgs[0], mins[0], maxes[0], variances[0]),))
    print("bias: %r" % ((avgs[1], mins[1], maxes[1], variances[1]),))
    print("ubif: %r" % ((avgs[2], mins[2], maxes[2], variances[2]),))
+   prediction=[]
+   for datapoints in test:
+    #print("dtapoint length---------------",datapoints)
+    y=classifier_t(datapoints[0])
+    #print("prediction--------------------",y)
+    prediction.append(y)
+    #print ("prediction----------",prediction)
+   return prediction

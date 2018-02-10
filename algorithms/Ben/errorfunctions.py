@@ -5,10 +5,10 @@ import heapq
 
 def minLabelErrorOfHypothesisAndNegation(data, h):
    posData, negData = ([(x, y) for (x, y) in data if h(x) == 1],
-                       [(x, y) for (x, y) in data if h(x) == -1])
+                       [(x, y) for (x, y) in data if h(x) == 0])
 
-   posError = sum(y == -1 for (x, y) in posData) + sum(y == 1 for (x, y) in negData)
-   negError = sum(y == 1 for (x, y) in posData) + sum(y == -1 for (x, y) in negData)
+   posError = sum(y == 0 for (x, y) in posData) + sum(y == 1 for (x, y) in negData)
+   negError = sum(y == 1 for (x, y) in posData) + sum(y == 0 for (x, y) in negData)
    return min(posError, negError) / len(data)
 
 
@@ -89,7 +89,7 @@ def individualFairness(data, learner, flipProportion=0.2, passProtected=False):
                            if x[0][protectedIndex] == 0 and x[1] == 1]
    m = len(indicesOfProtected)
    indicesOfFlippedData = set(random.sample(indicesOfProtected, int(flipProportion * m)))
-   biasedData = [(x[0], (-1 if i in indicesOfFlippedData else x[1])) for i,x in enumerate(unbiasedData)]
+   biasedData = [(x[0], (0 if i in indicesOfFlippedData else x[1])) for i,x in enumerate(unbiasedData)]
 
    if passProtected:
       h = learner(biasedData, protectedIndex, protectedValue)

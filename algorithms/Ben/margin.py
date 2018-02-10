@@ -70,7 +70,7 @@ class marginAnalyzer(object):
    def classifier(self, threshold=None):
       if threshold == None:
          threshold = lambda x: self.defaultThreshold
-      return lambda x: 1  if  self.margin(x) >= threshold(x) else -1
+      return lambda x: 1  if  self.margin(x) >= threshold(x) else 0
 
 
    #returns a classifier with shifted threshold for data points satisfying condition
@@ -84,13 +84,13 @@ class marginAnalyzer(object):
       # condition is margin >= threshold + shift, so that if shift is negative
       # the threshold is lower.
       shiftedMargins = [(m-shift if condition(x[0]) else m) for (m, x) in zip(margins, data)]
-      labels = [1 if m >= self.defaultThreshold else -1 for m in shiftedMargins]
+      labels = [1 if m >= self.defaultThreshold else 0 for m in shiftedMargins]
       return labels
 
 
    #finds the shift which achieves goal=0 under condition
    #goal takes two arguments, data and h
-   def optimalShift(self, goal=None, condition=None, rounds=10):
+   def optimalShift(self, goal=None, condition=None, rounds=3):
       #print("in optimalshift function--------------------")
       if goal == None:
          goal = lambda d, h: signedStatisticalParity(d, self.protectedIndex, self.protectedValue, h)
@@ -130,7 +130,7 @@ class marginAnalyzer(object):
                bestVal = newVal
          return bestShift
 
-   def optimalShiftClassifier(self, goal=None, condition=None, rounds=10):
+   def optimalShiftClassifier(self, goal=None, condition=None, rounds=3):
       #print("in optimal shift classifier function--------")
       if goal == None:
          goal = lambda d, h: signedStatisticalParity(d, self.protectedIndex, self.protectedValue, h)
@@ -140,7 +140,7 @@ class marginAnalyzer(object):
 
 
 class boostingMarginAnalyzer(marginAnalyzer):
-   def __init__(self, data, protectedIndex, protectedValue, numRounds=10,
+   def __init__(self, data, protectedIndex, protectedValue, numRounds=3,
                weakLearner=buildDecisionStump, computeError=boosting.weightedLabelError):
 
       self.splitData(data)

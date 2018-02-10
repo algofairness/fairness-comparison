@@ -23,13 +23,13 @@ class SDBSVM(Algorithm):
 
    @arrayErrorBars(2)
    def statistics(self, train, test, protectedIndex, protectedValue, learner):
-      #print("in statistics-----------------------")
+      #print("in statistics-----------------------",train[0])
       h = learner(train, protectedIndex, protectedValue)
-      print("Computing error")
+      #print("Computing error")
       error = labelError(test, h)
-      print("Computing bias")
+      #print("Computing bias")
       bias = signedStatisticalParity(test, protectedIndex, protectedValue, h)
-      print("Computing UBIF")
+      #print("Computing UBIF")
       ubif = individualFairness(train, learner, 0.2, passProtected=True)
       return error, bias, ubif
 
@@ -42,45 +42,48 @@ class SDBSVM(Algorithm):
       test_data_points=[]
       test = test_df.values.tolist()
       for datapoints in train:
-         if (datapoints[-1] == 0):
-            datapoints[-1] = -1
+         if (int(datapoints[-1]) != 1):
+            datapoints[-1] = 0
          train_labels.append(int(datapoints[-1]))
          train_data_points.append(tuple(datapoints[:-1]))
       train= list(zip(train_data_points,train_labels))
       for datapoints in test:
-         if (datapoints[-1] == 0.0):
-            datapoints[-1] = -1.0
+         if (int(datapoints[-1]) != 1):
+            datapoints[-1] = 0
          test_labels.append(int(datapoints[-1]))
          test_data_points.append(tuple(datapoints[:-1]))
 
       test= list(zip(test_data_points,test_labels))
       protectedIndex = train_df.columns.get_loc(sensitive_attrs[0])
       protectedValue = privileged_vals[0]
+      print("test data ---------------------------", test[:6],"---------------------train-----------------",train[:8] )
 
-      return self.runAll(train,test, protectedIndex, protectedValue) 
+      prediction=self.runAll(train,test, protectedIndex, protectedValue)
+      #print("prediction-----",len(prediction))
+      return  prediction, []
    
 
    def svmLearner(self, train, protectedIndex, protectedValue):
       marginAnalyzer = svmRBFMarginAnalyzer(train, protectedIndex, protectedValue)
       shift = marginAnalyzer.optimalShift()
-      print('best shift is: %r' % (shift,))
+      #print('best shift is: %r' % (shift,))
       return marginAnalyzer.conditionalShiftClassifier(shift)
 
 
    def svmLinearLearner(self, train, protectedIndex, protectedValue):
       marginAnalyzer = svmLinearMarginAnalyzer(train, protectedIndex, protectedValue)
       shift = marginAnalyzer.optimalShift()
-      print('best shift is: %r' % (shift,))
+      #print('best shift is: %r' % (shift,))
       return marginAnalyzer.conditionalShiftClassifier(shift)
 
    @errorBars(10)
    def indFairnessStats(self, train, learner):
-      print("Computing UBIF")
+      #print("Computing UBIF")
       ubif = individualFairness(train, learner, flipProportion=0.2, passProtected=True)
-      print("UBIF:", ubif)
+      #print("UBIF:", ubif)
       return ubif
 
-   def runAll(self, test, train, protectedIndex, protectedValue):
+   def runAll(self,train, test, protectedIndex, protectedValue):
       print("Shifted Decision Boundary Relabeling")
       dataset = test+train
       experiments = [
@@ -90,5 +93,5 @@ class SDBSVM(Algorithm):
 
       for (learnerName, learner) in experiments:
          print("%s" % (learnerName), flush=True)
-         experimentCrossValidate(train,test, learner, 5, self.statistics, protectedIndex, protectedValue)
+         return experimentCrossValidate(train,test, learner, 2, self.statistics, protectedIndex, protectedValue)
       
