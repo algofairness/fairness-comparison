@@ -132,7 +132,7 @@ Algorithms that tend to do well on accuracy (measured here by BCR) tend to do wo
 
 # Paper figures
 
-## Preprocessing consequences
+## Preprocessing tradeoffs
 
 ```{r}
 plot_tradeoff = function(measure, dataset) {
@@ -150,7 +150,7 @@ ggsave("paper-figures/preprocessing-tradeoff-accuracy.png", p)
 
 p = plot_tradeoff("DIavgall", "german_sex-age")
 print(p)
-ggsave("paper-figures/preprocess-tradeoff-DIavgall.png", p)
+ggsave("paper-figures/preprocessing-tradeoff-DIavgall.png", p)
 ```
 
 ## Algorithm sensitivity
