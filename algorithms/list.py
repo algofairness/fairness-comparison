@@ -5,14 +5,14 @@ from algorithms.baseline.DecisionTree import DecisionTree
 from algorithms.baseline.GaussianNB import GaussianNB
 from algorithms.baseline.LogisticRegression import LogisticRegression
 from algorithms.ParamGridSearch import ParamGridSearch
-from algorithms.Ben.SDBAlgorithm import SDBAlgorithm
+from algorithms.Ben.SDBSVM import SDBSVM
 
 from metrics.DisparateImpact import DisparateImpact
 from metrics.Accuracy import Accuracy
 from metrics.MCC import MCC
 
 ALGORITHMS = [ SVM(), GaussianNB(), LogisticRegression(), DecisionTree(), # baseline
-              SDBAlgorithm(SVM()),                                       #SDBAlgorithm                           
+              SDBSVM()                                       #SDBAlgorithm                           
               KamishimaAlgorithm(),                                          # Kamishima
                ParamGridSearch(KamishimaAlgorithm(), Accuracy()),             # Kamishima params
                ParamGridSearch(KamishimaAlgorithm(), DisparateImpact()),
