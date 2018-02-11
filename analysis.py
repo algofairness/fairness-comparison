@@ -24,14 +24,19 @@ def run(dataset = get_dataset_names(), graphs = GRAPHS):
                 make_all_graphs(filename, graphs)
 
 def make_all_graphs(filename, graphs):
-    f = pd.read_csv(filename)
-    o = pathlib.Path(filename).parts[-1].split('.')[0]
-
-    if graphs == 'all':
-        graphs = all_possible_graphs(f)
-
-    for xaxis, yaxis in graphs:
-        generate_graph(f, xaxis, yaxis, o)
+    try:
+       f = pd.read_csv(filename)
+    except:
+       print("File not found:" + filename)
+       return
+    else:
+        o = pathlib.Path(filename).parts[-1].split('.')[0]
+ 
+        if graphs == 'all':
+            graphs = all_possible_graphs(f)
+ 
+        for xaxis, yaxis in graphs:
+            generate_graph(f, xaxis, yaxis, o)
 
 def all_possible_graphs(f):
     graphs = []
