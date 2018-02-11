@@ -132,6 +132,8 @@ Algorithms that tend to do well on accuracy (measured here by BCR) tend to do wo
 
 # Paper figures
 
+## Preprocessing consequences
+
 ```{r}
 plot_tradeoff = function(measure, dataset) {
   df = nb_measure_comparison(dataset, measure)
@@ -151,6 +153,42 @@ print(p)
 ggsave("paper-figures/preprocess-tradeoff-DIavgall.png", p)
 ```
 
+## Algorithm sensitivity
+
 ```{r}
-do_it_all("ricci_Race_numerical-binsensitive", "accuracy", "DIavgall", check.names=TRUE)
+plot_sensitivity = function(df, var1, var2) {
+  x_var = as.name(var1)
+  y_var = as.name(var2)
+
+  sensitivity_summary = create_sensitivity_summary(df, !!x_var, !!y_var)
+
+  basic_plot = basic_sensitivity_plot(sensitivity_summary, !!x_var, !!y_var)
+  
+  plot_rects_sensitivity_summary(basic_plot)
+}
+algos_to_plot = c(
+  "ZafarFairness", "Calders", "LR", "SVM", 
+  "Feldman-SVM", "Feldman-LR", "DecisionTree", 
+  "Feldman-DecisionTree", "Kamishima")
+
+make_sensitivity_figure = function(name) {
+  df = read.csv(name, check.names=TRUE) %>% filter(algorithm %in% algos_to_plot)
+  plot_sensitivity(df, "accuracy", "DIavgall")
+  }
+
+p = make_sensitivity_figure("adult_sex_numerical-binsensitive.csv") +
+  ggtitle("Adult dataset, sex attribute")
+print(p)
+ggsave("paper-figures/adult_sex_sensitivity.png", p)
+
+p = make_sensitivity_figure("adult_race_numerical-binsensitive.csv") +
+  ggtitle("Adult dataset, race attribute")
+print(p)
+ggsave("paper-figures/adult_race_sensitivity.png", p)
+
+p = make_sensitivity_figure("adult_race-sex_numerical-binsensitive.csv") +
+  ggtitle("Adult dataset, sex+race combined attribute")
+print(p)
+ggsave("paper-figures/adult_race-sex_sensitivity.png", p)
+
 ```
