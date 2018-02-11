@@ -73,7 +73,8 @@ class CaldersAlgorithm(Algorithm):
                               if col not in sensitive_attrs + [class_attr])
         test_col_sets = list(set(test_df[col]) for col in test_df
                              if col not in sensitive_attrs + [class_attr])
-        nfv = ":".join(str(len(a.union(b))) for (a,b) in zip(train_col_sets, test_col_sets))
+        lengths = list(max(2, len(a.union(b))) for (a,b) in zip(train_col_sets, test_col_sets))
+        nfv = ":".join(str(l) for l in lengths)
 
         try:
             fd, model_name = tempfile.mkstemp()
@@ -82,9 +83,7 @@ class CaldersAlgorithm(Algorithm):
             os.close(fd)
             dicts = {}
             train_name = create_file_in_calders_format(train_df, dicts)
-            print(dicts[class_attr])
             test_name = create_file_in_calders_format(test_df, dicts)
-            print(dicts[class_attr])
             beta_val = params['beta']
             cmdline = ['python3', './algorithms/kamishima/kamfadm-2012ecmlpkdd/train_cv2nb.py',
                             '-b', str(beta_val),
@@ -92,7 +91,7 @@ class CaldersAlgorithm(Algorithm):
                             '-i', train_name,
                             '-o', model_name,
                             '--quiet']
-            print("WILL RUN: %s" % cmdline)
+            # print("WILL RUN: %s" % cmdline)
             try:
                 result1 = subprocess.run(cmdline, timeout=600)
                 if result1.returncode != 0:

@@ -15,3 +15,4 @@ six==1.10.0
 wheel==0.29.0
 fire
 BlackBoxAuditing>=0.1.26
+ggplot
