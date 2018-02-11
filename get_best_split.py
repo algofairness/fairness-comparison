@@ -1,4 +1,5 @@
 import fire
+import math
 import pandas as pd
 
 from data.objects.Adult import Adult
@@ -18,24 +19,37 @@ def run(algname, data = Adult(), measure = 'accuracy'):
         else:
             run_id = 0
             run_id_best_line = 0
+            start_param = f['params'][0]
             for i, (alg, meas) in enumerate(zip(f['algorithm'], f[measure])):
                 params = f['params'][i]
-                if params == 'lambda=0.0':
+                if params == start_param:
                     if run_id != 0:
+                        print(run_id, run_id_best_val)
                         line_str = ','.join([str(x) for x in
                                              f.ix[run_id_best_line].values.tolist()]) + '\n'
                         out.write(line_str)
                     run_id += 1
                     run_id_best_line = i
                     run_id_best_val = meas
-                if meas >= run_id_best_val:
+                if is_better_than(meas, run_id_best_val, measure):
                     run_id_best_line = i
                     run_id_best_val = meas
+            print(run_id, run_id_best_val)
             line_str = ','.join([str(x) for x in
                                  f.ix[run_id_best_line].values.tolist()]) + '\n'
             out.write(line_str)
         out.close()
         print("Corrected best per split written to:" + outfile)
+
+def is_better_than(val1, val2, measure):
+    if measure == 'accuracy':
+        return val1 >= val2
+    if 'DI' in measure:
+        dist1 = math.fabs(1.0 - val1)
+        dist2 = math.fabs(1.0 - val2)
+        return dist1 <= dist2
+    print("ERROR: Unkown measure:" + measure)
+    return
 
 def make_filenames(algname, measure, dataobj):
     names = []
