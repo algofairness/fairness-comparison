@@ -73,8 +73,9 @@ plot_rects_sensitivity_summary = function(basic_plot) {
     geom_rect(aesthetics2, fill=NA)
 }
 
-do_it_all = function(name, var1, var2) {
-  df = read.csv(str_c(name, ".csv"), check.names=FALSE)
+do_it_all = function(name, var1, var2, check.names=FALSE) {
+  df = read.csv(str_c(name, ".csv"), check.names=check.names)
+  
   x_var = as.name(var1)
   y_var = as.name(var2)
 
@@ -112,33 +113,44 @@ dataset <- "ricci_Race_numerical-binsensitive"
 Algorithms that tend to do well on accuracy (measured here by BCR) tend to do worse on disparate impact:
 
 ```{r}
-do_it_all(dataset, "DIbinary", "BCR")
+#do_it_all(dataset, "DIbinary", "BCR")
 ```
 
 # Some calibration plots
 
 ```{r}
-do_it_all(dataset, "TPR", "Race-calibration+")
+#do_it_all(dataset, "TPR", "Race-calibration+")
 ```
 
 ```{r}
-do_it_all(dataset, "TPR", "Race-calibration-")
+#do_it_all(dataset, "TPR", "Race-calibration-")
 ```
 
 ```{r}
-do_it_all(dataset, "TNR", "TPR")
+#do_it_all(dataset, "TNR", "TPR")
 ```
 
 # Paper figures
 
 ```{r}
-df1 = nb_measure_comparison("german_sex-age", measure)
-df2 = nb_measure_comparison("ricci_Race", measure)
+plot_tradeoff = function(measure, dataset) {
+  df = nb_measure_comparison(dataset, measure)
+  var1 <- as.name(str_c(measure, "-numerical"))
+  var2 <- as.name(str_c(measure, "-binsensitive"))
+  ggplot(df, aes_q(x=var1, y=var2, colour=quote(algorithm))) + catscale + catscale2 +
+    geom_point() + ggtitle(str_c(dataset, ", measure: ", measure))
+}
 
-measure = "accuracy"
-df = df1 # rbind(a,b)
+# measure = "accuracy"
+p = plot_tradeoff("accuracy", "german_sex-age")
+print(p)
+ggsave("paper-figures/preprocessing-tradeoff-accuracy.png", p)
 
-var1 <- as.name(str_c(measure, "-numerical"))
-var2 <- as.name(str_c(measure, "-binsensitive"))
-ggplot(df, aes_q(x=var1, y=var2, colour=quote(algorithm))) + catscale + catscale2 + geom_point() + ggtitle(measure)
+p = plot_tradeoff("DIavgall", "german_sex-age")
+print(p)
+ggsave("paper-figures/preprocess-tradeoff-DIavgall.png", p)
+```
+
+```{r}
+do_it_all("ricci_Race_numerical-binsensitive", "accuracy", "DIavgall", check.names=TRUE)
 ```
