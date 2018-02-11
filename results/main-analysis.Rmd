@@ -12,6 +12,8 @@ library(stringr)
 library(ggplot2)
 library(dplyr)
 library(magrittr)
+library(corrplot)
+library(robust)
 ```
 
 We'll be showing many different charts with a large number of different attributes, so a good
@@ -113,34 +115,6 @@ nb_measure_comparison = function(name, measure) {
 
 # Preliminaries
 
-You can vary the dataset/algorithm by changing the variable "dataset".
-
-```{r}
-dataset <- "ricci_Race_numerical-binsensitive"
-```
-
-# Some tradeoff plots
-
-Algorithms that tend to do well on accuracy (measured here by BCR) tend to do worse on disparate impact:
-
-```{r}
-#do_it_all(dataset, "DIbinary", "BCR")
-```
-
-# Some calibration plots
-
-```{r}
-#do_it_all(dataset, "TPR", "Race-calibration+")
-```
-
-```{r}
-#do_it_all(dataset, "TPR", "Race-calibration-")
-```
-
-```{r}
-#do_it_all(dataset, "TNR", "TPR")
-```
-
 # Paper figures
 
 ## Preprocessing tradeoffs
@@ -172,20 +146,22 @@ plot_sensitivity = function(df, var1, var2) {
   y_var = as.name(var2)
 
   sensitivity_summary = create_sensitivity_summary(df, !!x_var, !!y_var)
-
   basic_plot = basic_sensitivity_plot(sensitivity_summary, !!x_var, !!y_var)
-  
   plot_rects_sensitivity_summary(basic_plot)
 }
+
 algos_to_plot = c(
-  "ZafarFairness", "Calders", "LR", "SVM", 
-  "Feldman-SVM", "Feldman-LR", "DecisionTree", 
+  "ZafarFairness", "Calders", "SVM", 
+  "Feldman-SVM", "DecisionTree", 
   "Feldman-DecisionTree", "Kamishima")
 
 make_sensitivity_figure = function(name) {
-  df = read.csv(name, check.names=TRUE) %>% filter(algorithm %in% algos_to_plot)
-  plot_sensitivity(df, "accuracy", "DIavgall")
-  }
+  df = read.csv(name, check.names=TRUE) %>% 
+    filter(algorithm %in% algos_to_plot) %>% 
+    mutate(algorithm=recode(algorithm, ZafarFairness="Zafar")) # rename to Zafar for clarity
+  
+  plot_sensitivity(df, "DIavgall", "accuracy")
+}
 
 p = make_sensitivity_figure("adult_sex_numerical-binsensitive.csv") +
   ggtitle("Adult dataset, sex attribute")
@@ -203,3 +179,100 @@ print(p)
 ggsave("paper-figures/adult_race-sex_sensitivity.png", p)
 
 ```
+
+### Parameter setting tradeoffs
+
+Algorithms can state what their parameter grid search values are, since these can provide significantly different results:
+
+```{r}
+param_regex = "[01].[0-9]+"
+
+adult_race_params = read.csv("Feldman-SVM-DIavgall_adult_race_numerical-binsensitive.csv", stringsAsFactors = FALSE, check.names=TRUE) %>% 
+    mutate(lambda=as.numeric(str_extract(params, param_regex)))
+p = ggplot(adult_race_params, aes(x=DIavgall, y=accuracy, colour=lambda)) + geom_point() + ggtitle("Adult dataset, race attribute")
+print(p)
+ggsave("paper-figures/adult_race_params_feldman.png", p)
+```
+
+```{r}
+ricci_race_params = read.csv("ZafarFairness-DIavgall_ricci_Race_numerical-binsensitive.csv", stringsAsFactors = FALSE, check.names=FALSE) %>% 
+  mutate(c=as.numeric(str_extract(params, param_regex))) %>% 
+  filter(c>=0.01) # skip low range of parameter setting to avoid overweighting the correlation matrices
+# ggplot(ricci_race_params, aes(x=DIavgall, y=`Race-calibration-`, colour=c)) + geom_point()
+#adult_race_params = read.csv("ZafarFairness-DIavgall_adult_race_numerical-binsensitive.csv", #stringsAsFactors = FALSE, check.names=TRUE) %>% 
+#  mutate(c=as.numeric(str_extract(params, param_regex))) %>% 
+#  filter(c>=0.01) # skip low range of parameter setting to avoid overweighting the correlation matrices
+
+p = ggplot(ricci_race_params, aes(x=DIavgall, y=accuracy, colour=c)) + geom_point() + ggtitle("Ricci dataset, Race attribute")
+print(p)
+ggsave("paper-figures/ricci_race_params_zafar.png", p)
+```
+
+### Proliferation of measures
+
+```{r}
+compute_measure_correlation_matrix = function(df, measures) {
+  m = matrix(0, nrow=length(measures), ncol=length(measures))
+  # colnames(m) = measures
+  rownames(m) = measures
+  for (i in 1:length(measures)) {
+    for (j in 1:length(measures)) {
+      x = df[[measures[[i]]]]
+      y = df[[measures[[j]]]]
+      if (sd(x) < 0.0001 || sd(y) < 0.0001) {
+        m[i,j] = 0.0 # kludge
+      } else {
+        # some metrics have large outliers, which hoses a naive correlation calculation.
+        # we'll use a robust correlation routine
+        # we perturb the points minimally because otherwise robust:covRob crashes..
+        tdf <- data.frame(x=x+rnorm(length(x))*0.001, 
+                          y=y+rnorm(length(x))*0.001)
+        if (cor(x, y) > 0.9999) {
+          m[i, j] = cor(x, y)
+        } else {
+          r = covRob(tdf, corr=TRUE)
+          # I could probably do all of this at once, but I don't want to deal with constant
+          # columns _and_ robust calculations at once
+          m[i,j] = r$cov[[1,2]]
+        }
+      }
+    }
+  }
+  m
+}
+```
+
+For Ricci and Zafar:
+
+```{r}
+# numeric_columns = sapply(ricci_race_params, class) == "numeric"
+# ricci_measures = subset(colnames(ricci_race_params), numeric_columns)
+# ricci_m = compute_measure_correlation_matrix(ricci_race_params, ricci_measures)
+# symmetrize the matrix manually because robust correlation as we compute it is not
+# necessarily symmetric
+# ricci_m = (ricci_m + t(ricci_m))/2
+
+
+# BUG: I'm having a hard time making RMarkDown save this to a file :( type this in your
+# console instead...
+#
+# corrplot(ricci_m, method="color", order="hclust", tl.cex=0.5)
+# png(file="paper-figures/ricci_measures_correlation.png")
+```
+
+For Adult and Feldman-SVM:
+
+```{r}
+
+# numeric_columns = sapply(adult_race_params, class) == "numeric"
+# adult_measures = subset(colnames(adult_race_params), numeric_columns)
+# adult_m = compute_measure_correlation_matrix(adult_race_params, adult_measures)
+# adult_m = (adult_m + t(adult_m))/2
+
+# BUG: I'm having a hard time making RMarkDown save this to a file :( type this in your
+# console instead...
+#
+# corrplot(adult_m, method="color", order="hclust", tl.cex=0.5)
+# png(file="paper-figures/adult_measures_correlation.png")
+```
+
