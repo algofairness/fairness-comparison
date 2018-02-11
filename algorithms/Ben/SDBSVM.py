@@ -50,13 +50,13 @@ class SDBSVM(Algorithm):
       test_data_points=[]
       test = test_df.values.tolist()
       for datapoints in train:
-         if (int(datapoints[-1]) != 1):
+         if (int(datapoints[-1]) != positive_class_val):
             datapoints[-1] = 0
          train_labels.append(int(datapoints[-1]))
          train_data_points.append(tuple(datapoints[:-1]))
       train= list(zip(train_data_points,train_labels))
       for datapoints in test:
-         if (int(datapoints[-1]) != 1):
+         if (int(datapoints[-1]) != positive_class_val):
             datapoints[-1] = 0
          test_labels.append(int(datapoints[-1]))
          test_data_points.append(tuple(datapoints[:-1]))
@@ -70,13 +70,13 @@ class SDBSVM(Algorithm):
       # change prediction back to original
       prediction=[]
       for item in prediction_:
-         if (item != 1):
-            if(unique_labels[0]!=1):
+         if (item != positive_class_val):
+            if(unique_labels[0]!= positive_class_val):
                item = unique_labels[0]
             else:
                item = unique_labels[1]
-         prediction.append(item)
-
+         prediction.append(int(item))
+      #print ("Predictitons----------------------",prediction)
       return  prediction, []
    
 
