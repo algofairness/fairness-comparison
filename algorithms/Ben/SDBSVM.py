@@ -43,7 +43,16 @@ class SDBSVM(Algorithm):
       train_df=train_df[cols]
       train = train_df.values.tolist()
       unique_labels= list(OrderedDict().fromkeys(i[-1] for i in train))
+
+      #label_index = test_df.columns.get_loc(class_attr)
+      cols_t=test_df.columns.tolist()
+      cols_t=cols_t[:int(label_index)]+cols_t[int(label_index+1):len(cols_t)]+[class_attr]
+      test_df= test_df[cols_t]
+      test = test_df.values.tolist()
+      #unique_labels= list(OrderedDict().fromkeys(i[-1] for i in train))
       
+     # print("test_df--------------------",test_df[class_attr])
+     # print("train_df-----------------",train_df[class_attr])
       train_labels=[]
       train_data_points=[]
       test_labels=[]
@@ -101,7 +110,7 @@ class SDBSVM(Algorithm):
       return ubif
 
    def runAll(self,train, test, protectedIndex, protectedValue):
-      print("Shifted Decision Boundary Relabeling")
+      #print("Shifted Decision Boundary Relabeling")
       dataset = test+train
       experiments = [
       ('SVM', self.svmLearner),
@@ -110,5 +119,5 @@ class SDBSVM(Algorithm):
 
       for (learnerName, learner) in experiments:
          print("%s" % (learnerName), flush=True)
-         return experimentCrossValidate(train,test, learner, 2, self.statistics, protectedIndex, protectedValue)
+      return experimentCrossValidate(train,test,  self.svmLinearLearner, 2, self.statistics, protectedIndex, protectedValue)
       
