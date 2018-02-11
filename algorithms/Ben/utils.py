@@ -147,7 +147,7 @@ def experimentCrossValidate(Train, Test, learner, times, statistics, protectedIn
      variances[i] = variance(variances[i])
   #prediction on test data
    prediction=[]
-   for datapoints in test:
+   for datapoints in Test:
     y=classifier_t(datapoints[0])
     prediction.append(y)
    return prediction
