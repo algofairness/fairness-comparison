@@ -7,7 +7,7 @@ from data.objects.ProcessedData import TAGS
 
 def run(algname, data = Adult(), measure = 'accuracy'):
     for filename in make_filenames(algname, measure, data):
-        outfile = filename + '.correctedbest'
+        outfile = filename + '.correctedbest.csv'
         out = open(outfile, 'w')
         print(filename)
         f = pd.read_csv(filename)
