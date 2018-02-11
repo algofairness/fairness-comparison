@@ -5,22 +5,33 @@ date: "2/9/2018"
 output: html_document
 ---
 
-# Function definitions
+# Function definitions, setup
 
 ```{r}
 library(stringr)
 library(ggplot2)
 library(dplyr)
 library(magrittr)
+```
 
-catscale = scale_colour_manual(values=c(
+We'll be showing many different charts with a large number of different attributes, so a good
+categorical color scale is helpful. We're using [d3](https://d3js.org) `d3.schemeCategory10` and `d3.schemeCategory20`.
+
+```{r}
+# Use these for more than 10 algorithms
+colors_20 = c(
   "#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a", "#d62728", "#ff9896",
   "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7",
-  "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"))
-catscale2 = scale_fill_manual(values=c(
-  "#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a", "#d62728", "#ff9896",
-  "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7",
-  "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"))
+  "#bcbd22", "#dbdb8d", "#17becf", "#9edae5")
+
+# Use these for 10 or fewer algorithms
+colors_10 = c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf")
+
+catscale10  = scale_colour_manual(values=colors_10)
+catscale10_2 = scale_fill_manual(values=colors_10)
+
+catscale20  = scale_colour_manual(values=colors_20)
+catscale20_2 = scale_fill_manual(values=colors_20)
 
 create_sensitivity_summary = function(df, x_var, y_var) {
   quo_x_var = enquo(x_var)
@@ -39,7 +50,7 @@ create_sensitivity_summary = function(df, x_var, y_var) {
 }
 
 basic_sensitivity_plot = function(sensitivity_summary, x_var, y_var) {
-  ggplot(sensitivity_summary, aes(x=x_mean, y=y_mean, colour=algorithm)) + catscale + catscale2 +
+  ggplot(sensitivity_summary, aes(x=x_mean, y=y_mean, colour=algorithm)) + catscale10 + catscale10_2 +
     xlab(quo_name(enquo(x_var))) + ylab(quo_name(enquo(y_var)))
 }
 
@@ -139,7 +150,7 @@ plot_tradeoff = function(measure, dataset) {
   df = nb_measure_comparison(dataset, measure)
   var1 <- as.name(str_c(measure, "-numerical"))
   var2 <- as.name(str_c(measure, "-binsensitive"))
-  ggplot(df, aes_q(x=var1, y=var2, colour=quote(algorithm))) + catscale + catscale2 +
+  ggplot(df, aes_q(x=var1, y=var2, colour=quote(algorithm))) + catscale20 + catscale20_2 +
     geom_point() + ggtitle(str_c(dataset, ", measure: ", measure))
 }
 
