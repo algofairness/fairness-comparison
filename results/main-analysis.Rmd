@@ -160,7 +160,7 @@ make_sensitivity_figure = function(name) {
     filter(algorithm %in% algos_to_plot) %>% 
     mutate(algorithm=recode(algorithm, ZafarFairness="Zafar")) # rename to Zafar for clarity
   
-  plot_sensitivity(df, "DIavgall", "accuracy")
+  plot_sensitivity(df, "DIbinary", "accuracy")
 }
 
 p = make_sensitivity_figure("adult_sex_numerical-binsensitive.csv") +
@@ -187,7 +187,7 @@ Algorithms can state what their parameter grid search values are, since these ca
 ```{r}
 param_regex = "[01].[0-9]+"
 
-adult_race_params = read.csv("Feldman-SVM-DIavgall_adult_race_numerical-binsensitive.csv", stringsAsFactors = FALSE, check.names=TRUE) %>% 
+adult_race_params = read.csv("paramgrid-results/Feldman-SVM-DIavgall_adult_race_numerical-binsensitive.csv", stringsAsFactors = FALSE, check.names=TRUE) %>% 
     mutate(lambda=as.numeric(str_extract(params, param_regex)))
 p = ggplot(adult_race_params, aes(x=DIavgall, y=accuracy, colour=lambda)) + geom_point() + ggtitle("Adult dataset, race attribute")
 print(p)
@@ -195,7 +195,7 @@ ggsave("paper-figures/adult_race_params_feldman.png", p)
 ```
 
 ```{r}
-ricci_race_params = read.csv("ZafarFairness-DIavgall_ricci_Race_numerical-binsensitive.csv", stringsAsFactors = FALSE, check.names=FALSE) %>% 
+ricci_race_params = read.csv("paramgrid-results/ZafarFairness-DIavgall_ricci_Race_numerical-binsensitive.csv", stringsAsFactors = FALSE, check.names=FALSE) %>% 
   mutate(c=as.numeric(str_extract(params, param_regex))) %>% 
   filter(c>=0.01) # skip low range of parameter setting to avoid overweighting the correlation matrices
 # ggplot(ricci_race_params, aes(x=DIavgall, y=`Race-calibration-`, colour=c)) + geom_point()
@@ -245,34 +245,46 @@ compute_measure_correlation_matrix = function(df, measures) {
 For Ricci and Zafar:
 
 ```{r}
+# consistent_measures = c("DIbinary", "DIavgall", "CV", "TNR", "TPR", "accuracy", "BCR", "MCC")
+
 # numeric_columns = sapply(ricci_race_params, class) == "numeric"
 # ricci_measures = subset(colnames(ricci_race_params), numeric_columns)
-# ricci_m = compute_measure_correlation_matrix(ricci_race_params, ricci_measures)
+
+# ricci_measures
+# ricci_m = compute_measure_correlation_matrix(
+#   ricci_race_params, 
+#   c(consistent_measures[1:3], "Race-calibration-", 
+#     consistent_measures[-(1:3)], "Race-accuracy", "0-accuracy", "1-accuracy", "Race-calibration+",
+#     "Race-TNR", "Race-TPR"))
+
 # symmetrize the matrix manually because robust correlation as we compute it is not
 # necessarily symmetric
-# ricci_m = (ricci_m + t(ricci_m))/2
 
 
 # BUG: I'm having a hard time making RMarkDown save this to a file :( type this in your
 # console instead...
 #
-# corrplot(ricci_m, method="color", order="hclust", tl.cex=0.5)
 # png(file="paper-figures/ricci_measures_correlation.png")
+
+# corrplot(ricci_m, method="color", order="original")
 ```
 
 For Adult and Feldman-SVM:
 
 ```{r}
-
 # numeric_columns = sapply(adult_race_params, class) == "numeric"
 # adult_measures = subset(colnames(adult_race_params), numeric_columns)
-# adult_m = compute_measure_correlation_matrix(adult_race_params, adult_measures)
-# adult_m = (adult_m + t(adult_m))/2
+
+# adult_m = compute_measure_correlation_matrix(
+#   adult_race_params, 
+#   c("X1.accuracy", "TPR", "race.TPR", "TNR", "X0.accuracy", "race.TNR", "race.calibration.", "BCR", "MCC", "accuracy", "race.accuracy", "race.calibration..1", "CV", "DIbinary", "DIavgall"))
+  #c(consistent_measures[1:3], "race.calibration..1", 
+  #  consistent_measures[-(1:3)], "race.accuracy", "X0.accuracy", "X1.accuracy", "race.calibration.",
+  #  "race.TPR", "race.TNR"))
 
 # BUG: I'm having a hard time making RMarkDown save this to a file :( type this in your
 # console instead...
 #
-# corrplot(adult_m, method="color", order="hclust", tl.cex=0.5)
-# png(file="paper-figures/adult_measures_correlation.png")
+# corrplot(adult_m, method="color", order="original")
 ```
 
