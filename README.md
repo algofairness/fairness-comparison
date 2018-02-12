@@ -32,3 +32,25 @@ You'll need `python3-dev`:
 
     $ sudo apt-get install python3-dev
 
+
+### Additional analysis-specific requirements
+
+To regenerate figures (this is messy right now. we're working on it)
+
+Python requirements (use pip):
+
+* `ggplot`
+
+System requirements:
+
+* `pandoc`
+* R
+
+R package requirements (use `install.packages`):
+
+* `stringr`
+* `ggplot2`
+* `dplyr`
+* `magrittr`
+* `corrplot`
+* `robust`

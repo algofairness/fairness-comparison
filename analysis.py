@@ -2,6 +2,7 @@ import fire
 import pandas as pd
 import pathlib
 import sys
+import subprocess
 
 from ggplot import *
 
@@ -22,6 +23,9 @@ def run(dataset = get_dataset_names(), graphs = GRAPHS):
                 print("    type:" + tag)
                 filename = dataset_obj.get_results_filename(sensitive, tag)
                 make_all_graphs(filename, graphs)
+    print("Generating additional figures in R...")
+    subprocess.run(["Rscript",
+                    "results/generate-report.R"])
 
 def make_all_graphs(filename, graphs):
     try:
@@ -79,6 +83,10 @@ def generate_graph(f, xaxis_measure, yaxis_measure, title):
     p.save('results/analysis/%s/%s-%s.png' % (title, xaxis_measure, yaxis_measure),
            width=20,
            height=6)
+
+def generate_rmd_output():
+    subprocess.run(["Rscript",
+                    "results/generate-report.R"])
 
 def main():
     fire.Fire(run)
