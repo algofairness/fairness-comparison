@@ -124,7 +124,7 @@ plot_tradeoff = function(measure, dataset) {
   df = nb_measure_comparison(dataset, measure)
   var1 <- as.name(str_c(measure, "-numerical"))
   var2 <- as.name(str_c(measure, "-binsensitive"))
-  ggplot(df %>% filter(!(algorithm %in% c("LR", "SVM", "GaussianNB", "DecisionTree"))), aes_q(x=var1, y=var2, colour=quote(algorithm))) + catscale10 + catscale10_2 + geom_abline(a=0,b=1, colour="gray") +
+  ggplot(df %>% filter(!(algorithm %in% c("LR", "SVM", "GaussianNB"))), aes_q(x=var1, y=var2, colour=quote(algorithm))) + catscale10 + catscale10_2 + geom_abline(a=0,b=1, colour="gray") +
     geom_point() + ggtitle(str_c(dataset, ", measure: ", measure)) 
 }
 
@@ -140,6 +140,10 @@ ggsave("paper-figures/preprocessing-tradeoff-DIavgall.png", p)
 p = plot_tradeoff("DIbinary", "german_sex-age")
 print(p)
 ggsave("paper-figures/preprocessing-tradeoff-DIbinary.png", p)
+```
+```{r}
+p = plot_tradeoff("DIbinary", "german_sex-age")
+print(p)
 ```
 
 ## Algorithm sensitivity
@@ -159,12 +163,12 @@ algos_to_plot = c(
   "Feldman-SVM", "DecisionTree", 
   "Feldman-DecisionTree", "Kamishima")
 
-make_sensitivity_figure = function(name) {
+make_sensitivity_figure = function(name, var1="DIbinary", var2="accuracy") {
   df = read.csv(name, check.names=TRUE) %>% 
     filter(algorithm %in% algos_to_plot) %>% 
     mutate(algorithm=recode(algorithm, ZafarFairness="Zafar")) # rename to Zafar for clarity
   
-  plot_sensitivity(df, "DIbinary", "accuracy")
+  plot_sensitivity(df, var1, var2)
 }
 
 p = make_sensitivity_figure("adult_sex_numerical-binsensitive.csv") +
@@ -182,6 +186,12 @@ p = make_sensitivity_figure("adult_race-sex_numerical-binsensitive.csv") +
 print(p)
 ggsave("paper-figures/adult_race-sex_sensitivity.png", p)
 
+```
+
+```{r}
+p = make_sensitivity_figure("propublica-violent-recidivism_race_numerical-binsensitive.csv", "DIavgall") +
+  ggtitle("Propublica violent recidivism dataset, race attribute")
+print(p)
 ```
 
 ### Parameter setting tradeoffs
@@ -292,3 +302,37 @@ For Adult and Feldman-SVM:
 # corrplot(adult_m, method="color", order="original")
 ```
 
+# Multiple sensitive attributes
+
+```{r}
+race = read.csv("adult_race_numerical.csv")
+sex = read.csv("adult_sex_numerical.csv")
+both = read.csv("adult_race-sex_numerical.csv")
+race$repair = "race"
+sex$repair = "sex"
+both$repair = "both"
+
+df = rbind(race, sex, both) %>% 
+  filter(algorithm %in% c("ZafarFairness", "Calders", "Kamishima", "Feldman-GaussianNB"))
+
+p = ggplot(df, aes(x=DIavgall, y=accuracy, colour=repair)) + catscale10 + catscale10_2 + stat_ellipse(geom="polygon", level=0.5, alpha=0.1) + geom_point(alpha=0.3) + ggtitle("Adult dataset") + facet_wrap(~algorithm)
+print(p)
+ggsave("paper-figures/adult-multivariate-repair-tradeoff.png", p)
+```
+
+```{r}
+age = read.csv("german_age_numerical.csv")
+sex = read.csv("german_sex_numerical.csv")
+both = read.csv("german_sex-age_numerical.csv")
+age$repair = "age"
+sex$repair = "sex"
+both$repair = "both"
+
+df = rbind(age, sex, both) %>% 
+  filter(algorithm %in% c("ZafarFairness", "Calders", "Kamishima", "Feldman-SVM"))
+
+p = ggplot(df, aes(x=DIavgall, y=accuracy, colour=repair)) + catscale10 + catscale10_2 + stat_ellipse(geom="polygon", level=0.5, alpha=0.1) + geom_point(alpha=0.3) + ggtitle("German dataset") + facet_wrap(~algorithm)
+
+print(p)
+ggsave("paper-figures/german-multivariate-repair-tradeoff.png", p)
+```
