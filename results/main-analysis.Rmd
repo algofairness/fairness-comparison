@@ -124,8 +124,8 @@ plot_tradeoff = function(measure, dataset) {
   df = nb_measure_comparison(dataset, measure)
   var1 <- as.name(str_c(measure, "-numerical"))
   var2 <- as.name(str_c(measure, "-binsensitive"))
-  ggplot(df, aes_q(x=var1, y=var2, colour=quote(algorithm))) + catscale20 + catscale20_2 +
-    geom_point() + ggtitle(str_c(dataset, ", measure: ", measure))
+  ggplot(df %>% filter(!(algorithm %in% c("LR", "SVM", "GaussianNB", "DecisionTree"))), aes_q(x=var1, y=var2, colour=quote(algorithm))) + catscale10 + catscale10_2 + geom_abline(a=0,b=1, colour="gray") +
+    geom_point() + ggtitle(str_c(dataset, ", measure: ", measure)) 
 }
 
 # measure = "accuracy"
@@ -136,6 +136,10 @@ ggsave("paper-figures/preprocessing-tradeoff-accuracy.png", p)
 p = plot_tradeoff("DIavgall", "german_sex-age")
 print(p)
 ggsave("paper-figures/preprocessing-tradeoff-DIavgall.png", p)
+
+p = plot_tradeoff("DIbinary", "german_sex-age")
+print(p)
+ggsave("paper-figures/preprocessing-tradeoff-DIbinary.png", p)
 ```
 
 ## Algorithm sensitivity
