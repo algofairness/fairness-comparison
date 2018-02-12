@@ -314,7 +314,7 @@ both$repair = "both"
 
 df = rbind(race, sex, both) %>% 
   filter(algorithm %in% c("ZafarFairness", "Calders", "Kamishima", "Feldman-GaussianNB"))
-
+df$repair <- factor(df$repair, levels = c("race", "sex", "both"))
 p = ggplot(df, aes(x=DIavgall, y=accuracy, colour=repair)) + catscale10 + catscale10_2 + stat_ellipse(geom="polygon", level=0.5, alpha=0.1) + geom_point(alpha=0.3) + ggtitle("Adult dataset") + facet_wrap(~algorithm)
 print(p)
 ggsave("paper-figures/adult-multivariate-repair-tradeoff.png", p)
@@ -330,6 +330,7 @@ both$repair = "both"
 
 df = rbind(age, sex, both) %>% 
   filter(algorithm %in% c("ZafarFairness", "Calders", "Kamishima", "Feldman-SVM"))
+df$repair <- factor(df$repair, levels = c("age", "sex", "both"))
 
 p = ggplot(df, aes(x=DIavgall, y=accuracy, colour=repair)) + catscale10 + catscale10_2 + stat_ellipse(geom="polygon", level=0.5, alpha=0.1) + geom_point(alpha=0.3) + ggtitle("German dataset") + facet_wrap(~algorithm)
 
