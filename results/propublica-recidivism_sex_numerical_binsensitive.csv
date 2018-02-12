@@ -1,0 +1,2 @@
+algorithm,params,accuracy,TPR,TNR,BCR-outcome,MCC,DisparateImpact,CV,BCR
+SVM,{},0.666666666667,0.5,1.0,0.75,0.5,0.0,1.5,0.5
