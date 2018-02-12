@@ -43,8 +43,8 @@ Python requirements (use pip):
 
 System requirements:
 
-* `pandoc`
-* R
+* `pandoc`  (`brew install pandoc` on a Mac or `apt-get install pandoc` on Linux)
+* R  (Mac download link: https://cran.rstudio.com/bin/macosx/R-3.4.3.pkg)
 
 R package requirements (use `install.packages`):
 
