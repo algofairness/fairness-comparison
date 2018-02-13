@@ -1,4 +1,6 @@
-This repository is meant to facilitate the benchmarking of fairness aware machine learning algorithms.
+This repository is meant to facilitate the benchmarking of fairness aware machine learning algorithms.  
+
+*This specific branch represents the state of the code as of the arXiv paper (v1).*
 
 To run the benchmarks, clone the repository and run:
 
