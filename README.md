@@ -1,5 +1,9 @@
 This repository is meant to facilitate the benchmarking of fairness aware machine learning algorithms.
 
+The associated paper is:
+
+A comparative study of fairness-enhancing interventions in machine learning by Sorelle A. Friedler, Carlos Scheidegger, Suresh Venkatasubramanian, Sonam Choudhary, Evan P. Hamilton, and Derek Roth. https://arxiv.org/abs/1802.04422
+
 To run the benchmarks, clone the repository and run:
 
     $ python3 benchmark.py
