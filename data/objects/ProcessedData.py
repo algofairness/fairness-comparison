@@ -33,7 +33,7 @@ class ProcessedData():
 
             split_ix = int(n * TRAINING_PERCENT)
             train_fraction = a[:split_ix]
-            test_fraction = a[:split_ix]
+            test_fraction = a[split_ix:]
             
             for (k, v) in self.dfs.items():
                 train = self.dfs[k].iloc[train_fraction]
