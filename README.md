@@ -52,6 +52,7 @@ System requirements:
 
 R package requirements (use `install.packages`):
 
+* `rmarkdown`
 * `stringr`
 * `ggplot2`
 * `dplyr`
