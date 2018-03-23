@@ -10,7 +10,7 @@ from data.objects.list import DATASETS, get_dataset_names
 from data.objects.ProcessedData import TAGS
 
 # The graphs to generate: (xaxis measure, yaxis measure)
-GRAPHS = [('DIavgall', 'accuracy'), ('DIavgall', 'TPR')]
+GRAPHS = [('DIbinary', 'accuracy'), ('sex-TPR', 'sex-calibration-')]
 
 def run(dataset = get_dataset_names(), graphs = GRAPHS):
     for dataset_obj in DATASETS:
@@ -51,38 +51,43 @@ def all_possible_graphs(f):
     return graphs
 
 def generate_graph(f, xaxis_measure, yaxis_measure, title):
-    col1 = f[xaxis_measure]
-    col2 = f[yaxis_measure]
-
-    if len(col1) == 0:
-        print("Skipping graph containing no data:" + title)
+    try:
+        col1 = f[xaxis_measure]
+        col2 = f[yaxis_measure]
+    except:
+        print("Skipping measures: " + xaxis_measure + " " + yaxis_measure)
         return
+    else:
 
-    if col1[0] == 'None':
-        print("Skipping missing column %s" % xaxis_measure)
-        return
-
-    if col2[0] == 'None':
-        print("Skipping missing column %s" % yaxis_measure)
-        return
-
-    pathlib.Path("results/analysis/%s" % title).mkdir(parents=True, exist_ok=True)
-    # scale = scale_color_brewer(type='qual', palette=1)
-    # d3.schemeCategory20
-    # ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a", "#d62728", "#ff9896",
-    #  "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7",
-    #  "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"]
-    scale = scale_color_manual(
-                values=["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a",
-                        "#d62728", "#ff9896", "#9467bd", "#c5b0d5", "#8c564b", "#c49c94",
-                        "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7", "#bcbd22", "#dbdb8d",
-                        "#17becf", "#9edae5"])
-    p = (ggplot(f, aes(x=xaxis_measure, y=yaxis_measure, colour='algorithm')) +
-         geom_point(size=50) + ggtitle(title) + scale)
-    print(xaxis_measure, yaxis_measure)
-    p.save('results/analysis/%s/%s-%s.png' % (title, xaxis_measure, yaxis_measure),
-           width=20,
-           height=6)
+        if len(col1) == 0:
+            print("Skipping graph containing no data:" + title)
+            return
+ 
+        if col1[0] == 'None':
+            print("Skipping missing column %s" % xaxis_measure)
+            return
+ 
+        if col2[0] == 'None':
+            print("Skipping missing column %s" % yaxis_measure)
+            return
+ 
+        pathlib.Path("results/analysis/%s" % title).mkdir(parents=True, exist_ok=True)
+        # scale = scale_color_brewer(type='qual', palette=1)
+        # d3.schemeCategory20
+        # ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a", "#d62728", "#ff9896",
+        #  "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7",
+        #  "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"]
+        scale = scale_color_manual(
+                    values=["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a",
+                            "#d62728", "#ff9896", "#9467bd", "#c5b0d5", "#8c564b", "#c49c94",
+                            "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7", "#bcbd22", "#dbdb8d",
+                            "#17becf", "#9edae5"])
+        p = (ggplot(f, aes(x=xaxis_measure, y=yaxis_measure, colour='algorithm')) +
+             geom_point(size=50) + ggtitle(title) + scale)
+        print(xaxis_measure, yaxis_measure)
+        p.save('results/analysis/%s/%s-%s.png' % (title, xaxis_measure, yaxis_measure),
+               width=20,
+               height=6)
 
 def generate_rmd_output():
     subprocess.run(["Rscript",
