@@ -24,35 +24,30 @@ class SDBSVM(Algorithm):
 
    @arrayErrorBars(2)
    def statistics(self, train, test, protectedIndex, protectedValue, learner):
-      #print("in statistics-----------------------",train[0])
+      #print("in statistics test-----------------------",test)
       h = learner(train, protectedIndex, protectedValue)
       #print("Computing error")
       error = labelError(test, h)
-      #print("Computing bias")
+      #print("error on test set-------------------------", error)
       bias = signedStatisticalParity(test, protectedIndex, protectedValue, h)
       #print("Computing UBIF")
       ubif = individualFairness(train, learner, 0.2, passProtected=True)
       return error, bias, ubif
 
+   def column_shift(self, data_df , class_attr):
+      label_index = data_df.columns.get_loc(class_attr)
+      cols=data_df.columns.tolist()
+      cols=cols[:int(label_index)]+cols[int(label_index+1):len(cols)]+[class_attr]
+      data_df=data_df[cols]
+      data = data_df.values.tolist()
+      return data
+
    def run(self, train_df, test_df, class_attr, positive_class_val, sensitive_attrs,
             single_sensitive, privileged_vals, params):
       # shifted labels to last column 
-      label_index = train_df.columns.get_loc(class_attr)
-      cols=train_df.columns.tolist()
-      cols=cols[:int(label_index)]+cols[int(label_index+1):len(cols)]+[class_attr]
-      train_df=train_df[cols]
-      train = train_df.values.tolist()
+      train = self.column_shift(train_df, class_attr)
       unique_labels= list(OrderedDict().fromkeys(i[-1] for i in train))
-
-      #label_index = test_df.columns.get_loc(class_attr)
-      cols_t=test_df.columns.tolist()
-      cols_t=cols_t[:int(label_index)]+cols_t[int(label_index+1):len(cols_t)]+[class_attr]
-      test_df= test_df[cols_t]
-      test = test_df.values.tolist()
-      #unique_labels= list(OrderedDict().fromkeys(i[-1] for i in train))
-      
-     # print("test_df--------------------",test_df[class_attr])
-     # print("train_df-----------------",train_df[class_attr])
+      test = self.column_shift(test_df,class_attr)
       train_labels=[]
       train_data_points=[]
       test_labels=[]
@@ -74,7 +69,7 @@ class SDBSVM(Algorithm):
       protectedIndex = train_df.columns.get_loc(sensitive_attrs[0])
       protectedValue = privileged_vals[0]
      
-      prediction_=self.runAll(train,test, protectedIndex, protectedValue)
+      prediction_ =self.runAll(train,test, protectedIndex, protectedValue)
       prediction_labels = list(set(prediction_))
       # change prediction back to original
       prediction=[]
@@ -85,10 +80,14 @@ class SDBSVM(Algorithm):
             else:
                item = unique_labels[1]
          prediction.append(int(item))
-      #print ("Predictitons----------------------",prediction)
       return  prediction, []
    
-
+   def lrLearner(self, train, protectedIndex, protectedValue):
+      marginAnalyzer = lrSKLMarginAnalyzer(train, protectedIndex, protectedValue)
+      shift = marginAnalyzer.optimalShift()
+      #print('best shift is: %r' % (shift,))
+      return marginAnalyzer.conditionalShiftClassifier(shift)
+   
    def svmLearner(self, train, protectedIndex, protectedValue):
       marginAnalyzer = svmRBFMarginAnalyzer(train, protectedIndex, protectedValue)
       shift = marginAnalyzer.optimalShift()
@@ -111,13 +110,14 @@ class SDBSVM(Algorithm):
 
    def runAll(self,train, test, protectedIndex, protectedValue):
       #print("Shifted Decision Boundary Relabeling")
-      dataset = test+train
+      #dataset = test+train
       experiments = [
-      ('SVM', self.svmLearner),
-      ('SVMlinear', self.svmLinearLearner)
+      ('SVM', self.svmLinearLearner),
+      ('SVM', self.svmLearner)
+      #('lrLearner', self.lrLearner),
          ]
 
       for (learnerName, learner) in experiments:
-         print("%s" % (learnerName), flush=True)
-      return experimentCrossValidate(train,test,  self.svmLinearLearner, 2, self.statistics, protectedIndex, protectedValue)
+         #print("%s" % (learnerName), flush=True)
+         return experimentCrossValidate(train, test, learner, 2, self.statistics, protectedIndex, protectedValue)
       
