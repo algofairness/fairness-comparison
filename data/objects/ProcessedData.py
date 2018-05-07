@@ -1,42 +1,57 @@
 import pandas as pd
+import numpy
+import numpy.random
 
+TAGS = ["original", "numerical", "numerical-binsensitive", "categorical-binsensitive"]
 TRAINING_PERCENT = 2.0 / 3.0
 
 class ProcessedData():
     def __init__(self, data_obj):
         self.data = data_obj
-        self.processed_df = pd.read_csv(self.data.get_processed_filename())
-        self.numerical_df = pd.read_csv(self.data.get_processed_numerical_filename())
-        self.binsensitive_df = pd.read_csv(self.data.get_processed_binsensitive_filename())
-        self.processed_splits = []
-        self.numerical_splits = []
-        self.binsensitive_splits = []
+        self.dfs = dict((k, pd.read_csv(self.data.get_filename(k)))
+                        for k in TAGS)
+        self.splits = dict((k, []) for k in TAGS)
+        self.has_splits = False
 
-    def get_processed_filename(self):
-        return self.data.get_processed_filename()
+    def get_processed_filename(self, tag):
+        return self.data.get_filename(tag)
 
-    def get_processed_numerical_filename(self):
-        return self.data.get_processed_numerical_filename()
-
-    def get_processed_dataframe(self):
-        return self.processed_df
-
-    def get_processed_numerical_dataframe(self):
-        return self.numerical_df
+    def get_dataframe(self, tag):
+        return self.dfs[tag]
 
     def create_train_test_splits(self, num):
-        if len(self.processed_splits) > 0:
-            return self.processed_splits, self.numerical_splits
+        if self.has_splits:
+            return self.splits
 
         for i in range(0, num):
-            train = self.processed_df.sample(frac = TRAINING_PERCENT)
-            test = self.processed_df.drop(train.index)
-            self.processed_splits.append((train, test))
-            train = self.numerical_df.sample(frac = TRAINING_PERCENT)
-            test = self.numerical_df.drop(train.index)
-            self.numerical_splits.append((train, test))
-            train = self.binsensitive_df.sample(frac = TRAINING_PERCENT)
-            test = self.binsensitive_df.drop(train.index)
-            self.binsensitive_splits.append((train, test))
+            # we first shuffle a list of indices so that each subprocessed data
+            # is split consistently
+            n = len(list(self.dfs.values())[0])
 
-        return self.processed_splits, self.numerical_splits, self.binsensitive_splits
+            a = numpy.arange(n)
+            numpy.random.shuffle(a)
+
+            split_ix = int(n * TRAINING_PERCENT)
+            train_fraction = a[:split_ix]
+            test_fraction = a[split_ix:]
+            
+            for (k, v) in self.dfs.items():
+                train = self.dfs[k].iloc[train_fraction]
+                test = self.dfs[k].iloc[test_fraction]
+                self.splits[k].append((train, test))
+
+        self.has_splits = True
+        return self.splits
+
+    def get_sensitive_values(self, tag):
+        """
+        Returns a dictionary mapping sensitive attributes in the data to a list of all possible
+        sensitive values that appear.
+        """
+        df = self.get_dataframe(tag)
+        all_sens = self.data.get_sensitive_attributes_with_joint()
+        sensdict = {}
+        for sens in all_sens:
+             sensdict[sens] = list(set(df[sens].values.tolist()))
+        return sensdict
+

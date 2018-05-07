@@ -51,12 +51,12 @@ class FeldmanAlgorithm(Algorithm):
 
         return data_df
 
-    def numerical_data_only(self):
+    def get_supported_data_types(self):
         """
         The Feldman algorithm can preprocess both numerical and categorical data, the limiting
         factor is the capacity of the model that data is then passed to.
         """
-        return self.model.numerical_data_only()
+        return self.model.get_supported_data_types()
 
     def binary_sensitive_attrs_only(self):
         return False

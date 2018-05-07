@@ -15,9 +15,3 @@ class Adult(Data):
                                   'capital-loss', 'hours-per-week', 'native-country',
                                   'income-per-year' ]
         self.missing_val_indicators = ['?']
-	
-    def data_specific_processing(self, dataframe):
-        return dataframe
-
-    def handle_missing_data(self, dataframe):
-        return dataframe

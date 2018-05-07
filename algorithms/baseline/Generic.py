@@ -21,13 +21,10 @@ class Generic(Algorithm):
         X_test = test_df_nosensitive.drop(class_attr, axis=1)
         predictions = classifier.predict(X_test)
 
-        return predictions
+        return predictions, []
 
-    def numerical_data_only(self):
-        """
-        Returns True if this algorithm can only handle numerical data as input.
-        """
-        return True
+    def get_supported_data_types(self):
+        return set(["numerical", "numerical-binsensitive"])
 
     def get_classifier(self):
         """

@@ -1,13 +1,9 @@
+import pandas as pd
+
 RAW_DATA_DIR = 'data/raw/'
 PROCESSED_DATA_DIR = 'data/preprocessed/'
 RESULT_DIR = "results/"
 ANALYSIS_DIR = "analysis/"
-
-PROCESSED_ALL_STUB = "_processed.csv"
-RESULTS_ALL_STUB = "_results.csv"
-ANALYSIS_ALL_STUB = "_analysis.csv"
-NUM_STUB = "_numerical.csv"
-BINSENS_STUB = "_numerical_binsensitive.csv"
 
 class Data():
     def __init__(self):
@@ -26,11 +22,15 @@ class Data():
         """
         return self.class_attr
 
-    def get_positive_class_val(self):
+    def get_positive_class_val(self, tag):
         """
         Returns the value used in the dataset to indicate the positive classification choice.
         """
-        return self.positive_class_val
+        # FIXME this dependence between tags and metadata is bad; don't know how to fix it right now
+        if tag == 'numerical-binsensitive':
+            return 1
+        else:
+            return self.positive_class_val
 
     def get_sensitive_attributes(self):
         """
@@ -48,22 +48,28 @@ class Data():
             return self.get_sensitive_attributes() + ['-'.join(self.get_sensitive_attributes())]
         return self.get_sensitive_attributes()
 
-    def get_privileged_class_names(self):
+    def get_privileged_class_names(self, tag):
         """
         Returns a list in the same order as the sensitive attributes list above of the
         privileged class name (exactly as it appears in the data) of the associated sensitive
         attribute.
         """
-        return self.privileged_class_names
+        # FIXME this dependence between tags and privileged class names is bad; don't know how to
+        # fix it right now
+        if tag == 'numerical-binsensitive':
+            return [1 for x in self.get_sensitive_attributes()]
+        else:
+            return self.privileged_class_names
 
-    def get_privileged_class_names_with_joint(self):
+    def get_privileged_class_names_with_joint(self, tag):
         """
         Same as get_privileged_class_names, but also includes the joint sensitive attribute if there
         is more than one sensitive attribute.
         """
-        if len(self.get_privileged_class_names()) > 1:
-            return self.get_privileged_class_names() + ['-'.join(self.get_privileged_class_names())]
-        return self.get_privileged_class_names()
+        priv_class_names = self.get_privileged_class_names(tag)
+        if len(priv_class_names) > 1:
+            return priv_class_names + ['-'.join(str(v) for v in priv_class_names)]
+        return priv_class_names
 
     def get_categorical_features(self):
         """
@@ -79,40 +85,28 @@ class Data():
     def get_missing_val_indicators(self):
         return self.missing_val_indicators
 
+    def load_raw_dataset(self):
+        data_path = self.get_raw_filename()
+        data_frame = pd.read_csv(data_path, error_bad_lines=False,
+                                 na_values=self.get_missing_val_indicators(),
+                                 encoding = 'ISO-8859-1')
+        return data_frame
+
     def get_raw_filename(self):
         return RAW_DATA_DIR + self.get_dataset_name() + '.csv'
 
-    def get_processed_filename(self):
-        return PROCESSED_DATA_DIR + self.get_dataset_name() + PROCESSED_ALL_STUB
+    def get_filename(self, tag):
+        return PROCESSED_DATA_DIR + self.get_dataset_name() + "_" + tag + '.csv'
 
-    def get_processed_numerical_filename(self):
-        return PROCESSED_DATA_DIR + self.get_dataset_name() + NUM_STUB
+    def get_results_filename(self, sensitive_attr, tag):
+        return RESULT_DIR + self.get_dataset_name() + "_" + sensitive_attr + "_" + tag + '.csv'
 
-    def get_processed_binsensitive_filename(self):
-        """
-        Returns the filename for a processed version of this dataset that is all numerical with a
-        binary (numerical) sensitive attribute.  All privileged values will be replaced by 1 and
-        all other sensitive values by 0.
-        """
-        return PROCESSED_DATA_DIR + self.get_dataset_name() + BINSENS_STUB
+    def get_param_results_filename(self, sensitive_attr, tag, algname):
+        return RESULT_DIR + algname + '_' + self.get_dataset_name() + "_" + sensitive_attr + \
+               "_" + tag + '.csv'
 
-    def get_results_filename(self, sensitive_attr):
-        return RESULT_DIR + self.get_dataset_name() + "_" + sensitive_attr + RESULTS_ALL_STUB
-
-    def get_results_numerical_filename(self, sensitive_attr):
-        return RESULT_DIR + self.get_dataset_name() + "_" + sensitive_attr + NUM_STUB
-
-    def get_results_numerical_binsensitive_filename(self, sensitive_attr):
-        return RESULT_DIR + self.get_dataset_name() + "_" + sensitive_attr + BINSENS_STUB
-
-    def get_analysis_filename(self, sensitive_attr):
-        return ANALYSIS_DIR + self.get_dataset_name() + "_" + sensitive_attr + ANALYSIS_ALL_STUB
-
-    def get_analysis_numerical_filename(self, sensitive_attr):
-        return ANALYSIS_DIR + self.get_dataset_name() + "_" + sensitive_attr + NUM_STUB
-
-    def get_analysis_numerical_binsensitive_filename(self, sensitive_attr):
-        return ANALYSIS_DIR + self.get_dataset_name() + "_" + sensitive_attr + BINSENS_STUB
+    def get_analysis_filename(self, sensitive_attr, tag):
+        return ANALYSIS_DIR + self.get_dataset_name() + "_" + sensitive_attr + "_" + tag + '.csv'
 
     def data_specific_processing(self, dataframe):
         """

@@ -1,67 +1,97 @@
 import fire
-import statistics
-import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd
+import pathlib
+import sys
+import subprocess
+
+from ggplot import *
 
 from data.objects.list import DATASETS, get_dataset_names
-from metrics.list import METRICS
+from data.objects.ProcessedData import TAGS
 
-def run(dataset = get_dataset_names()):
+# The graphs to generate: (xaxis measure, yaxis measure)
+GRAPHS = [('DIbinary', 'accuracy'), ('sex-TPR', 'sex-calibration-')]
+
+def run(dataset = get_dataset_names(), graphs = GRAPHS):
     for dataset_obj in DATASETS:
         if not dataset_obj.get_dataset_name() in dataset:
             continue
 
-        all_sensitive_attributes = dataset_obj.get_sensitive_attributes_with_joint()
-        for sensitive in all_sensitive_attributes:
+        print("\nGenerating graphs for dataset:" + dataset_obj.get_dataset_name())
+        for sensitive in dataset_obj.get_sensitive_attributes_with_joint():
+            for tag in TAGS:
+                print("    type:" + tag)
+                filename = dataset_obj.get_results_filename(sensitive, tag)
+                make_all_graphs(filename, graphs)
+    print("Generating additional figures in R...")
+    subprocess.run(["Rscript",
+                    "results/generate-report.R"])
 
-            # Write summary files per dataset
-            write_summary_file(dataset_obj.get_results_numerical_binsensitive_filename(sensitive),
-                               dataset_obj.get_analysis_numerical_binsensitive_filename(sensitive))
-            write_summary_file(dataset_obj.get_results_numerical_filename(sensitive),
-                               dataset_obj.get_analysis_numerical_filename(sensitive))
-            write_summary_file(dataset_obj.get_results_filename(sensitive),
-                               dataset_obj.get_analysis_filename(sensitive))
+def make_all_graphs(filename, graphs):
+    try:
+       f = pd.read_csv(filename)
+    except:
+       print("File not found:" + filename)
+       return
+    else:
+        o = pathlib.Path(filename).parts[-1].split('.')[0]
+ 
+        if graphs == 'all':
+            graphs = all_possible_graphs(f)
+ 
+        for xaxis, yaxis in graphs:
+            generate_graph(f, xaxis, yaxis, o)
 
-            # Write graphs per dataset
-            make_graph(dataset_obj.get_dataset_name() + " dataset, " + sensitive + \
-                           " - numerical and binary sensitive",
-                       dataset_obj.get_analysis_numerical_binsensitive_filename(sensitive))
-            make_graph(dataset_obj.get_dataset_name() + " dataset, " + sensitive + \
-                           " - numerical",
-                       dataset_obj.get_analysis_numerical_filename(sensitive))
-            make_graph(dataset_obj.get_dataset_name() + " dataset, " + sensitive + \
-                           "- numerical and categorical",
-                       dataset_obj.get_analysis_filename(sensitive))
+def all_possible_graphs(f):
+    graphs = []
+    measures = list(f.columns.values)[2:]
+    for i, m1 in enumerate(measures):
+        for j, m2 in enumerate(measures):
+             graphs.append( (m1, m2) )
+    return graphs
 
-def write_summary_file(infile, outfile):
-    outf = open(outfile, 'w')
-    outf.write(summary_file_header())
-    df = pd.read_csv(infile)
-    algorithms = df.algorithm.unique()
-    for alg in algorithms:
-        line = alg
-        alg_rows = df.loc[df['algorithm'] == alg]
-        for metric in METRICS:
-            metric_vals = alg_rows[metric.get_name()].values.tolist()
-            line += ',' + str(statistics.mean(metric_vals)) + ',' + \
-                    str(statistics.stdev(metric_vals))
-        outf.write(line + '\n')
-    outf.close()
-    print("Wrote summary file:" + outfile)
+def generate_graph(f, xaxis_measure, yaxis_measure, title):
+    try:
+        col1 = f[xaxis_measure]
+        col2 = f[yaxis_measure]
+    except:
+        print("Skipping measures: " + xaxis_measure + " " + yaxis_measure)
+        return
+    else:
 
-def make_graph(graph_title, summary_file):
-    df = pd.read_csv(summary_file)
-    sns.lmplot(x='DisparateImpact', y='accuracy', data=df, fit_reg=False, hue='algorithm',
-               scatter_kws={"s": 100}, legend=True, legend_out=False)
-    ax = plt.gca()
-    ax.set_title(graph_title)
-    plt.axvline(x=1.0)
-    plt.show()
+        if len(col1) == 0:
+            print("Skipping graph containing no data:" + title)
+            return
+ 
+        if col1[0] == 'None':
+            print("Skipping missing column %s" % xaxis_measure)
+            return
+ 
+        if col2[0] == 'None':
+            print("Skipping missing column %s" % yaxis_measure)
+            return
+ 
+        pathlib.Path("results/analysis/%s" % title).mkdir(parents=True, exist_ok=True)
+        # scale = scale_color_brewer(type='qual', palette=1)
+        # d3.schemeCategory20
+        # ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a", "#d62728", "#ff9896",
+        #  "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7",
+        #  "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"]
+        scale = scale_color_manual(
+                    values=["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a",
+                            "#d62728", "#ff9896", "#9467bd", "#c5b0d5", "#8c564b", "#c49c94",
+                            "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7", "#bcbd22", "#dbdb8d",
+                            "#17becf", "#9edae5"])
+        p = (ggplot(f, aes(x=xaxis_measure, y=yaxis_measure, colour='algorithm')) +
+             geom_point(size=50) + ggtitle(title) + scale)
+        print(xaxis_measure, yaxis_measure)
+        p.save('results/analysis/%s/%s-%s.png' % (title, xaxis_measure, yaxis_measure),
+               width=20,
+               height=6)
 
-def summary_file_header():
-    line = "algorithm," + ",".join([x.get_name() + ",stdev" for x in METRICS]) + "\n"
-    return line
+def generate_rmd_output():
+    subprocess.run(["Rscript",
+                    "results/generate-report.R"])
 
 def main():
     fire.Fire(run)

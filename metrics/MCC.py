@@ -6,5 +6,6 @@ class MCC(Metric):
         Metric.__init__(self)
         self.name = 'MCC'
 
-    def calc(self, actual, predicted, sensitive, unprotected_vals, positive_pred):
+    def calc(self, actual, predicted, dict_of_sensitive_lists, single_sensitive_name,
+             unprotected_vals, positive_pred):
         return matthews_corrcoef(actual, predicted)
