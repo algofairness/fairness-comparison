@@ -33,6 +33,7 @@ def calc_pos_protected_percents(predicted, sensitive, unprotected_vals, positive
 
     return unprotected_pos_percent, protected_pos_percent
 
+
 def calc_prob_class_given_sensitive(predicted, sensitive, predicted_goal, sensitive_goal):
     """
     Returns P(predicted = predicted_goal | sensitive = sensitive_goal).  Assumes that predicted
@@ -76,3 +77,4 @@ def calc_fp_fn(actual, predicted, sensitive, unprotected_vals, positive_pred):
             elif(str(predicted_val)!=str(positive_pred))&(str(actual_val)==str(predicted_val)):
                     fn_protected+=1
     return fp_unprotected,fp_protected, fn_protected, fn_unprotected
+

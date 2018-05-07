@@ -18,6 +18,7 @@ from metrics.SensitiveMetric import SensitiveMetric
 from metrics.TNR import TNR
 from metrics.TPR import TPR
 
+
 METRICS = [ Accuracy(), TPR(), TNR(), BCR(), MCC(),        # accuracy metrics
             DIBinary(), DIAvgAll(), CV(),                  # fairness metrics
             SensitiveMetric(Accuracy), SensitiveMetric(TPR), SensitiveMetric(TNR),

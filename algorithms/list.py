@@ -7,10 +7,12 @@ from algorithms.baseline.DecisionTree import DecisionTree
 from algorithms.baseline.GaussianNB import GaussianNB
 from algorithms.baseline.LogisticRegression import LogisticRegression
 from algorithms.ParamGridSearch import ParamGridSearch
+from algorithms.Ben.SDBSVM import SDBSVM
 
 from metrics.DIAvgAll import DIAvgAll
 from metrics.Accuracy import Accuracy
 from metrics.MCC import MCC
+
 
 ALGORITHMS = [
    SVM(), GaussianNB(), LogisticRegression(), DecisionTree(),     # baseline
@@ -19,6 +21,7 @@ ALGORITHMS = [
    ZafarAlgorithmBaseline(),                                      # Zafar
    ZafarAlgorithmFairness(),
 #   ZafarAlgorithmAccuracy(),
+   SDBSVM(),                                                      # Ben
    ParamGridSearch(KamishimaAlgorithm(), Accuracy()),             # Kamishima params
    ParamGridSearch(KamishimaAlgorithm(), DIAvgAll()),
    FeldmanAlgorithm(SVM()), FeldmanAlgorithm(GaussianNB()),       # Feldman
