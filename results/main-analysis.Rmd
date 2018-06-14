@@ -209,15 +209,13 @@ ggsave("paper-figures/adult_race_params_feldman.png", p)
 ```
 
 ```{r}
-ricci_race_params = read.csv("paramgrid-results/ZafarFairness-DIavgall_ricci_Race_numerical-binsensitive.csv", stringsAsFactors = FALSE, check.names=FALSE) %>% 
-  mutate(c=as.numeric(str_extract(params, param_regex))) %>% 
-  filter(c>=0.01) # skip low range of parameter setting to avoid overweighting the correlation matrices
+ricci_race_params = read.csv("ricci_Race_numerical-binsensitive.csv", stringsAsFactors = FALSE, check.names=FALSE) 
 # ggplot(ricci_race_params, aes(x=DIavgall, y=`Race-calibration-`, colour=c)) + geom_point()
 #adult_race_params = read.csv("ZafarFairness-DIavgall_adult_race_numerical-binsensitive.csv", #stringsAsFactors = FALSE, check.names=TRUE) %>% 
 #  mutate(c=as.numeric(str_extract(params, param_regex))) %>% 
 #  filter(c>=0.01) # skip low range of parameter setting to avoid overweighting the correlation matrices
 
-p = ggplot(ricci_race_params, aes(x=DIavgall, y=accuracy, colour=c)) + geom_point() + ggtitle("Ricci dataset, Race attribute")
+p = ggplot(ricci_race_params, aes(x=DIavgall, y=accuracy, colour=algorithm)) + geom_point() + ggtitle("Ricci dataset, Race attribute")
 print(p)
 ggsave("paper-figures/ricci_race_params_zafar.png", p)
 ```
@@ -259,17 +257,42 @@ compute_measure_correlation_matrix = function(df, measures) {
 For Ricci and Zafar:
 
 ```{r}
-# consistent_measures = c("DIbinary", "DIavgall", "CV", "TNR", "TPR", "accuracy", "BCR", "MCC")
+consistent_measures = c("DIbinary", "DIavgall", "CV", "TNR", "TPR", "accuracy", "BCR", "MCC")
 
-# numeric_columns = sapply(ricci_race_params, class) == "numeric"
-# ricci_measures = subset(colnames(ricci_race_params), numeric_columns)
+load_and_compute_combined_datasets = function(dataset_names, attribute) {
+  measures = c(consistent_measures[1:3], str_c(attribute, "-calibration-"), 
+   consistent_measures[-(1:3)], str_c(attribute, "-accuracy"), 
+   "0-accuracy", "1-accuracy", str_c(attribute, "-calibration+"),
+   str_c(attribute, "-TNR"), str_c(attribute, "-TPR"))
+
+  datasets = lapply(dataset_names, function(dataset_name) {
+    dataset = read.csv(str_c(dataset_name, "_", attribute, "_numerical-binsensitive.csv"), stringsAsFactors = FALSE, check.names=FALSE) 
+    reduced_dataset = dataset[,c(measures, "algorithm")]
+    reduced_dataset$name = dataset_name
+    reduced_dataset
+  })
+  do.call(rbind, datasets)
+}
+load_and_compute_correlation_matrix = function(dataset_names, attribute) {
+  measures = c(consistent_measures[1:3], str_c(attribute, "-calibration-"), 
+   consistent_measures[-(1:3)], str_c(attribute, "-accuracy"), 
+   "0-accuracy", "1-accuracy", str_c(attribute, "-calibration+"),
+   str_c(attribute, "-TNR"), str_c(attribute, "-TPR"))
+
+    compute_measure_correlation_matrix(load_and_compute_combined_datasets(dataset_names, attribute), measures)
+}
+
+#consistent_measures = c("DIbinary", "DIavgall", "CV", "TNR", "TPR", "accuracy", "BCR", "MCC")
+
+#numeric_columns = sapply(ricci_race_params, class) == "numeric"
+#ricci_measures = subset(colnames(ricci_race_params), numeric_columns)
 
 # ricci_measures
-# ricci_m = compute_measure_correlation_matrix(
-#   ricci_race_params, 
-#   c(consistent_measures[1:3], "Race-calibration-", 
-#     consistent_measures[-(1:3)], "Race-accuracy", "0-accuracy", "1-accuracy", "Race-calibration+",
-#     "Race-TNR", "Race-TPR"))
+#ricci_m = compute_measure_correlation_matrix(
+# ricci_race_params, 
+# c(consistent_measures[1:3], "Race-calibration-", 
+#   consistent_measures[-(1:3)], "Race-accuracy", "0-accuracy", "1-accuracy", "Race-calibration+",
+#   "Race-TNR", "Race-TPR"))
 
 # symmetrize the matrix manually because robust correlation as we compute it is not
 # necessarily symmetric
@@ -352,4 +375,31 @@ df$repair <- factor(df$repair, levels = c("race", "sex", "both"))
 p = ggplot(df, aes(x=DIbinary, y=accuracy, colour=repair)) + catscale10 + catscale10_2 + stat_ellipse(geom="polygon", level=0.5, alpha=0.1) + geom_point(alpha=0.3) + ggtitle("Adult dataset") + facet_wrap(~algorithm)
 print(p)
 ggsave("paper-figures/multiple_sensitive.png", p)
+```
+
+```{r}
+dataset_name = "propublica-violent-recidivism"
+sensitive_attr = "sex-race"
+dataset = read.csv(str_c(dataset_name, "_", sensitive_attr, "_numerical-binsensitive.csv"), stringsAsFactors = FALSE, check.names=FALSE)
+consistent_measures = c("DIbinary", "DIavgall", "CV", "TNR", "accuracy", "BCR", "MCC")
+
+numeric_columns = sapply(dataset, class) == "numeric"
+dataset_measures = subset(colnames(dataset), numeric_columns)
+
+# ricci_measures
+dataset_m = compute_measure_correlation_matrix(
+ dataset, 
+ c(consistent_measures, str_c(sensitive_attr, "-accuracy"), "0-accuracy", "1-accuracy", str_c(sensitive_attr, "-calibration+"),
+   str_c(sensitive_attr, "-TNR"), str_c(sensitive_attr, "-calibration-"), str_c(sensitive_attr, "-TPR"), "TPR"))
+
+# symmetrize the matrix manually because robust correlation as we compute it is not
+# necessarily symmetric
+
+
+# BUG: I'm having a hard time making RMarkDown save this to a file :( type this in your
+# console instead...
+#
+# png(file="paper-figures/ricci_measures_correlation.png")
+
+corrplot(dataset_m, method="color", order="original")
 ```
