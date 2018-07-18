@@ -1,0 +1,5 @@
+recursive-include . *.py *.R *.Rmd *.md *.txt
+graft fairness/data/preprocessed
+graft fairness/data/raw
+recursive-exclude ./dist *.py *.R *.Rmd *.md *.txt
+recursive-exclude ./build *.py *.R *.Rmd *.md *.txt
