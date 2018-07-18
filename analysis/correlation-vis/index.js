@@ -7,16 +7,21 @@ var measures = [
   "BCR",
   "TPR",
   "sensitive-TPR",
+  "sensitive-TPRDiff",
   "TNR",
   "sensitive-TNR",
+  "sensitive-TNRDiff",
   "accuracy",
   "sensitive-accuracy",
+  "sensitive-accuracyDiff",
   "MCC",
   "0-accuracy",
   "1-accuracy",
   "sensitive-calibration+",
+  "sensitive-calibration+Diff",
   "sensitive-calibration-",
-  ];
+  "sensitive-calibration-Diff",
+];
 
 function pairs(l1, l2) {
   var result = [];
@@ -158,7 +163,7 @@ d3.csv("all_measures_numerical-binsensitive.csv", function(error, data) {
   scatterplotM2AxisG = scatterplotG.append("g").attr("transform", "translate(10, 0)");
 
   scatterplotM1AxisLabel = scatterplotMainG.append("g").attr("transform", "translate(290, 350)")
-    .append("text");
+    .append("text").style("text-anchor", "end");
   scatterplotM2AxisLabel = scatterplotMainG.append("g").attr("transform", "translate(20, 20)")
     .append("text");
   
