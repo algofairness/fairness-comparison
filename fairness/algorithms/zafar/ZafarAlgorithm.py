@@ -36,7 +36,7 @@ class ZafarAlgorithmBase(Algorithm):
             json.dump(out, out_file)
             out_file.close()
             return name
-        
+
         train_name = create_file(train_df)
         test_name = create_file(test_df)
         fd, predictions_name = tempfile.mkstemp()
@@ -45,8 +45,9 @@ class ZafarAlgorithmBase(Algorithm):
         # print("SENSITIVE ATTR: %s" % single_sensitive)
 
         cmd = self.create_command_line(train_name, test_name, predictions_name, params)
+        BASE_DIR = os.path.dirname(__file__)
         result = subprocess.run(cmd,
-            cwd='./algorithms/zafar/fair-classification-master/disparate_impact/run-classifier/')
+            cwd = BASE_DIR + '/fair-classification-master/disparate_impact/run-classifier/')
         os.unlink(train_name)
         os.unlink(test_name)
         if result.returncode != 0:
