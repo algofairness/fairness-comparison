@@ -1,5 +1,5 @@
 ---
-title: "KDD 2017 analysis"
+title: "Benchmark results analysis"
 author: "cscheid"
 date: "2/9/2018"
 output: html_document
@@ -14,6 +14,7 @@ library(dplyr)
 library(magrittr)
 library(corrplot)
 library(robust)
+library(purrr)
 ```
 
 We'll be showing many different charts with a large number of different attributes, so a good
@@ -209,15 +210,13 @@ ggsave("paper-figures/adult_race_params_feldman.png", p)
 ```
 
 ```{r}
-ricci_race_params = read.csv("paramgrid-results/ZafarFairness-DIavgall_ricci_Race_numerical-binsensitive.csv", stringsAsFactors = FALSE, check.names=FALSE) %>% 
-  mutate(c=as.numeric(str_extract(params, param_regex))) %>% 
-  filter(c>=0.01) # skip low range of parameter setting to avoid overweighting the correlation matrices
+ricci_race_params = read.csv("ricci_Race_numerical-binsensitive.csv", stringsAsFactors = FALSE, check.names=FALSE) 
 # ggplot(ricci_race_params, aes(x=DIavgall, y=`Race-calibration-`, colour=c)) + geom_point()
 #adult_race_params = read.csv("ZafarFairness-DIavgall_adult_race_numerical-binsensitive.csv", #stringsAsFactors = FALSE, check.names=TRUE) %>% 
 #  mutate(c=as.numeric(str_extract(params, param_regex))) %>% 
 #  filter(c>=0.01) # skip low range of parameter setting to avoid overweighting the correlation matrices
 
-p = ggplot(ricci_race_params, aes(x=DIavgall, y=accuracy, colour=c)) + geom_point() + ggtitle("Ricci dataset, Race attribute")
+p = ggplot(ricci_race_params, aes(x=DIavgall, y=accuracy, colour=algorithm)) + geom_point() + ggtitle("Ricci dataset, Race attribute")
 print(p)
 ggsave("paper-figures/ricci_race_params_zafar.png", p)
 ```
@@ -226,50 +225,78 @@ ggsave("paper-figures/ricci_race_params_zafar.png", p)
 
 ```{r}
 compute_measure_correlation_matrix = function(df, measures) {
-  m = matrix(0, nrow=length(measures), ncol=length(measures))
+  cor(df[,measures])
+  
+  # ignore robust correlation for now
+  #m = matrix(0, nrow=length(measures), ncol=length(measures))
   # colnames(m) = measures
-  rownames(m) = measures
-  for (i in 1:length(measures)) {
-    for (j in 1:length(measures)) {
-      x = df[[measures[[i]]]]
-      y = df[[measures[[j]]]]
-      if (sd(x) < 0.0001 || sd(y) < 0.0001) {
-        m[i,j] = 0.0 # kludge
-      } else {
-        # some metrics have large outliers, which hoses a naive correlation calculation.
-        # we'll use a robust correlation routine
-        # we perturb the points minimally because otherwise robust:covRob crashes..
-        tdf <- data.frame(x=x+rnorm(length(x))*0.001, 
-                          y=y+rnorm(length(x))*0.001)
-        if (cor(x, y) > 0.9999) {
-          m[i, j] = cor(x, y)
-        } else {
-          r = covRob(tdf, corr=TRUE)
-          # I could probably do all of this at once, but I don't want to deal with constant
-          # columns _and_ robust calculations at once
-          m[i,j] = r$cov[[1,2]]
-        }
-      }
-    }
-  }
-  m
+  #rownames(m) = measures
+  #for (i in 1:length(measures)) {
+  #  for (j in 1:length(measures)) {
+  #    x = df[[measures[[i]]]]
+  #    y = df[[measures[[j]]]]
+  #    if (sd(x) < 0.0001 || sd(y) < 0.0001) {
+  #      m[i,j] = 0.0 # kludge
+  #    } else {
+  #      # some metrics have large outliers, which hoses a naive correlation calculation.
+  #      # we'll use a robust correlation routine
+  #      # we perturb the points minimally because otherwise robust:covRob crashes..
+  #      tdf <- data.frame(x=x+rnorm(length(x))*0.001, 
+  #                        y=y+rnorm(length(x))*0.001)
+  #      if (cor(x, y) > 0.9999) {
+  #        m[i, j] = cor(x, y)
+  #      } else {
+  #        r = covRob(tdf, corr=TRUE)
+  #        # I could probably do all of this at once, but I don't want to deal with constant
+  #        # columns _and_ robust calculations at once
+  #        m[i,j] = r$cov[[1,2]]
+  #      }
+  #    }
+  #  }
+  #}
+  #m
 }
 ```
 
 For Ricci and Zafar:
 
 ```{r}
-# consistent_measures = c("DIbinary", "DIavgall", "CV", "TNR", "TPR", "accuracy", "BCR", "MCC")
+consistent_measures = c("DIbinary", "DIavgall", "CV", "TNR", "TPR", "accuracy", "BCR", "MCC")
 
-# numeric_columns = sapply(ricci_race_params, class) == "numeric"
-# ricci_measures = subset(colnames(ricci_race_params), numeric_columns)
+load_and_compute_combined_datasets = function(dataset_names, attribute) {
+  measures = c(consistent_measures[1:3], str_c(attribute, "-calibration-"), 
+   consistent_measures[-(1:3)], str_c(attribute, "-accuracy"), 
+   "0-accuracy", "1-accuracy", str_c(attribute, "-calibration+"),
+   str_c(attribute, "-TNR"), str_c(attribute, "-TPR"))
+
+  datasets = lapply(dataset_names, function(dataset_name) {
+    dataset = read.csv(str_c(dataset_name, "_", attribute, "_numerical-binsensitive.csv"), stringsAsFactors = FALSE, check.names=FALSE) 
+    reduced_dataset = dataset[,c(measures, "algorithm")]
+    reduced_dataset$name = dataset_name
+    reduced_dataset
+  })
+  do.call(rbind, datasets)
+}
+load_and_compute_correlation_matrix = function(dataset_names, attribute) {
+  measures = c(consistent_measures[1:3], str_c(attribute, "-calibration-"), 
+   consistent_measures[-(1:3)], str_c(attribute, "-accuracy"), 
+   "0-accuracy", "1-accuracy", str_c(attribute, "-calibration+"),
+   str_c(attribute, "-TNR"), str_c(attribute, "-TPR"))
+
+    compute_measure_correlation_matrix(load_and_compute_combined_datasets(dataset_names, attribute), measures)
+}
+
+#consistent_measures = c("DIbinary", "DIavgall", "CV", "TNR", "TPR", "accuracy", "BCR", "MCC")
+
+#numeric_columns = sapply(ricci_race_params, class) == "numeric"
+#ricci_measures = subset(colnames(ricci_race_params), numeric_columns)
 
 # ricci_measures
-# ricci_m = compute_measure_correlation_matrix(
-#   ricci_race_params, 
-#   c(consistent_measures[1:3], "Race-calibration-", 
-#     consistent_measures[-(1:3)], "Race-accuracy", "0-accuracy", "1-accuracy", "Race-calibration+",
-#     "Race-TNR", "Race-TPR"))
+#ricci_m = compute_measure_correlation_matrix(
+# ricci_race_params, 
+# c(consistent_measures[1:3], "Race-calibration-", 
+#   consistent_measures[-(1:3)], "Race-accuracy", "0-accuracy", "1-accuracy", "Race-calibration+",
+#   "Race-TNR", "Race-TPR"))
 
 # symmetrize the matrix manually because robust correlation as we compute it is not
 # necessarily symmetric
@@ -352,4 +379,104 @@ df$repair <- factor(df$repair, levels = c("race", "sex", "both"))
 p = ggplot(df, aes(x=DIbinary, y=accuracy, colour=repair)) + catscale10 + catscale10_2 + stat_ellipse(geom="polygon", level=0.5, alpha=0.1) + geom_point(alpha=0.3) + ggtitle("Adult dataset") + facet_wrap(~algorithm)
 print(p)
 ggsave("paper-figures/multiple_sensitive.png", p)
+```
+
+```{r}
+measure_names = c("DIbinary", "DIavgall", "CV", "TNR", "accuracy", "BCR", "MCC", 
+     "sensitive-accuracy", 
+     "0-accuracy", "1-accuracy", 
+     "sensitive-calibration+",
+     "sensitive-TNR", 
+     "sensitive-calibration-",
+     "sensitive-TPR", "TPR")
+
+load_dataset = function(name, attribute) {
+  dataset = read.csv(str_c(name, "_", attribute, "_numerical-binsensitive.csv"), stringsAsFactors = FALSE, check.names=FALSE)
+  bad_names = c(
+    str_c(attribute, "-accuracy"),
+    str_c(attribute, "-calibration+"),
+    str_c(attribute, "-calibration-"),
+    str_c(attribute, "-TNR"),
+    str_c(attribute, "-TPR"))
+  dataset$`sensitive-accuracy`     = dataset[,str_c(attribute, "-accuracy")]
+  dataset$`sensitive-calibration+` = dataset[,str_c(attribute, "-calibration+")]
+  dataset$`sensitive-calibration-` = dataset[,str_c(attribute, "-calibration-")]
+  dataset$`sensitive-TNR`          = dataset[,str_c(attribute, "-TNR")]
+  dataset$`sensitive-TPR`          = dataset[,str_c(attribute, "-TPR")]
+  dataset$name = name
+  dataset$attribute = attribute
+  # dataset[, !(colnames(dataset) %in% bad_names)]
+  dataset[, c("name", "attribute", "algorithm",
+     "DIbinary", "DIavgall", "CV", "TNR", "accuracy", "BCR", "MCC", 
+     "sensitive-accuracy", 
+     "0-accuracy", "1-accuracy", 
+     "sensitive-calibration+",
+     "sensitive-TNR", 
+     "sensitive-calibration-",
+     "sensitive-TPR", "TPR")]
+}
+
+make_correlation = function(dataset) {
+  compute_measure_correlation_matrix(dataset, 
+   c("DIbinary", "DIavgall", "CV", "TNR", "accuracy", "BCR", "MCC", 
+     "sensitive-accuracy", 
+     "0-accuracy", "1-accuracy", 
+     "sensitive-calibration+",
+     "sensitive-TNR", 
+     "sensitive-calibration-",
+     "sensitive-TPR", "TPR"))
+}
+
+#dataset_name = "propublica-violent-recidivism"
+#sensitive_attr = "sex-race"
+
+#load_dataset(dataset_name, sensitive_attr) %>% 
+#  make_correlation(.) %>% 
+#  corrplot(., method="color", order="original", 
+#           title=str_c(dataset_name, " - ", sensitive_attr, " - <all algorithms>"))
+```
+
+```{r}
+plot_with_title = function(m, title) {
+  corrplot(m, 
+           method="color", order="original", 
+           title=title,  
+           mar=c(0,0,3,0)) 
+}
+
+dataset = "propublica_violent_recidivism"
+sensitive_attribute = "race"
+
+make_many_plots = function(dataset, sensitive_attr) {
+  matrices = load_dataset(dataset, sensitive_attribute) %>% 
+    group_by(algorithm) %>% 
+    do(the_matrix = make_correlation(.))
+
+  for (i in 1:nrow(matrices)) {
+    plot_with_title(
+      matrices[i,]$the_matrix[[1]], 
+      str_c(dataset, " - ", attribute, " - ", matrices[i,]$algorithm))
+  }
+  matrices
+}
+
+make_many_plots(dataset, sensitive_attribute)
+```
+
+```{r}
+load_dataset("propublica-violent-recidivism", "race")
+```
+
+```{r}
+datasets = read.csv("all_numerical-binsensitive.csv")
+datasets = map2(datasets$dataset, datasets$attribute, load_dataset)
+datasets = bind_rows(datasets)
+write.csv(datasets, "all_measures_numerical-binsensitive.csv")
+```
+
+```{r}
+datasets %>%
+  group_by(name, algorithm) %>% 
+  do(mat = corrplot(make_correlation(.), method="color", order="original"), 
+           title=str_c("<all attributes> - <all algorithms>"))
 ```
