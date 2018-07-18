@@ -85,13 +85,13 @@ class KamishimaAlgorithm(Algorithm):
         subprocess.run(['python3', BASE_DIR + '/kamfadm-2012ecmlpkdd/train_pr.py',
                         '-e', str(eta_val),
                         '-i', train_name,
-                        '-o', model_name])
-                        #'--quiet'])
+                        '-o', model_name,
+                        '--quiet'])
         subprocess.run(['python3', BASE_DIR + '/kamfadm-2012ecmlpkdd/predict_lr.py',
                         '-i', test_name,
                         '-m', model_name,
-                        '-o', output_name])
-                        #'--quiet'])
+                        '-o', output_name,
+                        '--quiet'])
         os.unlink(train_name)
         os.unlink(model_name)
         os.unlink(test_name)
