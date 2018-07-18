@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-VERSION = '0.0.23'
+VERSION = '0.1.0'
 
 LICENSE='Apache 2.0'
 
@@ -26,12 +26,17 @@ PACKAGE_DATA = {
   'fairness.data.raw' : ['*.csv','*.txt'],
   'fairness.data.preprocessed' : ['*.csv'],
   'fairness.algorithms.kamishima' : ['kamfadm-2012ecmlpkdd/*', 'kamfadm-2012ecmlpkdd/*/*',
-                                     'kamfadm-2012ecmlpkdd/fadm/__init__.py', 'kamfadm-2012ecmlpkdd/*/*/*']
+                                     'kamfadm-2012ecmlpkdd/fadm/__init__.py',
+                                     'kamfadm-2012ecmlpkdd/*/*/*'],
+  'fairness.algorithms.zafar' : ['fair-classification-master/*',
+                                 'fair-classification-master/disparate_impact/*',
+                                 'fair-classification-master/disparate_impact/run-classifier/*']
 }
 INCLUDE_PACKAGE_DATA = True
 PACKAGE_DIR = {
   'fairness.data' : 'fairness/data',
-  'fairness.algorithms.kamishima' : 'fairness/algorithms/kamishima'
+  'fairness.algorithms.kamishima' : 'fairness/algorithms/kamishima',
+  'fairness.algorithms.zafar' : 'fairness/algorithms/zafar'
 }
 
 ENTRY_POINTS = {
