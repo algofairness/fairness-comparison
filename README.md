@@ -4,9 +4,16 @@ The associated paper is:
 
 A comparative study of fairness-enhancing interventions in machine learning by Sorelle A. Friedler, Carlos Scheidegger, Suresh Venkatasubramanian, Sonam Choudhary, Evan P. Hamilton, and Derek Roth. https://arxiv.org/abs/1802.04422
 
-To run the benchmarks, clone the repository and run:
+To install this software run:
 
-    $ python3 benchmark.py
+    $ pip3 install fairness
+
+The below instructions are still in the process of being updated to work with the new pip install-able version.
+
+To run the benchmarks:
+
+    $ from fairness.benchmark import run
+    $ run()
 
 This will write out metrics for each dataset to the results/ directory.
 
