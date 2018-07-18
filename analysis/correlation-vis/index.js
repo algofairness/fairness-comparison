@@ -1,6 +1,22 @@
 //////////////////////////////////////////////////////////////////////////////
 
-var measures = ["DIbinary","DIavgall","CV","TNR","accuracy","BCR","MCC","sensitive-accuracy","0-accuracy","1-accuracy","sensitive-calibration+","sensitive-TNR","sensitive-calibration-","sensitive-TPR","TPR"];
+var measures = [
+  "DIbinary",
+  "DIavgall",
+  "CV",
+  "BCR",
+  "TPR",
+  "sensitive-TPR",
+  "TNR",
+  "sensitive-TNR",
+  "accuracy",
+  "sensitive-accuracy",
+  "MCC",
+  "0-accuracy",
+  "1-accuracy",
+  "sensitive-calibration+",
+  "sensitive-calibration-",
+  ];
 
 function pairs(l1, l2) {
   var result = [];
@@ -33,6 +49,11 @@ var svg = d3.select("#main")
     .attr("width", 1400)
     .attr("height", 4000);
 
+var svg2 = d3.select("#main2")
+    .append("svg")
+    .attr("width", 350)
+    .attr("height", 400);
+
 //////////////////////////////////////////////////////////////////////////////
 
 // "And there was a disturbance in the force", but for numerical
@@ -60,19 +81,60 @@ function correlation(data, c1, c2) {
 
 //////////////////////////////////////////////////////////////////////////////
 
-function corrPlot(el, data, cScale) {
+var scatterplotG;
+var scatterplotM1Axis, scatterplotM1AxisG, scatterplotM1AxisLabel;
+var scatterplotM2Axis, scatterplotM2AxisG, scatterplotM2AxisLabel;
+
+function scatterplot(el, data, m1, m2) {
+  var update = el.selectAll("circle")
+      .data(data);
+  var enter = update.enter()
+      .append("circle");
+  var exit = update.exit()
+      .remove();
+  var xExt = d3.extent(data, d => d[m1]);
+  var yExt = d3.extent(data, d => d[m2]);
+  var xScale = d3.scaleLinear().domain(xExt).range([10, 290]);
+  var yScale = d3.scaleLinear().domain(yExt).range([290, 10]);
+  var cScale = d3.scaleOrdinal().range(d3.schemeCategory20);
+  
+  function setAttrs(sel) {
+    sel.attr("cx", d => xScale(d[m1]))
+      .attr("cy", d => yScale(d[m2]))
+      .attr("r", 2)
+      .attr("fill", d => cScale(d.algorithm));
+  }
+
+  scatterplotM1Axis.scale(xScale);
+  scatterplotM2Axis.scale(yScale);
+  scatterplotM1AxisLabel.text(m1);
+
+  scatterplotM1AxisG.call(scatterplotM1Axis);
+  scatterplotM2AxisG.call(scatterplotM2Axis);
+  scatterplotM2AxisLabel.text(m2);
+
+  setAttrs(update);
+  setAttrs(enter);
+}
+
+function corrPlot(el, data, cScale, algorithm, name) {
+  var rectSize = ~~(150 / measures.length);
   var ps = pairs(measures, measures);
   el.append("g")
     .selectAll("rect")
     .data(ps)
     .enter()
     .append("rect")
-    .attr("width", 10)
-    .attr("height", 10)
-    .attr("x", d => d.col * 10)
-    .attr("y", d => d.row * 10)
+    .attr("width", rectSize)
+    .attr("height", rectSize)
+    .attr("x", d => d.col * rectSize)
+    .attr("y", d => d.row * rectSize)
     .attr("fill", d => cScale(correlation(data, d.v1, d.v2)))
-    .attr("stroke", "none");
+    .attr("stroke", "none")
+    .attr("cursor", "pointer")
+    .on("click", d => {
+      scatterplot(scatterplotG, data, d.v1, d.v2, algorithm, name);
+    });
 }
 
 d3.csv("all_measures_numerical-binsensitive.csv", function(error, data) {
@@ -85,9 +147,23 @@ d3.csv("all_measures_numerical-binsensitive.csv", function(error, data) {
      d3.lab(90, 0, 0),
      d3.lab(30, -80, -50)]
   );
+
+  var scatterplotMainG = svg2.append("g");
+  scatterplotG = scatterplotMainG.append("g").attr("transform", "translate(20, 20)");
+  scatterplotM1Axis = d3.axisBottom();
+  scatterplotM1Axis.scale(d3.scaleLinear());
+  scatterplotM1AxisG = scatterplotG.append("g").attr("transform", "translate(0, 290)");
+  scatterplotM2Axis = d3.axisLeft();
+  scatterplotM2Axis.scale(d3.scaleLinear());
+  scatterplotM2AxisG = scatterplotG.append("g").attr("transform", "translate(10, 0)");
+
+  scatterplotM1AxisLabel = scatterplotMainG.append("g").attr("transform", "translate(290, 350)")
+    .append("text");
+  scatterplotM2AxisLabel = scatterplotMainG.append("g").attr("transform", "translate(20, 20)")
+    .append("text");
   
   corrPlot(svg.append("g").attr("transform", "translate(840, 30)"),
-           data, cScale);
+           data, cScale, "ALL", "ALL");
   svg.append("text").attr("x", 840).attr("y", 20).text("ALL");
   svg.append("text").attr("x", 1000).attr("y", 40).text("ALL");
 
@@ -123,7 +199,9 @@ d3.csv("all_measures_numerical-binsensitive.csv", function(error, data) {
     .append("g")
     .attr("transform", d => "translate(" + (d.col * 160) + ", " + (160 + 30 + d.row * 160) + ")")
     .each(function(d) {
-      corrPlot(d3.select(this), data.filter(d2 => d2.algorithm === d.v1 && d2.name === d.v2), cScale);
+      corrPlot(d3.select(this),
+               data.filter(d2 => d2.algorithm === d.v1 && d2.name === d.v2), cScale,
+               d.v1, d.v2);
     });
 
   corrPlotMatrixG.append("g")
@@ -133,7 +211,8 @@ d3.csv("all_measures_numerical-binsensitive.csv", function(error, data) {
     .append("g")
     .attr("transform", (d,i) => "translate(" + (5 * 160 + 20) + ", " + (190 + i * 160) + ")")
     .each(function(d) {
-      corrPlot(d3.select(this), data.filter(d2 => d2.algorithm === d), cScale);
+      corrPlot(d3.select(this), data.filter(d2 => d2.algorithm === d), cScale,
+               d, "ALL");
     });
 
   corrPlotMatrixG.append("g")
@@ -143,7 +222,8 @@ d3.csv("all_measures_numerical-binsensitive.csv", function(error, data) {
     .append("g")
     .attr("transform", (d,i) => "translate(" + (i * 160) + ", " + 10 + ")")
     .each(function(d) {
-      corrPlot(d3.select(this), data.filter(d2 => d2.name === d), cScale);
+      corrPlot(d3.select(this), data.filter(d2 => d2.name === d), cScale,
+               "ALL", d);
     });
 
   console.log(algorithms);
