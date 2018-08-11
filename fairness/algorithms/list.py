@@ -21,7 +21,7 @@ ALGORITHMS = [
    ZafarAlgorithmBaseline(),                                      # Zafar
    ZafarAlgorithmFairness(),
 #   ZafarAlgorithmAccuracy(),
-   SDBSVM(),                                                      # Ben
+#   SDBSVM(),                                                      # not yet confirmed to work
    ParamGridSearch(KamishimaAlgorithm(), Accuracy()),             # Kamishima params
    ParamGridSearch(KamishimaAlgorithm(), DIAvgAll()),
    FeldmanAlgorithm(SVM()), FeldmanAlgorithm(GaussianNB()),       # Feldman
