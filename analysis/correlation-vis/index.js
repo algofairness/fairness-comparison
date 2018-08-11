@@ -4,22 +4,22 @@ var measures = [
   "DIbinary",
   "DIavgall",
   "CV",
+  "accuracy",
   "BCR",
+  "sensitive-accuracy",
   "TPR",
   "sensitive-TPR",
-  "sensitive-TPRDiff",
   "TNR",
   "sensitive-TNR",
-  "sensitive-TNRDiff",
-  "accuracy",
-  "sensitive-accuracy",
   "sensitive-accuracyDiff",
-  "MCC",
   "0-accuracy",
   "1-accuracy",
   "sensitive-calibration+",
-  "sensitive-calibration+Diff",
   "sensitive-calibration-",
+  "sensitive-TPRDiff",
+  "sensitive-TNRDiff",
+//  "MCC",
+  "sensitive-calibration+Diff",
   "sensitive-calibration-Diff",
 ];
 
@@ -146,6 +146,26 @@ d3.csv("all_measures_numerical-binsensitive.csv", function(error, data) {
   data.forEach(d => {
     measures.forEach(m => { d[m] = Number(d[m]); });
   });
+  var isFair = {
+    "Calders": true,
+    "Feldman-LR": true,
+    "Feldman-GaussianNB": true,
+    "Kamishima": true,
+    "Feldman-SVM": true,
+    "ZafarFairness": true,
+    "ZafarAccuracy": true,
+    "Feldman-SVM-accuracy": true,
+    "Feldman-SVM-DIavgall": true,
+    "Kamishima-accuracy": true,
+    "ZafarBaseline": true,
+    "Kamishima-DIavgall": true,
+    "Feldman-DecisionTree": true,
+    "Feldman-GaussianNB-DIavgall": true,
+    "Feldman-GaussianNB-accuracy": true,
+    "ZafarFairness-DIavgall": true
+	
+};
+  data = data.filter(d => !isFair[d.algorithm]);
 
   var cScale = d3.scaleLinear().domain([-1, 0, 1]).range(
     [d3.lab(30, 80, 50),
