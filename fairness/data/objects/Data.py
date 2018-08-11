@@ -126,3 +126,16 @@ class Data():
         """
         return dataframe
 
+    def get_class_balance_statistics(self, data_frame=None):
+        if data_frame is None:
+            data_frame = self.load_raw_dataset()
+        r = data_frame.groupby(self.get_class_attribute()).size()
+        return r
+
+    def get_sensitive_attribute_balance_statistics(self, data_frame=None):
+        if data_frame is None:
+            data_frame = self.load_raw_dataset()
+        return [data_frame.groupby(a).size()
+                for a in self.get_sensitive_attributes()]
+
+
