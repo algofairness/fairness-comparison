@@ -383,48 +383,53 @@ ggsave("paper-figures/multiple_sensitive.png", p)
 
 ```{r}
 measure_names = c("DIbinary", "DIavgall", "CV", "TNR", "accuracy", "BCR", "MCC", 
+     "0-accuracy",
+     "1-accuracy",
+     
      "sensitive-accuracy", 
-     "0-accuracy", "1-accuracy", 
      "sensitive-calibration+",
-     "sensitive-TNR", 
+     "sensitive-TNR",
+     "sensitive-FNR",
      "sensitive-calibration-",
-     "sensitive-TPR", "TPR")
+     "sensitive-TPR",
+     "sensitive-FPR",
+
+     "sensitive-accuracyDiff", 
+     "sensitive-calibration+Diff",
+     "sensitive-TNRDiff",
+     "sensitive-FNRDiff",
+     "sensitive-calibration-Diff",
+     "sensitive-TPRDiff",
+     "sensitive-FPRDiff",
+     
+     "TPR")
 
 load_dataset = function(name, attribute) {
   dataset = read.csv(str_c(name, "_", attribute, "_numerical-binsensitive.csv"), stringsAsFactors = FALSE, check.names=FALSE)
-  bad_names = c(
-    str_c(attribute, "-accuracy"),
-    str_c(attribute, "-calibration+"),
-    str_c(attribute, "-calibration-"),
-    str_c(attribute, "-TNR"),
-    str_c(attribute, "-TPR"))
+
   dataset$`sensitive-accuracy`     = dataset[,str_c(attribute, "-accuracy")]
   dataset$`sensitive-calibration+` = dataset[,str_c(attribute, "-calibration+")]
   dataset$`sensitive-calibration-` = dataset[,str_c(attribute, "-calibration-")]
   dataset$`sensitive-TNR`          = dataset[,str_c(attribute, "-TNR")]
   dataset$`sensitive-TPR`          = dataset[,str_c(attribute, "-TPR")]
+  dataset$`sensitive-FNR`          = dataset[,str_c(attribute, "-FNR")]
+  dataset$`sensitive-FPR`          = dataset[,str_c(attribute, "-FPR")]
+  
+  dataset$`sensitive-accuracyDiff`     = dataset[,str_c(attribute, "-accuracyDiff")]
+  dataset$`sensitive-calibration+Diff` = dataset[,str_c(attribute, "-calibration+Diff")]
+  dataset$`sensitive-calibration-Diff` = dataset[,str_c(attribute, "-calibration-Diff")]
+  dataset$`sensitive-TNRDiff`          = dataset[,str_c(attribute, "-TNRDiff")]
+  dataset$`sensitive-TPRDiff`          = dataset[,str_c(attribute, "-TPRDiff")]
+  dataset$`sensitive-FNRDiff`          = dataset[,str_c(attribute, "-FNRDiff")]
+  dataset$`sensitive-FPRDiff`          = dataset[,str_c(attribute, "-FPRDiff")]
+  
   dataset$name = name
   dataset$attribute = attribute
-  # dataset[, !(colnames(dataset) %in% bad_names)]
-  dataset[, c("name", "attribute", "algorithm",
-     "DIbinary", "DIavgall", "CV", "TNR", "accuracy", "BCR", "MCC", 
-     "sensitive-accuracy", 
-     "0-accuracy", "1-accuracy", 
-     "sensitive-calibration+",
-     "sensitive-TNR", 
-     "sensitive-calibration-",
-     "sensitive-TPR", "TPR")]
+  dataset[, c("name", "attribute", "algorithm", measure_names)]
 }
 
 make_correlation = function(dataset) {
-  compute_measure_correlation_matrix(dataset, 
-   c("DIbinary", "DIavgall", "CV", "TNR", "accuracy", "BCR", "MCC", 
-     "sensitive-accuracy", 
-     "0-accuracy", "1-accuracy", 
-     "sensitive-calibration+",
-     "sensitive-TNR", 
-     "sensitive-calibration-",
-     "sensitive-TPR", "TPR"))
+  compute_measure_correlation_matrix(dataset, measure_names)
 }
 
 #dataset_name = "propublica-violent-recidivism"

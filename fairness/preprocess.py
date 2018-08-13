@@ -46,6 +46,16 @@ def preprocess(dataset, data_frame):
     # Do any data specific processing.
     processed_data = dataset.data_specific_processing(missing_data_removed)
 
+    print("\n-------------------")
+    print("Balance statistics:")
+    print("\nClass:")
+    print(dataset.get_class_balance_statistics(processed_data))
+    print("\nSensitive Attribute:")
+    for r in dataset.get_sensitive_attribute_balance_statistics(processed_data):
+        print(r)
+        print("\n")
+    print("\n")
+
     # Handle multiple sensitive attributes by creating a new attribute that's the joint distribution
     # of all of those attributes.  For example, if a dataset has both 'Race' and 'Gender', the
     # combined feature 'Race-Gender' is created that has attributes, e.g., 'White-Woman'.
