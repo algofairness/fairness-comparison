@@ -1,7 +1,11 @@
 import sys
 import pandas as pd
 
-METRICS_TO_SAVE = [
+ATTRS_TO_SAVE = [
+  "algorithm",
+  "params",
+  "run-id",
+
   "DIbinary",
   "DIavgall",
   "CV",
@@ -31,23 +35,26 @@ def combine_files(files, outfile):
         dataframe = pd.read_csv(filename)
         numrows, nummetrics = dataframe.shape
         print("    " + str(numrows) + " items")
-        sensitive = get_sensitive_from_filename(filename)
+        dataname, sensitive = get_sensitive_from_filename(filename)
         metrics = make_metrics_list(sensitive)
         dataframe = dataframe[metrics]
+        dataframe.insert(0, 'attribute', sensitive)
+        dataframe.insert(0, 'name', dataname)
         dataframe = dataframe[1:]  # remove attribute specific header
-        dataframe.columns = METRICS_TO_SAVE  # replace with generalized header
+        # replace with generalized header
+        dataframe.columns = ["name", "attribute"] + ATTRS_TO_SAVE
         combined = combined.append(dataframe)
     print(str(combined.shape[0]) + " total items, " + str(combined.shape[1]) + " metrics")
     combined.to_csv(outfile)
     print("CSV written to:" + outfile)
 
 def get_sensitive_from_filename(filename):
-    dataset, sensitive, tag = filename.split("_")
-    return sensitive
+    dataset, sensitive, tag = filename.split("/")[-1].split("_")
+    return dataset, sensitive
 
 def make_metrics_list(sensitive_attr):
     revised_metrics = []
-    for metric in METRICS_TO_SAVE:
+    for metric in ATTRS_TO_SAVE:
         if "sensitive" in metric:
             revised = metric.replace("sensitive", sensitive_attr)
         else:
