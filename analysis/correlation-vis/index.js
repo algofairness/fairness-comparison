@@ -1,26 +1,31 @@
 //////////////////////////////////////////////////////////////////////////////
 
+// "all_sampled_0.5class_0.5priv.csv"
+var FILENAME = "all_measures_numerical-binsensitive.csv";
+
 var measures = [
   "DIbinary",
   "DIavgall",
   "CV",
+  "comparative-sensitive-TPR",
   "accuracy",
-  "BCR",
-  "sensitive-accuracy",
-  "TPR",
-  "sensitive-TPR",
-  "TNR",
-  "sensitive-TNR",
-  "sensitive-accuracyDiff",
   "0-accuracy",
   "1-accuracy",
+  "sensitive-accuracy",
+  "TNR",
+  "sensitive-TNR",
+  "BCR",
   "sensitive-calibration+",
+  "comparative-sensitive-accuracy",
+  "TPR",
+  "sensitive-TPR",
   "sensitive-calibration-",
-  "sensitive-TPRDiff",
-  "sensitive-TNRDiff",
+  "comparative-sensitive-TNR",
+
+//  "percent_pos_class",
 //  "MCC",
-  "sensitive-calibration+Diff",
-  "sensitive-calibration-Diff",
+//  "comparative-sensitive-calibration+",
+//  "comparative-sensitive-calibration-",
 ];
 
 function pairs(l1, l2) {
@@ -102,12 +107,14 @@ function scatterplot(el, data, m1, m2) {
   var xScale = d3.scaleLinear().domain(xExt).range([10, 290]);
   var yScale = d3.scaleLinear().domain(yExt).range([290, 10]);
   var cScale = d3.scaleOrdinal().range(d3.schemeCategory20);
+  //var cScale = d3.scaleLinear().domain([0.3, 0.5, 0.7]).range(["white","blue", "white"]);
   
   function setAttrs(sel) {
     sel.attr("cx", d => xScale(d[m1]))
       .attr("cy", d => yScale(d[m2]))
       .attr("r", 2)
       .attr("fill", d => cScale(d.algorithm));
+      //.attr("fill", d => cScale(d.percent_pos_class));
   }
 
   scatterplotM1Axis.scale(xScale);
@@ -142,30 +149,30 @@ function corrPlot(el, data, cScale, algorithm, name) {
     });
 }
 
-d3.csv("all_measures_numerical-binsensitive.csv", function(error, data) {
+d3.csv(FILENAME, function(error, data) {
   data.forEach(d => {
     measures.forEach(m => { d[m] = Number(d[m]); });
   });
   var isFair = {
     "Calders": true,
-    "Feldman-LR": true,
-    "Feldman-GaussianNB": true,
     "Kamishima": true,
-    "Feldman-SVM": true,
+    "Kamishima-accuracy": true,
+    "Kamishima-DIavgall": true,
+    "ZafarBaseline": true,
     "ZafarFairness": true,
     "ZafarAccuracy": true,
+    "ZafarFairness-DIavgall": true,
+    "Feldman-LR": true,
+    "Feldman-GaussianNB": true,
+    "Feldman-SVM": true,
     "Feldman-SVM-accuracy": true,
     "Feldman-SVM-DIavgall": true,
-    "Kamishima-accuracy": true,
-    "ZafarBaseline": true,
-    "Kamishima-DIavgall": true,
     "Feldman-DecisionTree": true,
     "Feldman-GaussianNB-DIavgall": true,
     "Feldman-GaussianNB-accuracy": true,
-    "ZafarFairness-DIavgall": true
 	
 };
-  data = data.filter(d => !isFair[d.algorithm]);
+  // data = data.filter(d => isFair[d.algorithm]);
 
   var cScale = d3.scaleLinear().domain([-1, 0, 1]).range(
     [d3.lab(30, 80, 50),
