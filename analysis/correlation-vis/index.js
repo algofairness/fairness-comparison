@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
-// "all_sampled_0.5class_0.5priv.csv"
-var FILENAME = "all_measures_numerical-binsensitive.csv";
+var FILENAME = "all_sampled_0.5class_0.5priv.csv";
+//var FILENAME = "all_measures_numerical-binsensitive.csv";
 
 var measures = [
   "DIbinary",
@@ -17,10 +17,10 @@ var measures = [
   "BCR",
   "sensitive-calibration+",
   "comparative-sensitive-accuracy",
+  "comparative-sensitive-TNR",
   "TPR",
   "sensitive-TPR",
   "sensitive-calibration-",
-  "comparative-sensitive-TNR",
 
 //  "percent_pos_class",
 //  "MCC",
