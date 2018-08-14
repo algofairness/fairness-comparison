@@ -7,7 +7,22 @@ from fairness.data.objects.PropublicaViolentRecidivism import PropublicaViolentR
 from fairness.data.objects.TwoGaussians import TwoGaussians
 
 DATASETS = [
-    TwoGaussians(),
+
+# Synthetic datasets to test effects of class balance:
+#   TwoGaussians(0.1), TwoGaussians(0.2), TwoGaussians(0.3), TwoGaussians(0.4),
+#   TwoGaussians(0.5), TwoGaussians(0.6), TwoGaussians(0.7), TwoGaussians(0.8), TwoGaussians(0.9),
+
+# Downsampled datasetes to test effects of class and protected class balance:
+#     Sample(Ricci(), num = 1000, prob_pos_class = 0.5, prob_privileged = 0.5, sensitive_attr="Race"),
+#     Sample(Adult(), num = 1000, prob_pos_class = 0.5, prob_privileged = 0.5,
+#     sensitive_attr="race-sex"),
+#     Sample(German(), num = 1000, prob_pos_class = 0.5, prob_privileged = 0.5, sensitive_attr="sex-age"),
+#     Sample(PropublicaRecidivism(), num = 1000, prob_pos_class = 0.5, prob_privileged = 0.5,
+#     sensitive_attr="sex-race"),
+#     Sample(PropublicaViolentRecidivism(), num = 1000, prob_pos_class = 0.5, prob_privileged = 0.5,
+#     sensitive_attr="sex-race")
+
+# Real datasets:
     Ricci(),
     Adult(),
     German(),
@@ -15,9 +30,6 @@ DATASETS = [
     PropublicaViolentRecidivism()
     ]
 
-# For testing, you can just use a sample of the data.  E.g.:
-# DATASETS = [ Sample(Adult(), 50) ]
-# DATASETS = [Sample(d, 10) for d in DATASETS]
 
 def get_dataset_names():
     names = []
