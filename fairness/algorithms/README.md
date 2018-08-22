@@ -5,7 +5,7 @@
 The included implementation is from Kamishima et al. (see below).  The code in this directory is in kamishima/
 
 ### Paper to cite:
-Calders, T., Verwer, S.: Three naive bayes approaches for discrimination-free classification.  Data Mining and Knowledge Discovery 21, 277–292 (2010) . http://www.cs.ru.nl/~sicco/papers/dmkd10.pdf
+T. Calders and S. Verwer.  Three naive bayes approaches for discrimination-free classification.  Data Mining and Knowledge Discovery 21, 277–292 (2010) . http://www.cs.ru.nl/~sicco/papers/dmkd10.pdf
 
 ## Feldman et al.
 
@@ -34,6 +34,14 @@ T. Kamishima, S. Akaho, H. Asoh, and J. Sakuma "Fairness-Aware Classifier with P
 
 ### More information:
 http://www.kamishima.net/faclass/
+
+## Zafar et al.
+
+### Code source:
+https://github.com/mbilalzafar/fair-classification
+
+### Paper to cite:
+Muhammad Bilal Zafar, Isabel Valera, Manuel Gomez Rogriguez, and Krishna P. Gummadi. "Fairness Constraints: Mechanisms for Fair Classification." In Artificial Intelligence and Statistics, pp. 962-970. 2017.  https://arxiv.org/abs/1507.05259
 
 # Adding a new algorithm
 
