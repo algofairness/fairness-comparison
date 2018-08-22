@@ -20,7 +20,7 @@ ALGORITHMS = [
    CaldersAlgorithm(),                                            # Calders
    ZafarAlgorithmBaseline(),                                      # Zafar
    ZafarAlgorithmFairness(),
-#   ZafarAlgorithmAccuracy(),
+   ZafarAlgorithmAccuracy(),
 #   SDBSVM(),                                                      # not yet confirmed to work
    ParamGridSearch(KamishimaAlgorithm(), Accuracy()),             # Kamishima params
    ParamGridSearch(KamishimaAlgorithm(), DIAvgAll()),
