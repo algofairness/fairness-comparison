@@ -164,7 +164,7 @@ algos_to_plot = c(
   "Feldman-SVM", "DecisionTree", 
   "Feldman-DecisionTree", "Kamishima")
 
-make_sensitivity_figure = function(name, var1="DIbinary", var2="accuracy") {
+make_sensitivity_figure = function(name, var1="CV", var2="accuracy") {
   df = read.csv(name, check.names=TRUE) %>% 
     filter(algorithm %in% algos_to_plot) %>% 
     mutate(algorithm=recode(algorithm, ZafarFairness="Zafar")) # rename to Zafar for clarity
@@ -190,7 +190,7 @@ ggsave("paper-figures/adult_race-sex_sensitivity.png", p)
 ```
 
 ```{r}
-p = make_sensitivity_figure("propublica-violent-recidivism_race_numerical-binsensitive.csv", "DIavgall") +
+p = make_sensitivity_figure("propublica-violent-recidivism_race_numerical-binsensitive.csv", "CV") +
   ggtitle("Propublica violent recidivism dataset, race attribute")
 print(p)
 ```
@@ -342,7 +342,7 @@ both$repair = "both"
 df = rbind(race, sex, both) %>% 
   filter(algorithm %in% c("ZafarFairness", "Calders", "Kamishima", "Feldman-GaussianNB"))
 df$repair <- factor(df$repair, levels = c("race", "sex", "both"))
-p = ggplot(df, aes(x=DIavgall, y=accuracy, colour=repair)) + catscale10 + catscale10_2 + stat_ellipse(geom="polygon", level=0.5, alpha=0.1) + geom_point(alpha=0.3) + ggtitle("Adult dataset") + facet_wrap(~algorithm)
+p = ggplot(df, aes(x=CV, y=accuracy, colour=repair)) + catscale10 + catscale10_2 + stat_ellipse(geom="polygon", level=0.5, alpha=0.1) + geom_point(alpha=0.3) + ggtitle("Adult dataset") + facet_wrap(~algorithm)
 print(p)
 ggsave("paper-figures/adult-multivariate-repair-tradeoff.png", p)
 ```
@@ -359,7 +359,7 @@ df = rbind(age, sex, both) %>%
   filter(algorithm %in% c("ZafarFairness", "Calders", "Kamishima", "Feldman-SVM"))
 df$repair <- factor(df$repair, levels = c("age", "sex", "both"))
 
-p = ggplot(df, aes(x=DIavgall, y=accuracy, colour=repair)) + catscale10 + catscale10_2 + stat_ellipse(geom="polygon", level=0.5, alpha=0.1) + geom_point(alpha=0.3) + ggtitle("German dataset") + facet_wrap(~algorithm)
+p = ggplot(df, aes(x=CV, y=accuracy, colour=repair)) + catscale10 + catscale10_2 + stat_ellipse(geom="polygon", level=0.5, alpha=0.1) + geom_point(alpha=0.3) + ggtitle("German dataset") + facet_wrap(~algorithm)
 
 print(p)
 ggsave("paper-figures/german-multivariate-repair-tradeoff.png", p)
@@ -376,7 +376,7 @@ both$repair = "both"
 df = rbind(race, sex, both) %>% 
   filter(algorithm %in% c("ZafarFairness", "Calders", "Kamishima", "Feldman-GaussianNB"))
 df$repair <- factor(df$repair, levels = c("race", "sex", "both"))
-p = ggplot(df, aes(x=DIbinary, y=accuracy, colour=repair)) + catscale10 + catscale10_2 + stat_ellipse(geom="polygon", level=0.5, alpha=0.1) + geom_point(alpha=0.3) + ggtitle("Adult dataset") + facet_wrap(~algorithm)
+p = ggplot(df, aes(x=CV, y=accuracy, colour=repair)) + catscale10 + catscale10_2 + stat_ellipse(geom="polygon", level=0.5, alpha=0.1) + geom_point(alpha=0.3) + ggtitle("Adult dataset") + facet_wrap(~algorithm)
 print(p)
 ggsave("paper-figures/multiple_sensitive.png", p)
 ```
@@ -449,18 +449,18 @@ plot_with_title = function(m, title) {
            mar=c(0,0,3,0)) 
 }
 
-dataset = "propublica_violent_recidivism"
+dataset = "propublica-violent-recidivism"
 sensitive_attribute = "race"
 
 make_many_plots = function(dataset, sensitive_attr) {
-  matrices = load_dataset(dataset, sensitive_attribute) %>% 
+  matrices = load_dataset(dataset, sensitive_attr) %>% 
     group_by(algorithm) %>% 
     do(the_matrix = make_correlation(.))
 
   for (i in 1:nrow(matrices)) {
     plot_with_title(
       matrices[i,]$the_matrix[[1]], 
-      str_c(dataset, " - ", attribute, " - ", matrices[i,]$algorithm))
+      str_c(dataset, " - ", sensitive_attr, " - ", matrices[i,]$algorithm))
   }
   matrices
 }
@@ -472,16 +472,16 @@ make_many_plots(dataset, sensitive_attribute)
 load_dataset("propublica-violent-recidivism", "race")
 ```
 
-```{r}
-datasets = read.csv("all_numerical-binsensitive.csv")
-datasets = map2(datasets$dataset, datasets$attribute, load_dataset)
-datasets = bind_rows(datasets)
-write.csv(datasets, "all_measures_numerical-binsensitive.csv")
-```
+#```{r}
+#datasets = read.csv("all_numerical-binsensitive.csv")
+#datasets = map2(datasets$dataset, datasets$attribute, load_dataset)
+#datasets = bind_rows(datasets)
+#write.csv(datasets, "all_measures_numerical-binsensitive.csv")
+#```
 
-```{r}
-datasets %>%
-  group_by(name, algorithm) %>% 
-  do(mat = corrplot(make_correlation(.), method="color", order="original"), 
-           title=str_c("<all attributes> - <all algorithms>"))
-```
+#```{r}
+#datasets %>%
+#  group_by(name, algorithm) %>% 
+#  do(mat = corrplot(make_correlation(.), method="color", order="original"), 
+#           title=str_c("<all attributes> - <all algorithms>"))
+#```
