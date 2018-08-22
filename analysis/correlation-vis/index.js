@@ -152,6 +152,7 @@ function corrPlot(el, data, cScale, algorithm, name) {
 d3.csv(FILENAME, function(error, data) {
   data.forEach(d => {
     measures.forEach(m => { d[m] = Number(d[m]); });
+    // d["sensitive-calibration-"] = 1 - d["sensitive-calibration-"];
   });
   var isFair = {
     "Calders": true,
