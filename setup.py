@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 
 LICENSE='Apache 2.0'
 
@@ -11,7 +11,6 @@ INSTALL_REQUIRES = [
   'pyparsing>=2.1.4',
   'python-dateutil>=2.6.0',
   'pytz',
-  'readline>=6.2',
   'scikit-learn>=0.18.1',
   'scipy>=0.19.0',
   'six>=1.10.0',
