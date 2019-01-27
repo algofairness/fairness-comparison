@@ -1,11 +1,14 @@
 import pandas as pd
 import os
+import pathlib
+from fairness.results import local_results_path
 
-BASE_DIR = '/'.join(os.path.dirname(__file__).split('/')[0:-2])
-RAW_DATA_DIR = BASE_DIR + '/data/raw/'
-PROCESSED_DATA_DIR = BASE_DIR + '/data/preprocessed/'
-RESULT_DIR = BASE_DIR + "/results/"
-ANALYSIS_DIR = BASE_DIR + "/analysis/"
+BASE_DIR = local_results_path()
+PACKAGE_DIR = pathlib.Path('/'.join(os.path.dirname(__file__).split('/')[0:-2]))
+RAW_DATA_DIR = PACKAGE_DIR / 'data' / 'raw'
+PROCESSED_DATA_DIR = PACKAGE_DIR / 'data' / 'preprocessed'
+RESULT_DIR = BASE_DIR / "results"
+ANALYSIS_DIR = BASE_DIR / "analysis"
 
 class Data():
     def __init__(self):
@@ -95,20 +98,25 @@ class Data():
         return data_frame
 
     def get_raw_filename(self):
-        return RAW_DATA_DIR + self.get_dataset_name() + '.csv'
+        RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
+        return RAW_DATA_DIR / (self.get_dataset_name() + '.csv')
 
     def get_filename(self, tag):
-        return PROCESSED_DATA_DIR + self.get_dataset_name() + "_" + tag + '.csv'
+        PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
+        return PROCESSED_DATA_DIR / (self.get_dataset_name() + "_" + tag + '.csv')
 
     def get_results_filename(self, sensitive_attr, tag):
-        return RESULT_DIR + self.get_dataset_name() + "_" + sensitive_attr + "_" + tag + '.csv'
+        RESULT_DIR.mkdir(parents=True, exist_ok=True)
+        return RESULT_DIR / (self.get_dataset_name() + "_" + sensitive_attr + "_" + tag + '.csv')
 
     def get_param_results_filename(self, sensitive_attr, tag, algname):
-        return RESULT_DIR + algname + '_' + self.get_dataset_name() + "_" + sensitive_attr + \
-               "_" + tag + '.csv'
+        RESULT_DIR.mkdir(parents=True, exist_ok=True)
+        return RESULT_DIR / (algname + '_' + self.get_dataset_name() + "_" + sensitive_attr + \
+               "_" + tag + '.csv')
 
     def get_analysis_filename(self, sensitive_attr, tag):
-        return ANALYSIS_DIR + self.get_dataset_name() + "_" + sensitive_attr + "_" + tag + '.csv'
+        ANALYSIS_DIR.mkdir(parents=True, exist_ok=True)
+        return ANALYSIS_DIR / (self.get_dataset_name() + "_" + sensitive_attr + "_" + tag + '.csv')
 
     def data_specific_processing(self, dataframe):
         """

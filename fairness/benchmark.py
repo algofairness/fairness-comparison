@@ -3,6 +3,7 @@ import os
 import statistics
 import sys
 
+from fairness import results
 from fairness.data.objects.list import DATASETS, get_dataset_names
 from fairness.data.objects.ProcessedData import ProcessedData
 from fairness.algorithms.list import ALGORITHMS
@@ -78,7 +79,7 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
 
             print("Results written to:")
             for supported_tag in algorithm.get_supported_data_types():
-                print("    " + dataset_obj.get_results_filename(sensitive, supported_tag))
+                print("    %s" % dataset_obj.get_results_filename(sensitive, supported_tag))
 
             for detailed_file in detailed_files.values():
                 detailed_file.close()
