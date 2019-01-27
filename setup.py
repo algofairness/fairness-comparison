@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 
 LICENSE='Apache 2.0'
 
@@ -11,7 +11,6 @@ INSTALL_REQUIRES = [
   'pyparsing>=2.1.4',
   'python-dateutil>=2.6.0',
   'pytz',
-  'readline>=6.2',
   'scikit-learn>=0.18.1',
   'scipy>=0.19.0',
   'six>=1.10.0',
@@ -51,12 +50,12 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
     setup(
-    name="fairness",
+    name="fairness-cscheid",
     version=VERSION,
     author="See Authors.txt",
     author_email="fairness@haverford.edu",
     license=LICENSE,
-    description="Fairness-aware machine learning: algorithms, comparisons, bechmarking",
+    description="Fairness-aware machine learning: algorithms, comparisons, benchmarking",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/algofairness/fairness-comparison",
