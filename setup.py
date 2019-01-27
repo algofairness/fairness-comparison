@@ -56,7 +56,7 @@ with open("README.md", "r") as fh:
     author="See Authors.txt",
     author_email="fairness@haverford.edu",
     license=LICENSE,
-    description="Fairness-aware machine learning: algorithms, comparisons, bechmarking",
+    description="Fairness-aware machine learning: algorithms, comparisons, benchmarking",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/algofairness/fairness-comparison",
