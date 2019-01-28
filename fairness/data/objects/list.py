@@ -40,4 +40,9 @@ def get_dataset_names():
 def add_dataset(dataset):
     DATASETS.append(dataset)
 
+def get_dataset_by_name(name):
+    for ds in DATASETS:
+        if ds.get_dataset_name() == name:
+            return ds
+    raise Exception("No dataset with name %s could be found." % name)
     
