@@ -3,6 +3,7 @@ import os
 import statistics
 import sys
 
+from fairness import results
 from fairness.data.objects.list import DATASETS, get_dataset_names
 from fairness.data.objects.ProcessedData import ProcessedData
 from fairness.algorithms.list import ALGORITHMS
@@ -78,7 +79,7 @@ def run(num_trials = NUM_TRIALS_DEFAULT, dataset = get_dataset_names(),
 
             print("Results written to:")
             for supported_tag in algorithm.get_supported_data_types():
-                print("    " + dataset_obj.get_results_filename(sensitive, supported_tag))
+                print("    %s" % dataset_obj.get_results_filename(sensitive, supported_tag))
 
             for detailed_file in detailed_files.values():
                 detailed_file.close()
@@ -89,9 +90,6 @@ def write_alg_results(file_handle, alg_name, params, run_id, results_list):
     line += params + (',%s,' % run_id)
     line += ','.join(str(x) for x in results_list) + '\n'
     file_handle.write(line)
-    # Make sure the file is written to disk line-by-line:
-    file_handle.flush()
-    os.fsync(file_handle.fileno())
 
 def run_eval_alg(algorithm, train, test, dataset, processed_data, all_sensitive_attributes,
                  single_sensitive, tag):
@@ -149,11 +147,6 @@ def run_alg(algorithm, train, test, dataset, all_sensitive_attributes, single_se
 
     return predictions, params, predictions_list
 
-def get_metrics_list(dataset, sensitive_dict, tag):
-    return [metric.get_name() for metric in get_metrics(dataset, sensitive_dict, tag)]
-
-def get_detailed_metrics_header(dataset, sensitive_dict, tag):
-    return ','.join(['algorithm', 'params', 'run-id'] + get_metrics_list(dataset, sensitive_dict, tag))
 
 def get_dict_sensitive_vals(dict_sensitive_lists):
     """
@@ -167,9 +160,10 @@ def get_dict_sensitive_vals(dict_sensitive_lists):
     return newdict
 
 def create_detailed_file(filename, dataset, sensitive_dict, tag):
-    f = open(filename, 'w')
-    f.write(get_detailed_metrics_header(dataset, sensitive_dict, tag) + '\n')
-    return f
+    return results.ResultsFile(filename, dataset, sensitive_dict, tag)
+    # f = open(filename, 'w')
+    # f.write(get_detailed_metrics_header(dataset, sensitive_dict, tag) + '\n')
+    # return f
 
 def main():
     fire.Fire(run)

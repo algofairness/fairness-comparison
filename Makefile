@@ -1,3 +1,8 @@
+clean:
+	rm -rf build
+	rm -rf dist
+	rm -rf fairness.egg-info
+
 testdist:
 	rm -rf dist
 	rm -rf build
