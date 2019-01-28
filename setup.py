@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-VERSION = '0.1.4'
+VERSION = '0.1.5'
 
 LICENSE='Apache 2.0'
 
@@ -50,7 +50,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
     setup(
-    name="fairness-cscheid",
+    name="fairness",
     version=VERSION,
     author="See Authors.txt",
     author_email="fairness@haverford.edu",
