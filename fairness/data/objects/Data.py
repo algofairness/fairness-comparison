@@ -146,4 +146,10 @@ class Data():
         return [data_frame.groupby(a).size()
                 for a in self.get_sensitive_attributes()]
 
+    ##########################################################################
 
+    def get_results_data_frame(self, sensitive_attr, tag):
+        return pd.read_csv(self.get_results_filename(sensitive_attr, tag))
+
+    def get_param_results_data_frame(self, sensitive_attr, tag):
+        return pd.read_csv(self.get_param_results_filename(sensitive_attr, tag))
