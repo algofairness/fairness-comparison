@@ -37,3 +37,7 @@ def get_dataset_names():
         names.append(dataset.get_dataset_name())
     return names
 
+def add_dataset(dataset):
+    DATASETS.append(dataset)
+
+    

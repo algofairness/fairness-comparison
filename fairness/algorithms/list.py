@@ -31,3 +31,6 @@ ALGORITHMS = [
    ParamGridSearch(FeldmanAlgorithm(GaussianNB()), DIAvgAll()),
    ParamGridSearch(FeldmanAlgorithm(GaussianNB()), Accuracy())
 ]
+
+def add_algorithm(algorithm):
+    ALGORITHMS.append(algorithm)
