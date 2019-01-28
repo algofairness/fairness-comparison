@@ -9,7 +9,7 @@ def prepare_data(dataset_names = get_dataset_names()):
     for dataset in DATASETS:
         if not dataset.get_dataset_name() in dataset_names:
             continue
-        print("--- Processing dataset:" + dataset.get_dataset_name() + " ---")
+        print("--- Processing dataset: %s ---" % dataset.get_dataset_name())
         data_frame = dataset.load_raw_dataset()
         d = preprocess(dataset, data_frame)
         
@@ -17,7 +17,7 @@ def prepare_data(dataset_names = get_dataset_names()):
             write_to_file(dataset.get_filename(k), v)
 
 def write_to_file(filename, dataframe):
-    print("Writing data to: " + filename)
+    print("Writing data to: %s" % filename)
     dataframe.to_csv(filename, index = False)
 
 def preprocess(dataset, data_frame):
