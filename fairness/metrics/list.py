@@ -18,7 +18,6 @@ from fairness.metrics.SensitiveMetric import SensitiveMetric
 from fairness.metrics.TNR import TNR
 from fairness.metrics.TPR import TPR
 
-
 METRICS = [ Accuracy(), TPR(), TNR(), BCR(), MCC(),        # accuracy metrics
             DIBinary(), DIAvgAll(), CV(),                  # fairness metrics
             SensitiveMetric(Accuracy), SensitiveMetric(TPR), SensitiveMetric(TNR),
@@ -34,3 +33,6 @@ def get_metrics(dataset, sensitive_dict, tag):
     for metric in METRICS:
         metrics += metric.expand_per_dataset(dataset, sensitive_dict, tag)
     return metrics
+
+def add_metric(metric):
+    METRICS.append(metric)

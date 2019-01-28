@@ -54,39 +54,44 @@ class ResultsFile(object):
         self.fresh_file.close()
 
         new_file = open(self.tempname, "r")
-        old_file = open(self.filename, "r")
-        
-        # FIXME: handle newline here? if so,
-        # must fix the final_file.write() call a few lines down.
-        original_columns = old_file.readline().split(',')
-        new_columns      = new_file.readline().split(',')
-
-        if set(original_columns) != set(new_columns):
-            print(original_columns)
-            print(new_columns)
-            raise Exception("Don't know how to handle differing measures for now")
-
+        new_columns = new_file.readline().strip().split(',')
         new_rows = new_file.readlines()
-        old_rows = old_file.readlines()
 
+        try:
+            old_file = open(self.filename, "r")
+            old_columns = old_file.readline().strip().split(',')
+            old_rows = old_file.readlines()
+        except FileNotFoundError:
+            old_columns = new_columns[:3] # copy the key columns
+            old_rows = []
+
+        final_columns = set(old_columns).union(set(new_columns))
+        
         # FIXME: here we cross our fingers that parameters don't have "," in them.
-        def indexed_rows(rows):
+        def indexed_rows(rows, column_names):
             result = {}
             for row in rows:
-                entries = row.split(',')
-                result[tuple(entries[:3])] = row
+                entries = row.strip().split(',')
+                result[tuple(entries[:3])] = dict(
+                    (entry_name, entry)
+                    for (entry_name, entry) in
+                    zip(column_names, entries))
             return result
 
-        old_indexed_rows = indexed_rows(old_rows)
+        old_indexed_rows = indexed_rows(old_rows, old_columns)
         # now we merge the rows onto the old file.
-        for (key, value) in indexed_rows(new_rows).items():
-            old_indexed_rows[key] = value
+        for (key, value_dict) in indexed_rows(new_rows, new_columns).items():
+            for (value_name, value) in value_dict.items():
+                old_indexed_rows.setdefault(key, {})[value_name] = value
 
         fd, final_tempname = tempfile.mkstemp()
         os.close(fd)
         final_file = open(final_tempname, "w")
-        final_file.write(",".join(original_columns))
-        for row in old_indexed_rows.values():
-            final_file.write(row)
+        final_columns_list = ["algorithm", "params", "run-id"] + \
+            sorted(list(final_columns.difference(set(["algorithm", "params", "run-id"]))))
+        final_file.write(",".join(final_columns_list) + "\n")
+        for row_dict in old_indexed_rows.values():
+            row = ",".join(list(row_dict.get(l, "") for l in final_columns_list))
+            final_file.write(row + "\n")
         final_file.close()
         shutil.move(final_tempname, self.filename)
