@@ -34,7 +34,7 @@ class ResultsFile(object):
         self.tag = tag
         handle, name = self.create_new_file()
         self.fresh_file = handle
-        self.temp_name = name
+        self.tempname = name
 
     def create_new_file(self):
         fd, name = tempfile.mkstemp()
@@ -49,9 +49,44 @@ class ResultsFile(object):
         self.fresh_file.flush()
         os.fsync(self.fresh_file.fileno())
 
+    # FIXME close() is terribly inefficient, but :shrug:
     def close(self):
-        # FIXME, this is where we merge the new results to the old ones
-        # for now, we just atomically move the new file onto the old one.
         self.fresh_file.close()
-        shutil.move(self.temp_name, self.filename)
+
+        new_file = open(self.tempname, "r")
+        old_file = open(self.filename, "r")
         
+        # FIXME: handle newline here? if so,
+        # must fix the final_file.write() call a few lines down.
+        original_columns = old_file.readline().split(',')
+        new_columns      = new_file.readline().split(',')
+
+        if set(original_columns) != set(new_columns):
+            print(original_columns)
+            print(new_columns)
+            raise Exception("Don't know how to handle differing measures for now")
+
+        new_rows = new_file.readlines()
+        old_rows = old_file.readlines()
+
+        # FIXME: here we cross our fingers that parameters don't have "," in them.
+        def indexed_rows(rows):
+            result = {}
+            for row in rows:
+                entries = row.split(',')
+                result[tuple(entries[:3])] = row
+            return result
+
+        old_indexed_rows = indexed_rows(old_rows)
+        # now we merge the rows onto the old file.
+        for (key, value) in indexed_rows(new_rows).items():
+            old_indexed_rows[key] = value
+
+        fd, final_tempname = tempfile.mkstemp()
+        os.close(fd)
+        final_file = open(final_tempname, "w")
+        final_file.write(",".join(original_columns))
+        for row in old_indexed_rows.values():
+            final_file.write(row)
+        final_file.close()
+        shutil.move(final_tempname, self.filename)
