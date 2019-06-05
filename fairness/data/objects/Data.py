@@ -1,14 +1,14 @@
 import pandas as pd
-import os
 import pathlib
 from fairness.results import local_results_path
 
 BASE_DIR = local_results_path()
-PACKAGE_DIR = pathlib.Path('/'.join(os.path.dirname(__file__).split('/')[0:-2]))
+PACKAGE_DIR = pathlib.Path(__file__).parents[2]
 RAW_DATA_DIR = PACKAGE_DIR / 'data' / 'raw'
 PROCESSED_DATA_DIR = PACKAGE_DIR / 'data' / 'preprocessed'
 RESULT_DIR = BASE_DIR / "results"
 ANALYSIS_DIR = BASE_DIR / "analysis"
+
 
 class Data():
     def __init__(self):
