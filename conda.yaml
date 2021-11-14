@@ -13,4 +13,4 @@ dependencies:
   # - seaborn
   - pip:
     # - fairness==0.1.8
-    - file:///Users/jb846j/my/research/fairness-comparison  # use when editing locally
+    - file:///Users/<CHANGE_TO_YOUR_LOCAL_PATH/fairness-comparision
