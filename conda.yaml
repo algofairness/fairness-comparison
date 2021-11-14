@@ -1,0 +1,16 @@
+name: fairness-comparison
+channels:
+  - defaults
+  # - conda-forge
+dependencies:
+  # - ipykernel
+  # - jupyter
+  # - jupyter_contrib_nbextensions
+  # - matplotlib
+  # - numpy=1.15.4
+  # - pip
+  - python=3.6.8
+  # - seaborn
+  - pip:
+    # - fairness==0.1.8
+    - file:///Users/jb846j/my/research/fairness-comparison  # use when editing locally

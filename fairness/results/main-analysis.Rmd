@@ -130,21 +130,21 @@ plot_tradeoff = function(measure, dataset) {
 }
 
 # measure = "accuracy"
-p = plot_tradeoff("accuracy", "german_sex-age")
-print(p)
-ggsave("paper-figures/preprocessing-tradeoff-accuracy.png", p)
-
-p = plot_tradeoff("DIavgall", "german_sex-age")
-print(p)
-ggsave("paper-figures/preprocessing-tradeoff-DIavgall.png", p)
-
-p = plot_tradeoff("DIbinary", "german_sex-age")
-print(p)
-ggsave("paper-figures/preprocessing-tradeoff-DIbinary.png", p)
-```
-```{r}
-p = plot_tradeoff("DIbinary", "german_sex-age")
-print(p)
+# p = plot_tradeoff("accuracy", "german_sex-age")
+# print(p)
+# ggsave("paper-figures/preprocessing-tradeoff-accuracy.png", p)
+#
+# p = plot_tradeoff("DIavgall", "german_sex-age")
+# print(p)
+# ggsave("paper-figures/preprocessing-tradeoff-DIavgall.png", p)
+#
+# p = plot_tradeoff("DIbinary", "german_sex-age")
+# print(p)
+# ggsave("paper-figures/preprocessing-tradeoff-DIbinary.png", p)
+# ```
+# ```{r}
+# p = plot_tradeoff("DIbinary", "german_sex-age")
+# print(p)
 ```
 
 ## Algorithm sensitivity

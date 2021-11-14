@@ -4,6 +4,10 @@ import pathlib
 import sys
 import subprocess
 
+# The following two lines are needed to resolve an issue with ggplot
+import matplotlib
+matplotlib.use('TkAgg')
+
 from ggplot import *
 
 from fairness.data.objects.list import DATASETS, get_dataset_names
@@ -25,7 +29,7 @@ def run(dataset = get_dataset_names(), graphs = GRAPHS):
                 make_all_graphs(filename, graphs)
     print("Generating additional figures in R...")
     subprocess.run(["Rscript",
-                    "results/generate-report.R"])
+                    "./fairness/results/generate-report.R"])
 
 def make_all_graphs(filename, graphs):
     try:
@@ -35,10 +39,10 @@ def make_all_graphs(filename, graphs):
        return
     else:
         o = pathlib.Path(filename).parts[-1].split('.')[0]
- 
+
         if graphs == 'all':
             graphs = all_possible_graphs(f)
- 
+
         for xaxis, yaxis in graphs:
             generate_graph(f, xaxis, yaxis, o)
 
@@ -62,15 +66,15 @@ def generate_graph(f, xaxis_measure, yaxis_measure, title):
         if len(col1) == 0:
             print("Skipping graph containing no data:" + title)
             return
- 
+
         if col1[0] == 'None':
             print("Skipping missing column %s" % xaxis_measure)
             return
- 
+
         if col2[0] == 'None':
             print("Skipping missing column %s" % yaxis_measure)
             return
- 
+
         pathlib.Path("results/analysis/%s" % title).mkdir(parents=True, exist_ok=True)
         # scale = scale_color_brewer(type='qual', palette=1)
         # d3.schemeCategory20
