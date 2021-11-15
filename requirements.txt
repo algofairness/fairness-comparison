@@ -4,7 +4,7 @@ matplotlib==2.0.0
 networkx==1.11
 numpy==1.14.0
 pandas==0.21.1
-pip==9.0.1
+pip==21.1
 pyparsing==2.1.4
 python-dateutil==2.6.0
 pytz
